@@ -1,0 +1,55 @@
+{
+  "name": "submit",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Multi-tenant customs brokerage platform for The Bahamas",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "prisma generate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:rls": "tsx prisma/apply-rls.ts",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:seed:dev": "tsx prisma/seed.dev.ts",
+    "db:setup": "npm run db:push && npm run db:rls && npm run db:seed && npm run db:seed:dev"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@types/pg": "^8.20.0",
+    "bcryptjs": "^2.4.3",
+    "decimal.js": "^10.4.3",
+    "dotenv": "^17.4.2",
+    "fast-xml-parser": "^4.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "next": "^15.5.4",
+    "pg": "^8.22.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@prisma/schema-engine-wasm": "^7.8.0-6.3c6e192761c0362d496ed980de936e2f3cebcd3a",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "prisma": "^7.8.0",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}

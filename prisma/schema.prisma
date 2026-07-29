@@ -1,0 +1,738 @@
+// =============================================================================
+// SUBMIT — PRISMA SCHEMA
+// =============================================================================
+//
+// Multi-tenant customs brokerage platform for The Bahamas.
+//
+// Architecture notes:
+// - Organization-based multi-tenancy. Every tenant-scoped model carries
+//   `organizationId`. Isolation is enforced in three layers:
+//     1. Prisma client extension (src/lib/db/tenant-client.ts)  <- primary
+//     2. withAuth() request middleware (src/lib/auth/with-auth.ts)
+//     3. PostgreSQL Row Level Security (prisma/sql/rls.sql)     <- backstop
+// - Global lookup data (Port, CustomsOffice, HSCode, Carrier, Vessel,
+//   Voyage, Journey, ShippingAgent) is deliberately NOT tenant-scoped:
+//   these are real-world fixtures shared by every brokerage.
+// - All money is BSD, stored as Decimal — never floats.
+// - Rates are stored as decimal fractions (0.4500 = 45%).
+// - pg_trgm GIN indexes accelerate fuzzy text search on names/descriptions.
+//   They are declared on the models below (type: Gin + gin_trgm_ops) and
+//   created by migrations. Only RLS (prisma/sql/rls.sql) stays out-of-band,
+//   because Prisma does not model policies.
+//
+// Version: 2.1.0
+// Changelog vs 2.0.0:
+// - Added: HSCodeRate.dutyBasis / specificRate / specificRateUnit to support
+//   specific (per-unit) duties — required for correct alcohol calculations,
+//   a known gap in CayDeclarations.
+// - Added: CustomsEntry BEAIP round-trip fields (beaipReference, payloads).
+// =============================================================================
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  runtime         = "nodejs"
+  // postgresqlExtensions lets the datasource declare pg_trgm below, so the
+  // extension is created by migrations rather than by a side script.
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  // pg_trgm backs the GIN trigram indexes declared on the text columns that
+  // get fuzzy-searched (HSCode.description, Client.name, ...).
+  extensions = [pg_trgm]
+}
+
+// =============================================================================
+// TENANCY & USERS
+// =============================================================================
+
+model Organization {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  email         String?
+  phone         String?
+  address       String?
+  tinNumber     String?
+  licenseNumber String?
+  logoUrl       String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  users             User[]
+  clients           Client[]
+  suppliers         Supplier[]
+  manifests         Manifest[]
+  shipments         Shipment[]
+  invoices          Invoice[]
+  lineItems         LineItem[]
+  customsEntries    CustomsEntry[]
+  shipmentDocuments ShipmentDocument[]
+  brokerageInvoices BrokerageInvoice[]
+  payments          Payment[]
+  auditLogs         AuditLog[]
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  BROKER
+  CLERK
+  VIEWER
+}
+
+model User {
+  id             String    @id @default(cuid())
+  organizationId String
+  email          String    @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  role           UserRole  @default(CLERK)
+  isActive       Boolean   @default(true)
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  auditLogs         AuditLog[]
+  createdShipments  Shipment[]         @relation("ShipmentCreatedBy")
+  uploadedDocuments ShipmentDocument[]
+
+  @@index([organizationId])
+}
+
+// =============================================================================
+// GLOBAL TRANSPORT LOOKUPS (not tenant-scoped)
+// =============================================================================
+
+enum TransportMode {
+  SEA
+  AIR
+  LAND
+}
+
+model Port {
+  id        String   @id @default(cuid())
+  unLocode  String   @unique // e.g. "USMIA", "BSNAS"
+  name      String
+  country   String // ISO 3166-1 alpha-2, e.g. "US", "BS"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  journeysFrom Journey[] @relation("JourneyOrigin")
+  journeysTo   Journey[] @relation("JourneyDestination")
+}
+
+model CustomsOffice {
+  id        String   @id @default(cuid())
+  code      String   @unique // NAS, FPO, MSH, GGT, NEH
+  name      String
+  location  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shipments Shipment[]
+}
+
+model ShippingAgent {
+  id        String   @id @default(cuid())
+  code      String?  @unique
+  name      String
+  email     String?
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  manifests Manifest[]
+}
+
+model Carrier {
+  id        String        @id @default(cuid())
+  code      String        @unique // e.g. "TROP"
+  name      String // "Tropical Shipping"
+  mode      TransportMode @default(SEA)
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  vessels Vessel[]
+}
+
+model Vessel {
+  id        String        @id @default(cuid())
+  carrierId String
+  name      String // "Tropic Sun"
+  imoNumber String?       @unique
+  mode      TransportMode @default(SEA)
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  carrier Carrier  @relation(fields: [carrierId], references: [id])
+  voyages Voyage[]
+
+  @@index([carrierId])
+}
+
+/// A route between two ports (e.g. Miami -> Nassau).
+model Journey {
+  id                String   @id @default(cuid())
+  originPortId      String
+  destinationPortId String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  originPort      Port     @relation("JourneyOrigin", fields: [originPortId], references: [id])
+  destinationPort Port     @relation("JourneyDestination", fields: [destinationPortId], references: [id])
+  voyages         Voyage[]
+
+  @@unique([originPortId, destinationPortId])
+}
+
+/// A specific sailing/flight of a vessel on a journey (e.g. voyage 1961).
+model Voyage {
+  id            String    @id @default(cuid())
+  vesselId      String
+  journeyId     String?
+  voyageNumber  String
+  departureDate DateTime?
+  arrivalDate   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  vessel    Vessel     @relation(fields: [vesselId], references: [id])
+  journey   Journey?   @relation(fields: [journeyId], references: [id])
+  manifests Manifest[]
+
+  @@unique([vesselId, voyageNumber])
+  @@index([journeyId])
+}
+
+// =============================================================================
+// HS CODE REFERENCE DATA (global, seeded from the Bahamas Tariff Schedule)
+// =============================================================================
+
+model HSCode {
+  id             String   @id @default(cuid())
+  code           String   @unique // "8703.23.10"
+  description    String
+  chapter        String // "87"
+  heading        String // "8703"
+  unit           String? // KG, L, PCS...
+  sectionNumber  String? // "XVII"
+  sectionName    String?
+  chapterName    String?
+  requiresPermit Boolean  @default(false)
+  permitType     String? // "Ministry of Agriculture", "Port Department"...
+  notes          String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  lineItems   LineItem[]
+  rateHistory HSCodeRate[]
+
+  @@index([chapter])
+  @@index([heading])
+  /// Fuzzy search: pg_trgm GIN index on description (see hs-codes.service / list filters).
+  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin, map: "HSCode_description_trgm_idx")
+}
+
+enum DutyBasis {
+  AD_VALOREM /// duty = customs value x dutyRate
+  SPECIFIC /// duty = quantity x specificRate  (e.g. $X per litre of spirits)
+  COMPOUND /// engine applies the greater of the ad valorem and specific amounts
+}
+
+/// Rates live in their own table so we can track history and answer
+/// "what was the rate on the date this shipment was assessed?"
+model HSCodeRate {
+  id       String @id @default(cuid())
+  hsCodeId String
+
+  dutyBasis        DutyBasis @default(AD_VALOREM)
+  dutyRate         Decimal   @default(0) @db.Decimal(6, 4) // 0.4500 = 45%
+  specificRate     Decimal?  @db.Decimal(12, 4) // BSD per specificRateUnit
+  specificRateUnit String? // "L", "LPA" (litres pure alcohol), "KG"...
+
+  vatRate    Decimal @default(0.1000) @db.Decimal(6, 4)
+  levyRate   Decimal @default(0) @db.Decimal(6, 4) // environmental levy (ad valorem portion)
+  exciseRate Decimal @default(0) @db.Decimal(6, 4)
+
+  processingFeeExempt Boolean @default(false)
+
+  effectiveFrom DateTime
+  effectiveTo   DateTime? // NULL = currently active
+  changeReason  String?
+  gazetteRef    String?
+  createdAt     DateTime  @default(now())
+
+  hsCode HSCode @relation(fields: [hsCodeId], references: [id])
+
+  @@index([hsCodeId, effectiveFrom])
+}
+
+// =============================================================================
+// TENANT-SCOPED BUSINESS DATA
+// =============================================================================
+
+enum ClientType {
+  INDIVIDUAL
+  BUSINESS
+}
+
+model Client {
+  id             String     @id @default(cuid())
+  organizationId String
+  name           String
+  clientType     ClientType @default(BUSINESS)
+  tinNumber      String?
+  email          String?
+  phone          String?
+  address        String?
+  contactPerson  String?
+  notes          String?
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  shipments         Shipment[]
+  brokerageInvoices BrokerageInvoice[]
+
+  @@index([organizationId, isActive])
+  /// Fuzzy search: pg_trgm GIN index on name (see hs-codes.service / list filters).
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "Client_name_trgm_idx")
+}
+
+model Supplier {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  country        String? // ISO alpha-2
+  address        String?
+  email          String?
+  phone          String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  invoices     Invoice[]
+
+  @@index([organizationId, isActive])
+  /// Fuzzy search: pg_trgm GIN index on name (see hs-codes.service / list filters).
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "Supplier_name_trgm_idx")
+}
+
+enum ManifestStatus {
+  OPEN
+  CLOSED
+}
+
+model Manifest {
+  id              String         @id @default(cuid())
+  organizationId  String
+  manifestNumber  String
+  voyageId        String
+  shippingAgentId String?
+  registeredAt    DateTime?
+  status          ManifestStatus @default(OPEN)
+  notes           String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  organization  Organization   @relation(fields: [organizationId], references: [id])
+  voyage        Voyage         @relation(fields: [voyageId], references: [id])
+  shippingAgent ShippingAgent? @relation(fields: [shippingAgentId], references: [id])
+  shipments     Shipment[]
+
+  @@unique([organizationId, manifestNumber])
+  @@index([organizationId, status, createdAt(sort: Desc)])
+  @@index([voyageId])
+}
+
+enum ShipmentStatus {
+  DRAFT
+  SUBMITTED
+  CLEARED
+  CANCELLED
+}
+
+enum GoodsType {
+  GENERAL
+  PERSONAL_EFFECTS
+  COMMERCIAL
+  VEHICLE
+  HAZARDOUS
+  PERISHABLE
+}
+
+enum PackageType {
+  CONTAINER
+  PALLET
+  CARTON
+  CRATE
+  DRUM
+  BUNDLE
+  LOOSE
+  VEHICLE
+  OTHER
+}
+
+model Shipment {
+  id             String @id @default(cuid())
+  organizationId String
+  manifestId     String?
+  clientId       String
+  createdById    String
+
+  shipmentNumber  String // org-scoped human reference, e.g. "SHP-2026-00042"
+  blNumber        String? // bill of lading / airway bill
+  containerNumber String?
+
+  declarationOfficeId String // exactly one customs office per shipment
+  goodsType           GoodsType     @default(GENERAL)
+  packageType         PackageType   @default(CARTON)
+  packageCount        Int           @default(1)
+  transportMode       TransportMode @default(SEA) // denormalized from voyage.vessel.mode
+  description         String?
+  grossWeightKg       Decimal?      @db.Decimal(12, 3)
+
+  status      ShipmentStatus @default(DRAFT)
+  submittedAt DateTime?
+  clearedAt   DateTime?
+
+  // Shipment-level charges to be apportioned across line items
+  freightCharge   Decimal @default(0) @db.Decimal(12, 2)
+  insuranceCharge Decimal @default(0) @db.Decimal(12, 2)
+  otherCharges    Decimal @default(0) @db.Decimal(12, 2)
+
+  // Rolled-up totals (recomputed by the calculation engine)
+  totalFobValue Decimal   @default(0) @db.Decimal(14, 2)
+  totalCifValue Decimal   @default(0) @db.Decimal(14, 2)
+  totalDuty     Decimal   @default(0) @db.Decimal(14, 2)
+  totalVat      Decimal   @default(0) @db.Decimal(14, 2)
+  totalLevy     Decimal   @default(0) @db.Decimal(14, 2)
+  totalExcise   Decimal   @default(0) @db.Decimal(14, 2)
+  processingFee Decimal   @default(0) @db.Decimal(12, 2)
+  totalPayable  Decimal   @default(0) @db.Decimal(14, 2)
+  calculatedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  manifest          Manifest?          @relation(fields: [manifestId], references: [id])
+  client            Client             @relation(fields: [clientId], references: [id])
+  createdBy         User               @relation("ShipmentCreatedBy", fields: [createdById], references: [id])
+  declarationOffice CustomsOffice      @relation(fields: [declarationOfficeId], references: [id])
+  invoices          Invoice[]
+  documents         ShipmentDocument[]
+  customsEntries    CustomsEntry[]
+
+  @@unique([organizationId, shipmentNumber])
+  @@index([organizationId, status, createdAt(sort: Desc)])
+  @@index([organizationId, clientId])
+  @@index([manifestId])
+  @@index([blNumber])
+  /// Fuzzy search: pg_trgm GIN index on description (see hs-codes.service / list filters).
+  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin, map: "Shipment_description_trgm_idx")
+}
+
+enum DocumentType {
+  COMMERCIAL_INVOICE
+  BILL_OF_LADING
+  AIRWAY_BILL
+  PACKING_LIST
+  PERMIT
+  CERTIFICATE_OF_ORIGIN
+  RECEIPT
+  OTHER
+}
+
+model ShipmentDocument {
+  id             String       @id @default(cuid())
+  organizationId String
+  shipmentId     String
+  uploadedById   String
+  documentType   DocumentType @default(OTHER)
+  fileName       String
+  mimeType       String
+  sizeBytes      Int
+  storageKey     String // S3/R2 object key — bytes never live in Postgres
+  createdAt      DateTime     @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  shipment     Shipment     @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  uploadedBy   User         @relation(fields: [uploadedById], references: [id])
+
+  @@index([organizationId])
+  @@index([shipmentId])
+}
+
+/// A supplier's commercial invoice attached to a shipment.
+model Invoice {
+  id             String   @id @default(cuid())
+  organizationId String
+  shipmentId     String
+  supplierId     String
+  invoiceNumber  String
+  invoiceDate    DateTime
+  currency       String   @default("BSD")
+  subTotal       Decimal  @default(0) @db.Decimal(14, 2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  shipment     Shipment     @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  supplier     Supplier     @relation(fields: [supplierId], references: [id])
+  lineItems    LineItem[]
+
+  @@index([organizationId])
+  @@index([shipmentId])
+  @@index([supplierId])
+}
+
+enum ExemptionType {
+  NONE
+  FULL
+  PARTIAL
+  CONDITIONAL
+}
+
+model LineItem {
+  id             String @id @default(cuid())
+  organizationId String
+  invoiceId      String
+  hsCodeId       String?
+
+  lineNumber            Int
+  description           String // "Head & Shoulders Shampoo 400ml"
+  commercialDescription String? // broker's category tag: "Soap", "Dress"
+  pageNumber            Int? // page of the source PDF
+  hsCode                String // denormalized code string at time of entry
+  /// Customs Procedure Code, per line (ASYCUDA-style, e.g. "4000" = home
+  /// consumption). Distinct from CustomsEntry.declarationType (C13/C14/...),
+  /// which classifies the whole declaration. Defaults to 4000 because that is
+  /// what the overwhelming majority of lines are; no authoritative CPC list is
+  /// encoded here, so the value is stored as entered and validated only for
+  /// shape.
+  cpcCode               String    @default("4000")
+  quantity              Decimal  @db.Decimal(12, 3)
+  unit                  String   @default("PCS")
+  unitPrice             Decimal  @db.Decimal(12, 4)
+  totalValue            Decimal  @db.Decimal(12, 2) // line FOB
+  weightKg              Decimal? @db.Decimal(12, 3)
+  countryOfOrigin       String?
+
+  // Apportioned shipment-level costs (calculation engine output)
+  freightApportioned   Decimal @default(0) @db.Decimal(12, 2)
+  insuranceApportioned Decimal @default(0) @db.Decimal(12, 2)
+  otherCostApportioned Decimal @default(0) @db.Decimal(12, 2)
+  cifValue             Decimal @default(0) @db.Decimal(12, 2)
+
+  // Rates as applied (frozen at calculation time for auditability)
+  dutyBasis        DutyBasis @default(AD_VALOREM)
+  dutyRate         Decimal   @default(0) @db.Decimal(6, 4)
+  specificRate     Decimal?  @db.Decimal(12, 4)
+  specificRateUnit String?
+  vatRate          Decimal   @default(0) @db.Decimal(6, 4)
+  levyRate         Decimal   @default(0) @db.Decimal(6, 4)
+  exciseRate       Decimal   @default(0) @db.Decimal(6, 4)
+
+  // Calculated amounts
+  dutyAmount   Decimal @default(0) @db.Decimal(12, 2)
+  vatAmount    Decimal @default(0) @db.Decimal(12, 2)
+  levyAmount   Decimal @default(0) @db.Decimal(12, 2)
+  exciseAmount Decimal @default(0) @db.Decimal(12, 2)
+
+  exemptionType ExemptionType @default(NONE)
+  exemptionRef  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  hsCodeRef    HSCode?      @relation(fields: [hsCodeId], references: [id])
+
+  @@unique([invoiceId, lineNumber])
+  @@index([organizationId])
+  @@index([hsCodeId])
+  /// Fuzzy search: pg_trgm GIN index on description (see hs-codes.service / list filters).
+  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin, map: "LineItem_description_trgm_idx")
+  /// Fuzzy search: pg_trgm GIN index on commercialDescription (see hs-codes.service / list filters).
+  @@index([commercialDescription(ops: raw("gin_trgm_ops"))], type: Gin, map: "LineItem_commercialDescription_trgm_idx")
+}
+
+// =============================================================================
+// CUSTOMS DECLARATIONS (BEAIP round trip)
+// =============================================================================
+
+enum CustomsEntryStatus {
+  DRAFT
+  VALIDATED
+  SUBMITTED
+  UNDER_ASSESSMENT
+  ASSESSED
+  PAID
+  RELEASED
+  REJECTED
+  CANCELLED
+}
+
+enum DeclarationType {
+  C13 /// Home consumption
+  C14 /// Temporary import
+  C17 /// Warehouse
+  C18 /// Transshipment
+  OTHER
+}
+
+model CustomsEntry {
+  id             String @id @default(cuid())
+  organizationId String
+  shipmentId     String
+
+  entryNumber     String?
+  declarationType DeclarationType    @default(C13)
+  status          CustomsEntryStatus @default(DRAFT)
+
+  // BEAIP round trip
+  beaipReference  String? // reference number returned by BEAIP
+  submittedAt     DateTime?
+  assessedAt      DateTime?
+  releasedAt      DateTime?
+  rejectionReason String?
+  requestPayload  Json? // exact XML/JSON we sent (audit trail)
+  responsePayload Json? // exact response we received
+
+  totalPayable Decimal @default(0) @db.Decimal(14, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  shipment     Shipment     @relation(fields: [shipmentId], references: [id])
+
+  @@index([organizationId, status, createdAt(sort: Desc)])
+  @@index([shipmentId])
+  @@index([beaipReference])
+}
+
+// =============================================================================
+// BROKERAGE BILLING (what the brokerage charges its clients)
+// =============================================================================
+
+enum BrokerageInvoiceStatus {
+  DRAFT
+  SENT
+  PARTIALLY_PAID
+  PAID
+  VOID
+}
+
+model BrokerageInvoice {
+  id             String                 @id @default(cuid())
+  organizationId String
+  clientId       String
+  invoiceNumber  String
+  status         BrokerageInvoiceStatus @default(DRAFT)
+  issueDate      DateTime               @default(now())
+  dueDate        DateTime?
+  subtotal       Decimal                @default(0) @db.Decimal(14, 2)
+  vatAmount      Decimal                @default(0) @db.Decimal(14, 2)
+  total          Decimal                @default(0) @db.Decimal(14, 2)
+  amountPaid     Decimal                @default(0) @db.Decimal(14, 2)
+  notes          String?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  organization Organization           @relation(fields: [organizationId], references: [id])
+  client       Client                 @relation(fields: [clientId], references: [id])
+  items        BrokerageInvoiceItem[]
+  payments     Payment[]
+
+  @@unique([organizationId, invoiceNumber])
+  @@index([organizationId, status, issueDate(sort: Desc)])
+  @@index([clientId])
+}
+
+model BrokerageInvoiceItem {
+  id                 String  @id @default(cuid())
+  brokerageInvoiceId String
+  shipmentId         String? // optional link back to the shipment being billed
+  description        String
+  quantity           Decimal @default(1) @db.Decimal(12, 3)
+  unitPrice          Decimal @db.Decimal(12, 2)
+  amount             Decimal @db.Decimal(12, 2)
+
+  brokerageInvoice BrokerageInvoice @relation(fields: [brokerageInvoiceId], references: [id], onDelete: Cascade)
+
+  @@index([brokerageInvoiceId])
+}
+
+enum PaymentMethod {
+  CASH
+  CHEQUE
+  BANK_TRANSFER
+  CARD
+  OTHER
+}
+
+model Payment {
+  id                 String        @id @default(cuid())
+  organizationId     String
+  brokerageInvoiceId String
+  amount             Decimal       @db.Decimal(14, 2)
+  method             PaymentMethod @default(BANK_TRANSFER)
+  reference          String?
+  receivedAt         DateTime      @default(now())
+  createdAt          DateTime      @default(now())
+
+  organization     Organization     @relation(fields: [organizationId], references: [id])
+  brokerageInvoice BrokerageInvoice @relation(fields: [brokerageInvoiceId], references: [id])
+
+  @@index([organizationId])
+  @@index([brokerageInvoiceId])
+}
+
+// =============================================================================
+// AUDIT LOGGING
+// =============================================================================
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  SUBMIT
+  STATUS_CHANGE
+  LOGIN
+  LOGOUT
+}
+
+model AuditLog {
+  id             String      @id @default(cuid())
+  organizationId String
+  userId         String?
+  action         AuditAction
+  entityType     String // "Shipment", "LineItem"...
+  entityId       String?
+  changes        Json? // { before: {...}, after: {...} }
+  metadata       Json? // { ip, userAgent }
+  createdAt      DateTime    @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User?        @relation(fields: [userId], references: [id])
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([entityType, entityId])
+}

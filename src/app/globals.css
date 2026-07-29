@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@import "./theme.css";
+
+/*
+ * Submit — design tokens.
+ * Harbor navy + ledger paper. Numbers set in mono: this product's identity
+ * is financial precision, so figures get typographic priority everywhere.
+ */
+:root {
+  --ink: #0e1b2c;        /* harbor navy — headers, primary text */
+  --ink-soft: #3d4d63;
+  --paper: #f7f8f6;      /* ledger paper */
+  --line: #d9ded8;
+  --accent: #0e7c66;     /* customs-stamp green — actions, cleared */
+  --accent-ink: #085444;
+  --flag: #ffc72c;       /* Bahamian aquamarine+gold; gold used sparingly */
+  --danger: #b3382c;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sb-font-ui, ui-sans-serif, system-ui, sans-serif);
+}
+
+.num, .mono {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.stamp {
+  border: 2px solid var(--accent);
+  color: var(--accent-ink);
+  letter-spacing: 0.08em;
+}
