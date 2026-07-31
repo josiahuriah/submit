@@ -28,25 +28,20 @@ and structure, not owner law.
   `submit-build-and-env`, `submit-calculations-and-money`,
   `submit-auth-and-tenancy`, `submit-api-conventions`
 
-## The dominant governance fact: NO VERSION CONTROL
+## Version control status (RESOLVED 2026-07-29, verified 2026-07-31)
 
-Verified 2026-07-09: there is no `.git` directory. Consequences:
+The repo is now under git: initial commit `b72bc45` (2026-07-29), remote
+`origin = github.com:josiahuriah/submit.git`, branch `main`. Commits are
+made when the owner asks (session 2026-07-31 pushed `462d3c4` on request).
 
-- No history, no diff-based review, no bisect, no revert. Every edit is
-  immediately live and irreversible.
-- The skills library itself (`.claude/skills/`) is unversioned.
-- A `.gitignore` already exists and covers `node_modules/`, `.next/`, `.env`,
-  `.env.local`, `src/generated/`, `prisma/seed.dev.ts`, `*.tsbuildinfo`.
+Still-live consequence: `prisma/seed.dev.ts` remains in `.gitignore`, so a
+fresh clone LACKS the dev seed (demo tenants that tests and smoke depend on).
+Un-ignoring it is an owner decision (Class A). `.gitignore` also covers
+`node_modules/`, `.next/`, `.env`, `.env.local`, `src/generated/`,
+`*.tsbuildinfo`, `.DS_Store`.
 
-**Recommended remedy (owner decision, Class A):** `git init` + initial commit.
-One flag for that decision: `prisma/seed.dev.ts` is in `.gitignore`, so a
-plain commit-and-clone would LOSE the dev seed (it contains the demo tenants
-the tests and smoke depend on). The owner must decide whether to un-ignore it
-or accept that fresh clones need it recreated.
-
-**Until git exists, every session must:** avoid mass deletes/rewrites, prefer
-additive edits, and end with a summary of every file touched (see Session
-review protocol).
+The session review protocol below still applies in full — git gives undo,
+not permission to skip the ledger.
 
 ## Change classification
 
