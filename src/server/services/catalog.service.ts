@@ -24,7 +24,7 @@ const MANIFEST_SELECT = {
   id: true, manifestNumber: true, status: true, registeredAt: true, notes: true, createdAt: true,
   voyage: {
     select: {
-      id: true, voyageNumber: true,
+      id: true, voyageNumber: true, arrivalDate: true,
       vessel: { select: { id: true, name: true, carrier: { select: { name: true } } } },
     },
   },

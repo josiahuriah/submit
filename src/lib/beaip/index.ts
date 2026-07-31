@@ -8,7 +8,17 @@ import { MockBeaipClient } from './mock-client'
 import { ProductionBeaipClient } from './production-client'
 import type { BeaipClient } from './types'
 
-export type { BeaipClient, BeaipDeclaration, BeaipSubmissionResult } from './types'
+export type {
+  BeaipClient,
+  BeaipDeclaration,
+  BeaipDeclarationLine,
+  BeaipInvoice,
+  BeaipParty,
+  BeaipPartyAddress,
+  BeaipSubmissionResult,
+  BeaipTransport,
+} from './types'
+export { buildWcoDeclarationXml, WCO_DECLARATION_NS } from './wco-xml'
 
 let instance: BeaipClient | undefined
 

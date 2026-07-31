@@ -1,20 +1,15 @@
+import { listAgentOptions, listManifests, listVoyageOptions } from "@/lib/data/manifests";
+import { ManifestsView } from "./manifests-view";
+
 /**
- * Manifests — placeholder.
- * This route follows one of the two canonical patterns already built:
- *   • List pages (Manifests, Clients, Billing, Accounting, Home) mirror
- *     /shipments  — a Server Component fetches via a lib/data seam and passes
- *     rows to a Client Component for filtering/search.
- *   • The Clients page additionally uses a master-detail split.
- * Ask Claude to generate this page next and it will drop in here.
+ * Manifests — Server Component fetches via the lib/data seam (same pattern as
+ * /shipments) and hands rows plus the picker options to the client view.
  */
-export default function ManifestsPage() {
-  return (
-    <div className="sb-page">
-      <h1 className="sb-h1">Manifests</h1>
-      <p className="sb-meta" style={{ marginTop: 8 }}>
-        This page is scaffolded. It follows the same Server + Client pattern as
-        the Shipments page — ready to be built out next.
-      </p>
-    </div>
-  );
+export default async function ManifestsPage() {
+  const [rows, voyages, agents] = await Promise.all([
+    listManifests(),
+    listVoyageOptions(),
+    listAgentOptions(),
+  ]);
+  return <ManifestsView initialRows={rows} voyages={voyages} agents={agents} />;
 }

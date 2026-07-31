@@ -11,10 +11,10 @@
  *   - submitting user holds shipments:submit (checked at the route)
  */
 import type { TenantClient } from '@/lib/db/tenant-client'
-import { getBeaipClient, type BeaipDeclaration } from '@/lib/beaip'
+import { getBeaipClient } from '@/lib/beaip'
 import { writeAudit, type AuditContext } from '@/lib/audit'
 import { BusinessRuleError, NotFoundError } from '@/lib/errors'
-import { moneyString } from '@/lib/calculations/money'
+import { loadDeclarationSource, toBeaipDeclaration } from './declaration-mapper'
 import type { DeclarationType } from '@/generated/prisma/enums'
 
 export const declarationsService = {
@@ -24,48 +24,7 @@ export const declarationsService = {
     shipmentId: string,
     declarationType: DeclarationType,
   ) {
-    const shipment = await db.shipment.findUnique({
-      where: { id: shipmentId },
-      select: {
-        id: true,
-        shipmentNumber: true,
-        status: true,
-        blNumber: true,
-        packageCount: true,
-        grossWeightKg: true,
-        calculatedAt: true,
-        updatedAt: true,
-        totalCifValue: true,
-        totalDuty: true,
-        totalVat: true,
-        totalLevy: true,
-        totalExcise: true,
-        processingFee: true,
-        totalPayable: true,
-        client: { select: { name: true, tinNumber: true } },
-        declarationOffice: { select: { code: true } },
-        invoices: {
-          select: {
-            lineItems: {
-              select: {
-                lineNumber: true,
-                hsCode: true,
-                description: true,
-                countryOfOrigin: true,
-                quantity: true,
-                unit: true,
-                cifValue: true,
-                dutyAmount: true,
-                vatAmount: true,
-                levyAmount: true,
-                exciseAmount: true,
-              },
-              orderBy: { lineNumber: 'asc' },
-            },
-          },
-        },
-      },
-    })
+    const shipment = await loadDeclarationSource(db, shipmentId)
 
     if (!shipment) throw new NotFoundError('Shipment')
     if (shipment.status !== 'DRAFT') {
@@ -84,40 +43,12 @@ export const declarationsService = {
       }
     }
 
-    const lines = shipment.invoices.flatMap((inv) => inv.lineItems)
-    if (lines.length === 0) throw new BusinessRuleError('Shipment has no line items')
-
-    // Map to the BEAIP contract.
-    const declaration: BeaipDeclaration = {
-      declarationType,
-      brokerReference: shipment.shipmentNumber,
-      customsOfficeCode: shipment.declarationOffice.code,
-      importerName: shipment.client.name,
-      importerTin: shipment.client.tinNumber,
-      blNumber: shipment.blNumber,
-      packageCount: shipment.packageCount,
-      grossWeightKg: shipment.grossWeightKg === null ? null : String(shipment.grossWeightKg),
-      totalCifValue: moneyString(String(shipment.totalCifValue)),
-      totalDuty: moneyString(String(shipment.totalDuty)),
-      totalVat: moneyString(String(shipment.totalVat)),
-      totalLevy: moneyString(String(shipment.totalLevy)),
-      totalExcise: moneyString(String(shipment.totalExcise)),
-      processingFee: moneyString(String(shipment.processingFee)),
-      totalPayable: moneyString(String(shipment.totalPayable)),
-      lines: lines.map((l, i) => ({
-        lineNumber: l.lineNumber ?? i + 1,
-        hsCode: l.hsCode,
-        description: l.description,
-        countryOfOrigin: l.countryOfOrigin,
-        quantity: String(l.quantity),
-        unit: l.unit,
-        cifValue: moneyString(String(l.cifValue)),
-        dutyAmount: moneyString(String(l.dutyAmount)),
-        vatAmount: moneyString(String(l.vatAmount)),
-        levyAmount: moneyString(String(l.levyAmount)),
-        exciseAmount: moneyString(String(l.exciseAmount)),
-      })),
+    if (shipment.invoices.every((inv) => inv.lineItems.length === 0)) {
+      throw new BusinessRuleError('Shipment has no line items')
     }
+
+    // Map to the BEAIP contract (shared with the WCO XML generator script).
+    const declaration = toBeaipDeclaration(shipment, declarationType)
 
     // Submit through whichever client the environment provides.
     const beaip = getBeaipClient()

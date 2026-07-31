@@ -18,7 +18,8 @@
     "db:rls": "tsx prisma/apply-rls.ts",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:dev": "tsx prisma/seed.dev.ts",
-    "db:setup": "npm run db:push && npm run db:rls && npm run db:seed && npm run db:seed:dev"
+    "db:setup": "npm run db:push && npm run db:rls && npm run db:seed && npm run db:seed:dev",
+    "wco:generate": "tsx scripts/generate-wco-declaration.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

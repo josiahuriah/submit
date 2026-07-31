@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:dec="http://globaletrade.services/Declaration" targetNamespace="http://globaletrade.services/Declaration"
+	elementFormDefault="qualified" xmlns:TFB-CMN="TFB_Common_Types">
+	<xs:import namespace="TFB_Common_Types" schemaLocation="TFB_Common_Types.xsd"/>
+	<xs:element name="Declaration" >
+		<xs:complexType> 
+			<xs:sequence>
+				<xs:element name="AcceptanceDateTime" type="TFB-CMN:DateTimeType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="FunctionCode" type="TFB-CMN:FunctionCodeType" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="FunctionalReferenceID" type="TFB-CMN:IDType" minOccurs="1" maxOccurs="1"/>		
+				<xs:element name="StatusCode" type="TFB-CMN:StatusType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="TypeCode" type="TFB-CMN:RegimeType" minOccurs="1" maxOccurs="1"/>				
+				<xs:element name="TotalGrossMassMeasure" type="TFB-CMN:WeightMeasureType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="TotalPackageQuantity" type="TFB-CMN:PackagingUnitType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="Submitter" type="dec:SubmitterType" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="DeclarationOffice" type="dec:DeclarationOfficeType" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="AdditionalDocument" type="dec:AdditionalDocumentType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="AdditionalInformation"  type="dec:AdditionalInformationType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="BorderTransportMeans" type="dec:BorderTransportMeansType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="Declarant" type="dec:PartyNameType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="DutyTaxFee" type="dec:DutyTaxFeeType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="GoodsShipment" type="dec:GoodsShipmentType" minOccurs="0" maxOccurs="unbounded"/>				
+				<xs:element name="GovernmentProcedure" type="dec:GovernmentProcedureType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="PreviousDocument" type="dec:PreviousDocumentType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>				
+		</xs:complexType>		
+	</xs:element>
+	
+	<xs:complexType name="BorderTransportMeansType">
+		<xs:sequence>
+			<xs:element name="Name" type="TFB-CMN:TransportMeanType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="TypeCode" type="TFB-CMN:TransportModeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="RegistrationNationalityCode" type="TFB-CMN:CountryType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ArrivalDateTime" type="TFB-CMN:DateTimeType" minOccurs="0" maxOccurs="unbounded"/>	
+			<xs:element name="TransportEquipment" type="dec:TransportEquipmentType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="GoodsShipmentType">
+		<xs:sequence>
+			<xs:element name="Consignee" type="dec:PartyType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Consignment" type="dec:GoodsShipmentConsignmentType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Consignor" type="dec:PartyType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="CustomsValuation" type="dec:GoodsShipmentCustomsValuationType" minOccurs="0" maxOccurs="unbounded"/>	
+			<xs:element name="Destination" type="dec:DestinationType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="EntryOffice" type="dec:EntryOfficeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ExitOffice" type="dec:ExitOfficeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ExportCountry" type="dec:ExportCountryType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Exporter" type="dec:PartyType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="GovernmentAgencyGoodsItem" type="dec:GovernmentAgencyGoodsItemType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Importer" type="dec:PartyType" minOccurs="0" maxOccurs="1"/>			
+			<xs:element name="Invoice" type="dec:InvoiceType" minOccurs="0" maxOccurs="unbounded"/>	
+			<xs:element name="Supplier" type="dec:PartyType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="TradeTerms" type="dec:TradeTermsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="UCR" type="dec:UCRType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="TradeTermsType">
+		<xs:sequence>		
+			<xs:element name="LocationID" type="TFB-CMN:TypeCodeType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:InvoiceIDType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="IssueDateTime" type="TFB-CMN:DateTimeType" minOccurs="0" maxOccurs="1"/>	
+			<!-- Inco Term -->
+			<xs:element name="TypeCode" type="TFB-CMN:TypeCodesType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="SequenceNumeric" type="TFB-CMN:SequenceNumericType" minOccurs="0"/>
+			<xs:element name="Authenticator" type="dec:PartyNameType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="GoodsShipmentCustomsValuationType">
+		<xs:sequence>
+			<!-- InvoiceChargeAmount -->	
+			<xs:element name="ExitToEntryChargeAmount" type="TFB-CMN:AmountCurrencyType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="FreightChargeAmount" type="TFB-CMN:AmountCurrencyType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="InsuranceAmount" type="TFB-CMN:AmountCurrencyType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ChargeDeduction" type="dec:CustomsValuationChargeDeductionType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>	
+	
+	<xs:complexType name="CustomsValuationChargeDeductionType">
+		<xs:sequence>
+			<!-- EDICFACT 5025  -->
+			<xs:element name="ChargesTypeCode" type="TFB-CMN:TypeCodesType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="OtherChargeDeductionAmount" type="TFB-CMN:AmountCurrencyType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="CurrencyExchange" type="dec:CurrencyExchangeType" minOccurs="0" maxOccurs="1"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CurrencyExchangeType">
+		<xs:sequence>
+			<xs:element name="CurrencyTypeCode" type="TFB-CMN:CurrencyCodeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="RateNumeric" type="TFB-CMN:ExchangeRateType" minOccurs="0" maxOccurs="1"/>
+		
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="GovernmentAgencyGoodsItemType">
+		<xs:sequence>
+			<xs:element name="AdditionalInformation"  type="dec:AdditionalInformationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Commodity" type="dec:CommodityType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="CustomsValuation" type="dec:GoodsShipmentCustomsValuationType" minOccurs="0" maxOccurs="1"/><!-- In Item Level Customs Valuation is only one related to that item -->
+			<xs:element name="GovernmentProcedure" type="dec:GovernmentProcedureType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Origin" type="dec:OriginType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Packaging" type="dec:GoodsPackagingType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="PreviousDocument" type="dec:GoodsItemPreviousDocumentType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="GoodsItemPreviousDocumentType">
+		<xs:sequence>				
+			<xs:element name="ID" type="TFB-CMN:IDType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="LineNumeric" type="TFB-CMN:IDType" minOccurs="1" maxOccurs="1"/>		
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="GoodsPackagingType">
+		<xs:sequence>
+			<xs:element name="SequenceNumeric" type="TFB-CMN:SequenceNumericType" minOccurs="0"/>
+			<xs:element name="QuantityQuantity" type="TFB-CMN:PackagingUnitType" minOccurs="0" maxOccurs="4"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="OriginType">
+		<xs:sequence>
+			<xs:element name="CountryCode" type="TFB-CMN:CountryType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="DestinationType">
+		<xs:sequence>
+			<xs:element name="CountryCode" type="TFB-CMN:CountryType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="CommodityType">
+		<xs:sequence>
+			<xs:element name="SequenceNumeric" type="TFB-CMN:SequenceNumericType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Description" type="TFB-CMN:DescriptionType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ValueAmount" type="TFB-CMN:AmountCurrencyType" minOccurs="0" maxOccurs="1"/>		
+			<xs:element name="CommercialDescription" type="TFB-CMN:CommercialDescriptionType" minOccurs="0" maxOccurs="1"/>			
+			<xs:element name="AdditionalDocument" type="dec:CommodityAdditionalDocumentType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="AdditionalInformation"  type="dec:AdditionalInformationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Classification" type="dec:ClassificationType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="GoodsMeasure" type="dec:GoodsMeasureType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ProductCharacteristics" type="dec:ProductCharacteristicsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="TransportEquipment" type="dec:CommodityTransportEquipmentType" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProductCharacteristicsType">
+		<xs:sequence>
+			<xs:element name="Description" type="TFB-CMN:RemarksType" minOccurs="0"/>
+			<xs:element name="QualifierCode" type="TFB-CMN:TypeCodesType" minOccurs="0"/>	
+		</xs:sequence>
+	</xs:complexType>	
+	<xs:complexType name="CommodityAdditionalDocumentType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:NameType" minOccurs="0"/>
+			<xs:element name="TypeCode" type="TFB-CMN:TypeCodesType" minOccurs="0"/>		
+		</xs:sequence>
+	</xs:complexType>	
+	<xs:complexType name="GoodsMeasureType">
+		<xs:sequence>
+			<xs:element name="GrossMassMeasure" type="TFB-CMN:WeightMeasureType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="NetNetWeightMeasure" type="TFB-CMN:WeightMeasureType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="TariffQuantity" type="TFB-CMN:WeightMeasureType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>		
+	<xs:complexType name="GovernmentProcedureType">
+		<xs:sequence>
+			<xs:element name="CurrentCode" type="TFB-CMN:CurrentCodeType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>	
+	<xs:complexType name="SubmitterType">
+		<xs:sequence>				
+			<xs:element name="ID" type="TFB-CMN:CRNumberIDType" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>	
+	<xs:complexType name="PreviousDocumentType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:IDType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>		
+	<xs:complexType name="AdditionalInformationType">
+		<xs:sequence>
+			<xs:element name="StatementCode" type="TFB-CMN:StatementDescriptionType"></xs:element>
+			<xs:element name="StatementDescription" type="TFB-CMN:StatementDescriptionType"></xs:element>
+			<xs:element name="StatementTypeCode" type="TFB-CMN:StatementTypeType"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="EntryOfficeType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:PortIDType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ExitOfficeType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:PortIDType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="UCRType">
+		<xs:sequence>
+			<xs:element name="TraderAssignedReferenceID" type="TFB-CMN:TraderAssignedReferenceIDType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PartyNameType">
+		<xs:sequence>
+			<xs:element name="Name" type="TFB-CMN:NameType" minOccurs="0" maxOccurs="1" />
+			<xs:element name="ID" type="TFB-CMN:PINType" minOccurs="0" maxOccurs="1" />			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PartyType">
+		<xs:sequence>
+			<xs:element name="Name" type="TFB-CMN:NameType" minOccurs="0" maxOccurs="1" />
+			<xs:element name="ID" type="TFB-CMN:PINType" minOccurs="0" maxOccurs="1" />
+			<xs:element name="Address" type="dec:AddressType" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AddressType">
+		<xs:sequence>
+			<xs:element name="CityName" type="TFB-CMN:CityNameType" minOccurs="0" maxOccurs="1" />
+			<xs:element name="CountryCode" type="TFB-CMN:CountryType" minOccurs="0" maxOccurs="1" />
+			<xs:element name="Line" type="TFB-CMN:LineType" minOccurs="0" maxOccurs="1" />
+			<xs:element name="PostcodeID" type="TFB-CMN:PostcodeIDType" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="CommodityTransportEquipmentType">
+		<xs:sequence>
+			
+			<xs:element name="ID" type="TFB-CMN:ContainerIDType" minOccurs="0" maxOccurs="1"/>
+			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TransportEquipmentType">
+		<xs:sequence>
+			<xs:element name="CharacteristicCode" type="TFB-CMN:CharacteristicCodeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="FullnessCode" type="TFB-CMN:FullnessCodeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ID" type="TFB-CMN:ContainerIDType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Seal" type="dec:SealType" minOccurs="0" maxOccurs="1"/>
+			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SealType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:SealIDType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GoodsShipmentConsignmentType">
+		<xs:sequence>
+			<xs:element name="ArrivalTransportMeans" type="dec:ArrivalTransportMeansType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="GoodsLocation" type="dec:GoodsLocationType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="TransportContractDocument" type="dec:TransportContractDocumentType" minOccurs="0" maxOccurs="2"/>		
+			<xs:element name="UnloadingLocation" type="dec:ConsignmentUnloadingLocationType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GoodsLocationType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:PortIDType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ArrivalTransportMeansType">
+		<xs:sequence>
+			<xs:element name="Name" type="TFB-CMN:TransportMeanType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="TypeCode" type="TFB-CMN:TransportModeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="RegistrationNationalityCode" type="TFB-CMN:CountryType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="TransportContractDocumentType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:TCDIDType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="TypeCode" type="TFB-CMN:TransportDocumentTypeCodeType" minOccurs="0"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ConsignmentUnloadingLocationType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:ConsignmentUnloadingLocationIDType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ArrivalDateTime" type="TFB-CMN:DateTimeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Warehouse" type="dec:ConsignmentWarehouseType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ConsignmentWarehouseType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:WarehouseIDType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ClassificationType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:ClassificationIDType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="IdentificationTypeCode" type="TFB-CMN:IdentificationType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>	
+	<xs:complexType name="ExportCountryType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:CountryType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ImportCountryType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:CountryType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AdditionalDocumentType">
+		<xs:sequence>
+			<xs:element name="CategoryCode" type="TFB-CMN:TypeCodesType" minOccurs="0" maxOccurs="1"/>	
+			<xs:element name="ID" type="TFB-CMN:NameType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="IssueDateTime" type="TFB-CMN:DateTimeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Name" type="TFB-CMN:NameType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="TypeCode" type="TFB-CMN:TypeCodeType" minOccurs="0" maxOccurs="1"/>			
+			<xs:element name="VersionID" type="TFB-CMN:StatusType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="BinaryFile" type="dec:BinaryFileType" minOccurs="0" maxOccurs="1"/>	
+			<xs:element name="Submitter" type="dec:PartyNameType" minOccurs="0" maxOccurs="1"/>			
+			<xs:element name="LPCOAuthorizedParty" type="dec:PartyNameType" minOccurs="0" maxOccurs="1"/>						
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DutyTaxFeeType">
+		<xs:sequence>
+			<xs:element name="TypeCode" type="TFB-CMN:TypeCodesType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="QuotaOrderID" type="TFB-CMN:TypeCodeType" minOccurs="0" maxOccurs="1"/>			
+			<xs:element name="Payment" type="dec:DutyTaxPaymentType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DutyTaxPaymentType">
+		<xs:sequence>		
+			<xs:element name="PaymentAmount" type="TFB-CMN:AmountCurrencyType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DeclarationOfficeType">
+		<xs:sequence>
+			<xs:element name="ID" type="TFB-CMN:DeclarationOfficeIDType" minOccurs="1" maxOccurs="1"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BinaryFileType">
+			<xs:sequence>
+				<xs:element name="ID" type="TFB-CMN:BinaryFileIdentificationIDType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="Title" type="TFB-CMN:BinaryFileTitleTextType" minOccurs="0" maxOccurs="1"/>
+				<!--xs:element name="AuthorName" type="ds:BinaryFileAuthorNameTextType" minOccurs="0" maxOccurs="unbounded"/-->
+				<xs:element name="VersionID" type="TFB-CMN:BinaryFileVersionIDType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="FileNametext" type="TFB-CMN:BinaryFileFileNameTextType" minOccurs="0" maxOccurs="1"/>
+				<!--xs:element name="URIID" type="ds:BinaryFileURIIDType" minOccurs="0" maxOccurs="unbounded"/-->
+				<xs:element name="MIMECode" type="TFB-CMN:BinaryFileMIMECodeType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="EncodingCode" type="TFB-CMN:BinaryFileEncodingCodeType" minOccurs="0" maxOccurs="1"/>
+				<!--xs:element name="CharacterSetCode" type="TFB-CMN:BinaryFileCharacterSetCodeType" minOccurs="0" maxOccurs="1"/-->
+				<xs:element name="IncludedBinaryObjectBinaryObject" type="TFB-CMN:BinaryFileIncludedBinaryObjectBinaryObjectType" minOccurs="0" maxOccurs="1"/>
+				<!--xs:element name="Access" type="ds:BinaryFileAccessTextType" minOccurs="0" maxOccurs="unbounded"/-->
+				<xs:element name="Description" type="TFB-CMN:BinaryFileDescriptionTextType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="SizeMeasure" type="TFB-CMN:BinaryFileSizeMeasureType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="TypeCode" type="TFB-CMN:BinaryFileTypeCodeType" minOccurs="0"/>
+				<xs:element name="HashCode" type="TFB-CMN:BinaryFileHashCodeTextType" minOccurs="0"/>
+				<xs:element name="HashCodeAlgorithmIDCode" type="TFB-CMN:BinaryFileHashCodeAlgorithmIDCodeType" minOccurs="0"/>
+			</xs:sequence>
+	</xs:complexType>	
+</xs:schema>

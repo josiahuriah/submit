@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  STUB of TFB_Common_Types.xsd - the official file is withheld by the
+  government until we pass the sample-file gate. Every type referenced by
+  TFB_WCO_DEC_v1.4.4.xsd is declared permissively (any text, children,
+  attributes) so xmllint can enforce everything the declaration schema
+  itself defines: element names, ordering, cardinality.
+  REPLACE this file with the official one the moment it arrives, then
+  re-run scripts/generate-wco-declaration.ts - the real file adds the
+  length/pattern/enumeration checks this stub waves through.
+  Generated 2026-07-31; regeneration recipe in docs/tfp-single-window-gap-analysis.md.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="TFB_Common_Types" xmlns="TFB_Common_Types">
+  <xs:complexType name="AmountCurrencyType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileCharacterSetCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileDescriptionTextType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileEncodingCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileFileNameTextType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileHashCodeAlgorithmIDCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileHashCodeTextType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileIdentificationIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileIncludedBinaryObjectBinaryObjectType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileMIMECodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileSizeMeasureType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileTitleTextType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileTypeCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="BinaryFileVersionIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="CRNumberIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="CharacteristicCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="CityNameType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="ClassificationIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="CommercialDescriptionType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="ConsignmentUnloadingLocationIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="ContainerIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="CountryType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="CurrencyCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="CurrentCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="DateTimeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="DeclarationOfficeIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="DescriptionType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="ExchangeRateType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="FullnessCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="FunctionCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="IDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="IdentificationType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="InvoiceIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="LineType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="NameType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="PINType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="PackagingUnitType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="PortIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="PostcodeIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="RegimeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="RemarksType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="SealIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="SequenceNumericType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="StatementDescriptionType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="StatementTypeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="StatusType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="TCDIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="TraderAssignedReferenceIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="TransportDocumentTypeCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="TransportMeanType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="TransportModeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="TypeCodeType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="TypeCodesType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="WarehouseIDType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+  <xs:complexType name="WeightMeasureType" mixed="true"><xs:sequence><xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/></xs:sequence><xs:anyAttribute processContents="skip"/></xs:complexType>
+</xs:schema>

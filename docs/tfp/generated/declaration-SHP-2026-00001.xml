@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Declaration xmlns="http://globaletrade.services/Declaration">
+    <AcceptanceDateTime>
+        <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-31 06:55:38</DateTimeString>
+    </AcceptanceDateTime>
+    <FunctionCode>9</FunctionCode>
+    <FunctionalReferenceID>SHP-2026-00001</FunctionalReferenceID>
+    <TypeCode>4</TypeCode>
+    <TotalGrossMassMeasure unitCode="KGM">2450</TotalGrossMassMeasure>
+    <TotalPackageQuantity unitCode="PX">6</TotalPackageQuantity>
+    <Submitter>
+        <ID>CRN-PENDING</ID>
+    </Submitter>
+    <DeclarationOffice>
+        <ID>NAS</ID>
+    </DeclarationOffice>
+    <BorderTransportMeans>
+        <Name>Tropic Freedom</Name>
+        <TypeCode>1</TypeCode>
+        <ArrivalDateTime>
+            <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-03 05:00:00</DateTimeString>
+        </ArrivalDateTime>
+        <TransportEquipment>
+            <ID>TCLU7305421</ID>
+        </TransportEquipment>
+    </BorderTransportMeans>
+    <Declarant>
+        <Name>Bahama Brokerage Co</Name>
+    </Declarant>
+    <GoodsShipment>
+        <Consignee>
+            <Name>Paradise Liquors Ltd</Name>
+            <ID>100-345-678</ID>
+        </Consignee>
+        <Consignment>
+            <ArrivalTransportMeans>
+                <Name>Tropic Freedom</Name>
+                <TypeCode>1</TypeCode>
+            </ArrivalTransportMeans>
+            <TransportContractDocument>
+                <ID>TROP26070001</ID>
+                <TypeCode>705</TypeCode>
+            </TransportContractDocument>
+            <TransportContractDocument>
+                <ID>MAN-2026-0142</ID>
+                <TypeCode>785</TypeCode>
+            </TransportContractDocument>
+            <UnloadingLocation>
+                <ID>BSNAS</ID>
+                <ArrivalDateTime>
+                    <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-03 05:00:00</DateTimeString>
+                </ArrivalDateTime>
+            </UnloadingLocation>
+        </Consignment>
+        <CustomsValuation>
+            <ChargeDeduction>
+                <ChargesTypeCode>77</ChargesTypeCode>
+                <OtherChargeDeductionAmount>18965.00</OtherChargeDeductionAmount>
+                <CurrencyExchange>
+                    <CurrencyTypeCode>BSD</CurrencyTypeCode>
+                </CurrencyExchange>
+            </ChargeDeduction>
+            <ChargeDeduction>
+                <ChargesTypeCode>64</ChargesTypeCode>
+                <OtherChargeDeductionAmount>1850.00</OtherChargeDeductionAmount>
+                <CurrencyExchange>
+                    <CurrencyTypeCode>BSD</CurrencyTypeCode>
+                </CurrencyExchange>
+            </ChargeDeduction>
+            <ChargeDeduction>
+                <ChargesTypeCode>67</ChargesTypeCode>
+                <OtherChargeDeductionAmount>320.00</OtherChargeDeductionAmount>
+                <CurrencyExchange>
+                    <CurrencyTypeCode>BSD</CurrencyTypeCode>
+                </CurrencyExchange>
+            </ChargeDeduction>
+            <ChargeDeduction>
+                <ChargesTypeCode>104</ChargesTypeCode>
+                <OtherChargeDeductionAmount>145.00</OtherChargeDeductionAmount>
+                <CurrencyExchange>
+                    <CurrencyTypeCode>BSD</CurrencyTypeCode>
+                </CurrencyExchange>
+            </ChargeDeduction>
+        </CustomsValuation>
+        <Destination>
+            <CountryCode>BS</CountryCode>
+        </Destination>
+        <EntryOffice>
+            <ID>BSNAS</ID>
+        </EntryOffice>
+        <ExitOffice>
+            <ID>USPEF</ID>
+        </ExitOffice>
+        <ExportCountry>
+            <ID>US</ID>
+        </ExportCountry>
+        <Exporter>
+            <Name>Caribbean Spirits Export</Name>
+            <Address>
+                <CountryCode>US</CountryCode>
+            </Address>
+        </Exporter>
+        <GovernmentAgencyGoodsItem>
+            <Commodity>
+                <SequenceNumeric>1</SequenceNumeric>
+                <Description>Ricardo Gold Rum 1L (case of 12)</Description>
+                <ValueAmount currencyID="BSD">6900.00</ValueAmount>
+                <CommercialDescription>Rum</CommercialDescription>
+                <AdditionalDocument>
+                    <ID>INV-88231</ID>
+                    <TypeCode>380</TypeCode>
+                </AdditionalDocument>
+                <Classification>
+                    <ID>2208.40.00</ID>
+                    <IdentificationTypeCode>HS</IdentificationTypeCode>
+                </Classification>
+                <GoodsMeasure>
+                    <GrossMassMeasure unitCode="KGM">780</GrossMassMeasure>
+                    <NetNetWeightMeasure unitCode="KGM">780</NetNetWeightMeasure>
+                    <TariffQuantity unitCode="L">600</TariffQuantity>
+                </GoodsMeasure>
+                <TransportEquipment>
+                    <ID>TCLU7305421</ID>
+                </TransportEquipment>
+            </Commodity>
+            <CustomsValuation>
+                <ExitToEntryChargeAmount currencyID="BSD">7742.26</ExitToEntryChargeAmount>
+                <FreightChargeAmount currencyID="BSD">673.08</FreightChargeAmount>
+                <InsuranceAmount currencyID="BSD">116.42</InsuranceAmount>
+                <ChargeDeduction>
+                    <ChargesTypeCode>104</ChargesTypeCode>
+                    <OtherChargeDeductionAmount>52.76</OtherChargeDeductionAmount>
+                    <CurrencyExchange>
+                        <CurrencyTypeCode>BSD</CurrencyTypeCode>
+                    </CurrencyExchange>
+                </ChargeDeduction>
+            </CustomsValuation>
+            <GovernmentProcedure>
+                <CurrentCode>4000</CurrentCode>
+            </GovernmentProcedure>
+            <Origin>
+                <CountryCode>US</CountryCode>
+            </Origin>
+        </GovernmentAgencyGoodsItem>
+        <GovernmentAgencyGoodsItem>
+            <Commodity>
+                <SequenceNumeric>2</SequenceNumeric>
+                <Description>Cotton T-shirts, assorted (bulk)</Description>
+                <ValueAmount currencyID="BSD">6225.00</ValueAmount>
+                <CommercialDescription>T-shirts</CommercialDescription>
+                <AdditionalDocument>
+                    <ID>INV-88231</ID>
+                    <TypeCode>380</TypeCode>
+                </AdditionalDocument>
+                <Classification>
+                    <ID>6109.10.00</ID>
+                    <IdentificationTypeCode>HS</IdentificationTypeCode>
+                </Classification>
+                <GoodsMeasure>
+                    <GrossMassMeasure unitCode="KGM">450</GrossMassMeasure>
+                    <NetNetWeightMeasure unitCode="KGM">450</NetNetWeightMeasure>
+                    <TariffQuantity unitCode="PCS">1500</TariffQuantity>
+                </GoodsMeasure>
+                <TransportEquipment>
+                    <ID>TCLU7305421</ID>
+                </TransportEquipment>
+            </Commodity>
+            <CustomsValuation>
+                <ExitToEntryChargeAmount currencyID="BSD">6984.87</ExitToEntryChargeAmount>
+                <FreightChargeAmount currencyID="BSD">607.24</FreightChargeAmount>
+                <InsuranceAmount currencyID="BSD">105.04</InsuranceAmount>
+                <ChargeDeduction>
+                    <ChargesTypeCode>104</ChargesTypeCode>
+                    <OtherChargeDeductionAmount>47.59</OtherChargeDeductionAmount>
+                    <CurrencyExchange>
+                        <CurrencyTypeCode>BSD</CurrencyTypeCode>
+                    </CurrencyExchange>
+                </ChargeDeduction>
+            </CustomsValuation>
+            <GovernmentProcedure>
+                <CurrentCode>4000</CurrentCode>
+            </GovernmentProcedure>
+            <Origin>
+                <CountryCode>US</CountryCode>
+            </Origin>
+        </GovernmentAgencyGoodsItem>
+        <GovernmentAgencyGoodsItem>
+            <Commodity>
+                <SequenceNumeric>3</SequenceNumeric>
+                <Description>Frigidaire 18cu ft refrigerator-freezer</Description>
+                <ValueAmount currencyID="BSD">5840.00</ValueAmount>
+                <CommercialDescription>Refrigerator</CommercialDescription>
+                <AdditionalDocument>
+                    <ID>INV-88231</ID>
+                    <TypeCode>380</TypeCode>
+                </AdditionalDocument>
+                <Classification>
+                    <ID>8418.10.00</ID>
+                    <IdentificationTypeCode>HS</IdentificationTypeCode>
+                </Classification>
+                <GoodsMeasure>
+                    <GrossMassMeasure unitCode="KGM">1220</GrossMassMeasure>
+                    <NetNetWeightMeasure unitCode="KGM">1220</NetNetWeightMeasure>
+                    <TariffQuantity unitCode="PCS">8</TariffQuantity>
+                </GoodsMeasure>
+                <TransportEquipment>
+                    <ID>TCLU7305421</ID>
+                </TransportEquipment>
+            </Commodity>
+            <CustomsValuation>
+                <ExitToEntryChargeAmount currencyID="BSD">6552.87</ExitToEntryChargeAmount>
+                <FreightChargeAmount currencyID="BSD">569.68</FreightChargeAmount>
+                <InsuranceAmount currencyID="BSD">98.54</InsuranceAmount>
+                <ChargeDeduction>
+                    <ChargesTypeCode>104</ChargesTypeCode>
+                    <OtherChargeDeductionAmount>44.65</OtherChargeDeductionAmount>
+                    <CurrencyExchange>
+                        <CurrencyTypeCode>BSD</CurrencyTypeCode>
+                    </CurrencyExchange>
+                </ChargeDeduction>
+            </CustomsValuation>
+            <GovernmentProcedure>
+                <CurrentCode>4000</CurrentCode>
+            </GovernmentProcedure>
+            <Origin>
+                <CountryCode>US</CountryCode>
+            </Origin>
+        </GovernmentAgencyGoodsItem>
+        <Importer>
+            <Name>Paradise Liquors Ltd</Name>
+            <ID>100-345-678</ID>
+        </Importer>
+        <Invoice>
+            <ID>INV-88231</ID>
+            <IssueDateTime>
+                <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-06-27 20:00:00</DateTimeString>
+            </IssueDateTime>
+        </Invoice>
+        <Supplier>
+            <Name>Caribbean Spirits Export</Name>
+            <Address>
+                <CountryCode>US</CountryCode>
+            </Address>
+        </Supplier>
+        <UCR>
+            <TraderAssignedReferenceID>SHP-2026-00001</TraderAssignedReferenceID>
+        </UCR>
+    </GoodsShipment>
+    <GovernmentProcedure>
+        <CurrentCode>400</CurrentCode>
+    </GovernmentProcedure>
+</Declaration>

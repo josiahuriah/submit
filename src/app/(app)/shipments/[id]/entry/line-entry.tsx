@@ -6,7 +6,8 @@ import { Icons } from "@/components/ui/icons";
 import { money } from "@/lib/format";
 import { previewLine } from "@/lib/calc";
 import { commitLineItem, deleteLineItem, findHsRate, searchHsCodes } from "@/lib/data/line-items";
-import type { HsRate, LineCharges, LineDraft, LineItem, ShipmentTotals } from "@/lib/types";
+import { SubmitButton } from "./submit-button";
+import type { HsRate, LineCharges, LineDraft, LineItem, ShipmentStatus, ShipmentTotals } from "@/lib/types";
 
 /**
  * The interactive heart of the app.
@@ -38,13 +39,20 @@ const EMPTY_DRAFT: LineDraft = {
 
 export function LineEntry({
   shipmentId,
+  status,
+  hasInvoice,
   initialLines,
   initialTotals,
 }: {
   shipmentId: string;
+  status: ShipmentStatus;
+  hasInvoice: boolean;
   initialLines: LineItem[];
   initialTotals: ShipmentTotals | null;
 }) {
+  // Entry is only meaningful on a DRAFT shipment with a supplier invoice; the
+  // server refuses both cases anyway, so this just keeps the UI honest.
+  const entryLocked = status !== "DRAFT" || !hasInvoice;
   const [lines, setLines] = useState<LineItem[]>(initialLines);
   const [totals, setTotals] = useState<ShipmentTotals | null>(initialTotals);
   const [draft, setDraft] = useState<LineDraft>(EMPTY_DRAFT);
@@ -100,7 +108,7 @@ export function LineEntry({
   const dc = previewLine(draft, draftRate);
 
   function commit() {
-    if (!draft.hsCode || !draft.unitPrice || pending) return;
+    if (!draft.hsCode || !draft.unitPrice || pending || entryLocked) return;
     const submitted = draft;
     setNotice(null);
     startTransition(async () => {
@@ -123,7 +131,7 @@ export function LineEntry({
   }
 
   function remove(id: string) {
-    if (pending) return;
+    if (pending || entryLocked) return;
     setNotice(null);
     startTransition(async () => {
       try {
@@ -255,7 +263,7 @@ export function LineEntry({
                 <div className="sb-meta" style={{ fontSize: 10.5 }}>preview</div>
               </td>
               <td style={{ verticalAlign: "top", paddingTop: 8 }}>
-                <button className="sb-btn is-primary is-sm" style={{ padding: "4px 8px" }} onClick={commit} disabled={pending} title="Commit line (Enter)">↵</button>
+                <button className="sb-btn is-primary is-sm" style={{ padding: "4px 8px" }} onClick={commit} disabled={pending || entryLocked} title="Commit line (Enter)">↵</button>
               </td>
             </tr>
           </tbody>
@@ -370,9 +378,12 @@ export function LineEntry({
                 ? `${unpriced} line${unpriced === 1 ? "" : "s"} added since the last calculation`
                 : "Duty + excise + levy + VAT + processing fee"}
           </div>
-          <button className="sb-btn is-gold" style={{ width: "100%", justifyContent: "center" }}>
-            Submit declaration <Icons.chevR />
-          </button>
+          <SubmitButton
+            shipmentId={shipmentId}
+            status={status}
+            disabled={totals === null}
+            variant="ledger"
+          />
           <div className="sb-meta" style={{ textAlign: "center", marginTop: 8 }}>
             <Chip kind="excise">excise</Chip> flags alcohol, fuel &amp; tobacco
           </div>

@@ -30,8 +30,9 @@ Log in with `broker@bahamabrokerage.test` / `Password123!` and press
 ### Verifying everything
 
 ```bash
-npm test                      # 16 tests: calculation engine + live tenant isolation
+npm test                      # 34 tests: calculations, tenant isolation, tariff import, WCO XML
 npx tsx scripts/smoke.ts      # end-to-end: calculate → verify math → submit via mock BEAIP
+npm run wco:generate          # TFP declaration XML from a calculated shipment + XSD validation
 ```
 
 ---

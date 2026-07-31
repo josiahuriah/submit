@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { getShipment } from "@/lib/data/shipments";
 import { getLineItems } from "@/lib/data/line-items";
+import { listSupplierOptions } from "@/lib/data/invoices";
 import { Chip } from "@/components/ui/primitives";
 import { money } from "@/lib/format";
 import { LineEntry } from "./line-entry";
+import { AddInvoiceCard } from "./add-invoice-card";
+import { SubmitButton } from "./submit-button";
 
 /**
  * LINE ITEM ENTRY — the crown jewel.
@@ -17,6 +20,8 @@ import { LineEntry } from "./line-entry";
 export default async function EntryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [shipment, lines] = await Promise.all([getShipment(id), getLineItems(id)]);
+  // Supplier picker data is only needed while the shipment lacks an invoice.
+  const suppliers = shipment.invoice ? [] : await listSupplierOptions();
 
   return (
     <div className="sb-page" style={{ maxWidth: 1560 }}>
@@ -28,8 +33,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         </span>
         <Chip kind={shipment.status === "DRAFT" ? "draft" : "acc"}>{shipment.status}</Chip>
         <div style={{ flex: 1 }} />
-        <button className="sb-btn">Save draft</button>
-        <button className="sb-btn is-gold">Submit to customs</button>
+        <SubmitButton shipmentId={id} status={shipment.status} disabled={shipment.totals === null} />
       </div>
 
       <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 4 }}>
@@ -62,7 +66,15 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         ))}
       </div>
 
-      <LineEntry shipmentId={id} initialLines={lines} initialTotals={shipment.totals} />
+      {!shipment.invoice && <AddInvoiceCard shipmentId={id} suppliers={suppliers} />}
+
+      <LineEntry
+        shipmentId={id}
+        status={shipment.status}
+        hasInvoice={shipment.invoice !== null}
+        initialLines={lines}
+        initialTotals={shipment.totals}
+      />
     </div>
   );
 }

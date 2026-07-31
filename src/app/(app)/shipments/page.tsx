@@ -21,7 +21,7 @@ export default async function ShipmentsPage() {
         <h1 className="sb-h1">Shipments</h1>
         <span className="sb-meta">{rows.length} total · last 30 days</span>
         <div style={{ flex: 1 }} />
-        <Link href="/shipments/new/entry" className="sb-btn is-primary">
+        <Link href="/shipments/new" className="sb-btn is-primary">
           <Icons.plus /> New shipment
         </Link>
       </div>

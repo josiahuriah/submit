@@ -32,7 +32,7 @@ gate only PASSES with the evidence listed in its section).
 
 | Gate | Item | Status (2026-07-09) |
 |---|---|---|
-| 0 | WSDL + schema docs obtained from CrimsonLogic | ⬜ |
+| 0 | WSDL + schema docs obtained from CrimsonLogic | 🟡 2026-07-31: DEC message spec v1.4.4 + `TFB_WCO_DEC_v1.4.4.xsd` + sample XML received. Still withheld until we pass the sample-file gate: `TFB_Common_Types.xsd`, code-master worksheets, endpoint/transport docs. See `docs/tfp-single-window-gap-analysis.md` — it also answers Gate 0 item 7 (C13/C14 are NOT wire fields; the message uses Regime + CPC) and shows DutyTaxFee is left blank on submission (we don't transmit our amounts; reconciliation is against the response). |
 | 0 | Sandbox/test environment + credentials obtained | ⬜ |
 | 0 | Broker code + onboarding requirements confirmed | ⬜ |
 | 0 | Sync/async assessment + duplicate-submission semantics documented | ⬜ |

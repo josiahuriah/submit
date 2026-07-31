@@ -1,0 +1,288 @@
+/**
+ * WCO 3.8 Declaration XML builder for the TFP Single Window (Click2Clear).
+ *
+ * Emits the TFB_WCO_DEC v1.4.4 document from a BeaipDeclaration. Element
+ * names, ordering and cardinality follow docs/tfp/TFB_WCO_DEC_v1.4.4.xsd
+ * exactly — child order inside every complex type is a validation error if
+ * wrong, so the object literals below are written in schema order and must
+ * stay that way.
+ *
+ * Spec facts this file encodes (see docs/tfp-single-window-gap-analysis.md):
+ *   - The root MUST carry xmlns="http://globaletrade.services/Declaration";
+ *     the government's own sample omits it and fails its own XSD.
+ *   - DateTimeString children are unqualified (xmlns="") with the spec's
+ *     formatCode "yyyy-MM-dd HH:mm:ss " (trailing space verbatim from spec).
+ *   - DutyTaxFee is NOT sent: "For Incoming message this section is left
+ *     blank — Customs Internal Use Only". Click2Clear computes amounts.
+ *   - Shipment-level CustomsValuation elements must appear in the same order
+ *     as the Invoice elements — that ordering IS the invoice linkage.
+ *
+ * PLACEHOLDER code maps (transport mode, package UOM) are best-guess UN/EDIFACT
+ * values pending the withheld TFP code-master worksheets; each is labeled.
+ */
+import { XMLBuilder } from 'fast-xml-parser'
+import type {
+  BeaipDeclaration,
+  BeaipDeclarationLine,
+  BeaipInvoice,
+  BeaipParty,
+} from './types'
+
+export const WCO_DECLARATION_NS = 'http://globaletrade.services/Declaration'
+
+/** EDIFACT 1225 function codes: 9 original, 5 amendment, 1 cancellation. */
+export type WcoFunctionCode = '9' | '5' | '1'
+
+// PLACEHOLDER (UN/ECE Rec 19) until the Transport Mode worksheet arrives.
+const TRANSPORT_MODE_CODES: Record<string, string> = {
+  SEA: '1',
+  AIR: '4',
+  LAND: '3',
+}
+
+// PLACEHOLDER (UN/EDIFACT Rec 21) until the Package UOM worksheet arrives.
+const PACKAGE_UOM_CODES: Record<string, string> = {
+  CONTAINER: 'CN',
+  PALLET: 'PX',
+  CARTON: 'CT',
+  CRATE: 'CR',
+  DRUM: 'DR',
+  BUNDLE: 'BE',
+  LOOSE: 'NE',
+  VEHICLE: 'VN',
+  OTHER: 'PK',
+}
+
+const builder = new XMLBuilder({
+  ignoreAttributes: false,
+  attributeNamePrefix: '@_',
+  textNodeName: '#text',
+  format: true,
+  indentBy: '    ',
+})
+
+function formatDateTime(iso: string | Date): string {
+  const d = new Date(iso)
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+}
+
+/** DateTimeType — unqualified DateTimeString child, spec formatCode verbatim. */
+function dt(iso: string | Date) {
+  return {
+    DateTimeString: {
+      '#text': formatDateTime(iso),
+      '@_xmlns': '',
+      '@_formatCode': 'yyyy-MM-dd HH:mm:ss ',
+    },
+  }
+}
+
+/** AmountCurrencyType — value with a currencyID attribute. */
+function amt(value: string, currency: string) {
+  return { '#text': value, '@_currencyID': currency }
+}
+
+/** PartyType in schema order: Name, ID, Address(CityName, CountryCode, Line, PostcodeID). */
+function party(p: BeaipParty) {
+  const a = p.address
+  const hasAddress = a && (a.cityName || a.countryCode || a.line || a.postcode)
+  return {
+    Name: p.name,
+    ...(p.id ? { ID: p.id } : {}),
+    ...(hasAddress
+      ? {
+          Address: {
+            ...(a.cityName ? { CityName: a.cityName } : {}),
+            ...(a.countryCode ? { CountryCode: a.countryCode } : {}),
+            ...(a.line ? { Line: a.line.slice(0, 70) } : {}),
+            ...(a.postcode ? { PostcodeID: a.postcode } : {}),
+          },
+        }
+      : {}),
+  }
+}
+
+/**
+ * ChargeDeduction — EDIFACT 5025 codes: 77 invoice amount, 64 freight,
+ * 67 insurance, 104 other transport charges. Exchange RateNumeric is
+ * "not required for incoming", so only the currency is sent.
+ */
+function chargeDeduction(code: string, amount: string, currency: string) {
+  return {
+    ChargesTypeCode: code,
+    OtherChargeDeductionAmount: amount,
+    CurrencyExchange: { CurrencyTypeCode: currency },
+  }
+}
+
+function isNonZero(money: string): boolean {
+  return Number(money) !== 0
+}
+
+/** Shipment-level CustomsValuation for one invoice (order-linked to Invoice). */
+function invoiceValuation(inv: BeaipInvoice) {
+  return {
+    ChargeDeduction: [
+      chargeDeduction('77', inv.subTotal, inv.currency),
+      ...(isNonZero(inv.freightApportioned)
+        ? [chargeDeduction('64', inv.freightApportioned, 'BSD')]
+        : []),
+      ...(isNonZero(inv.insuranceApportioned)
+        ? [chargeDeduction('67', inv.insuranceApportioned, 'BSD')]
+        : []),
+      ...(isNonZero(inv.otherApportioned)
+        ? [chargeDeduction('104', inv.otherApportioned, 'BSD')]
+        : []),
+    ],
+  }
+}
+
+/** GovernmentAgencyGoodsItem — one per line item, schema order throughout. */
+function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber: string | null) {
+  return {
+    Commodity: {
+      SequenceNumeric: sequence,
+      Description: line.description,
+      ValueAmount: amt(line.totalValue, line.currency),
+      ...(line.commercialDescription
+        ? { CommercialDescription: line.commercialDescription }
+        : {}),
+      AdditionalDocument: { ID: line.invoiceNumber, TypeCode: '380' }, // 380 = commercial invoice
+      Classification: { ID: line.hsCode, IdentificationTypeCode: 'HS' },
+      GoodsMeasure: {
+        // Only weightKg exists per line — emitted as both gross and net until
+        // the model distinguishes them (gap-analysis Phase 3).
+        ...(line.weightKg
+          ? {
+              GrossMassMeasure: { '#text': line.weightKg, '@_unitCode': 'KGM' },
+              NetNetWeightMeasure: { '#text': line.weightKg, '@_unitCode': 'KGM' },
+            }
+          : {}),
+        TariffQuantity: { '#text': line.quantity, '@_unitCode': line.unit },
+      },
+      ...(containerNumber ? { TransportEquipment: { ID: containerNumber } } : {}),
+    },
+    CustomsValuation: {
+      ExitToEntryChargeAmount: amt(line.cifValue, 'BSD'), // item customs value
+      FreightChargeAmount: amt(line.freightApportioned, 'BSD'),
+      InsuranceAmount: amt(line.insuranceApportioned, 'BSD'),
+      ...(isNonZero(line.otherApportioned)
+        ? { ChargeDeduction: chargeDeduction('104', line.otherApportioned, 'BSD') }
+        : {}),
+    },
+    GovernmentProcedure: { CurrentCode: line.cpcCode },
+    ...(line.countryOfOrigin ? { Origin: { CountryCode: line.countryOfOrigin } } : {}),
+  }
+}
+
+export interface WcoXmlOptions {
+  /** EDIFACT 1225: 9 original (default), 5 amendment, 1 cancellation. */
+  functionCode?: WcoFunctionCode
+  /** AcceptanceDateTime; defaults to now. Injectable for deterministic tests. */
+  acceptanceDateTime?: Date
+}
+
+/**
+ * Build the full TFB_WCO_DEC declaration document as a UTF-8 XML string.
+ * Validate the output with `npx tsx scripts/generate-wco-declaration.ts` or
+ * xmllint against docs/tfp/TFB_WCO_DEC_v1.4.4.xsd.
+ */
+export function buildWcoDeclarationXml(
+  declaration: BeaipDeclaration,
+  options: WcoXmlOptions = {},
+): string {
+  const d = declaration
+  const t = d.transport
+  const acceptance = options.acceptanceDateTime ?? new Date()
+
+  const transportContractDocuments = [
+    ...(d.blNumber ? [{ ID: d.blNumber, TypeCode: '705' }] : []), // 705 = bill of lading
+    ...(t.manifestNumber ? [{ ID: t.manifestNumber, TypeCode: '785' }] : []), // 785 = manifest
+  ]
+
+  // Declaration-level CPC group = the item CPC family (e.g. lines "4000" → "400").
+  const cpcGroup = d.lines[0]?.cpcCode.slice(0, 3) ?? null
+
+  const doc = {
+    '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' },
+    Declaration: {
+      '@_xmlns': WCO_DECLARATION_NS,
+      AcceptanceDateTime: dt(acceptance),
+      FunctionCode: options.functionCode ?? '9',
+      FunctionalReferenceID: d.functionalReferenceId,
+      TypeCode: d.regimeCode,
+      ...(d.grossWeightKg
+        ? { TotalGrossMassMeasure: { '#text': d.grossWeightKg, '@_unitCode': 'KGM' } }
+        : {}),
+      TotalPackageQuantity: {
+        '#text': d.packageCount,
+        '@_unitCode': PACKAGE_UOM_CODES[d.packageUom] ?? 'PK',
+      },
+      Submitter: { ID: d.submitterId },
+      DeclarationOffice: { ID: d.customsOfficeCode },
+      ...(t.vesselName || t.transportMode || t.arrivalDate || t.containerNumber
+        ? {
+            BorderTransportMeans: {
+              ...(t.vesselName ? { Name: t.vesselName } : {}),
+              ...(t.transportMode
+                ? { TypeCode: TRANSPORT_MODE_CODES[t.transportMode] ?? t.transportMode }
+                : {}),
+              ...(t.arrivalDate ? { ArrivalDateTime: dt(t.arrivalDate) } : {}),
+              ...(t.containerNumber
+                ? { TransportEquipment: { ID: t.containerNumber } }
+                : {}),
+            },
+          }
+        : {}),
+      Declarant: { Name: d.declarant.name, ...(d.declarant.id ? { ID: d.declarant.id } : {}) },
+      // DutyTaxFee deliberately omitted — blank for incoming messages.
+      GoodsShipment: {
+        Consignee: party(d.consignee),
+        Consignment: {
+          ...(t.vesselName || t.transportMode
+            ? {
+                ArrivalTransportMeans: {
+                  ...(t.vesselName ? { Name: t.vesselName } : {}),
+                  ...(t.transportMode
+                    ? { TypeCode: TRANSPORT_MODE_CODES[t.transportMode] ?? t.transportMode }
+                    : {}),
+                },
+              }
+            : {}),
+          ...(transportContractDocuments.length > 0
+            ? { TransportContractDocument: transportContractDocuments }
+            : {}),
+          ...(t.unloadingPortCode
+            ? {
+                UnloadingLocation: {
+                  ID: t.unloadingPortCode,
+                  ...(t.arrivalDate ? { ArrivalDateTime: dt(t.arrivalDate) } : {}),
+                },
+              }
+            : {}),
+        },
+        // One CustomsValuation per invoice, in Invoice element order (linkage).
+        CustomsValuation: d.invoices.map(invoiceValuation),
+        Destination: { CountryCode: 'BS' },
+        ...(t.entryPortCode ? { EntryOffice: { ID: t.entryPortCode } } : {}),
+        ...(t.exitPortCode ? { ExitOffice: { ID: t.exitPortCode } } : {}),
+        ...(t.exportCountryCode ? { ExportCountry: { ID: t.exportCountryCode } } : {}),
+        ...(d.invoices[0] ? { Exporter: party(d.invoices[0].supplier) } : {}),
+        GovernmentAgencyGoodsItem: d.lines.map((line, i) =>
+          goodsItem(line, i + 1, t.containerNumber),
+        ),
+        Importer: party(d.importer),
+        Invoice: d.invoices.map((inv) => ({
+          ID: inv.invoiceNumber,
+          ...(inv.invoiceDate ? { IssueDateTime: dt(inv.invoiceDate) } : {}),
+        })),
+        Supplier: d.invoices.map((inv) => party(inv.supplier)),
+        UCR: { TraderAssignedReferenceID: d.brokerReference },
+      },
+      ...(cpcGroup ? { GovernmentProcedure: { CurrentCode: cpcGroup } } : {}),
+    },
+  }
+
+  return builder.build(doc) as string
+}
