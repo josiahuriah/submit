@@ -16,8 +16,9 @@ import { d, toMoney, moneyString, sum } from '@/lib/calculations/money'
 import { cursorArgs, toPage, type PaginationParams } from '@/lib/db/pagination'
 
 const INVOICE_SELECT = {
-  id: true, invoiceNumber: true, status: true, issueDate: true, dueDate: true,
-  subtotal: true, vatAmount: true, total: true, amountPaid: true, notes: true,
+  id: true, kind: true, invoiceNumber: true, status: true, issueDate: true, dueDate: true,
+  validUntil: true, subtotal: true, vatAmount: true, total: true, amountPaid: true, notes: true,
+  convertedFromId: true,
   client: { select: { id: true, name: true } },
   items: {
     select: { id: true, description: true, quantity: true, unitPrice: true, amount: true, shipmentId: true },
@@ -26,21 +27,25 @@ const INVOICE_SELECT = {
     select: { id: true, amount: true, method: true, reference: true, receivedAt: true },
     orderBy: { receivedAt: 'desc' as const },
   },
+  convertedTo: { select: { id: true, invoiceNumber: true } },
 } as const
 
 export interface BrokerageInvoiceInput {
   clientId: string
+  kind?: 'INVOICE' | 'QUOTE'
   invoiceNumber: string
   dueDate?: Date
+  validUntil?: Date
   vatRate: string
   notes?: string
   items: { description: string; shipmentId?: string; quantity: string; unitPrice: string }[]
 }
 
 export const billingService = {
-  async list(db: TenantClient, params: PaginationParams & { status?: string; clientId?: string }) {
+  async list(db: TenantClient, params: PaginationParams & { kind?: string; status?: string; clientId?: string }) {
     const rows = await db.brokerageInvoice.findMany({
       where: {
+        ...(params.kind ? { kind: params.kind as never } : {}),
         ...(params.status ? { status: params.status as never } : {}),
         ...(params.clientId ? { clientId: params.clientId } : {}),
       },
@@ -72,11 +77,14 @@ export const billingService = {
     const vatAmount = toMoney(subtotal.times(d(input.vatRate)))
     const total = toMoney(subtotal.plus(vatAmount))
 
+    const kind = input.kind ?? 'INVOICE'
     const invoice = await db.brokerageInvoice.create({
       data: {
         clientId: input.clientId,
+        kind,
         invoiceNumber: input.invoiceNumber,
         dueDate: input.dueDate,
+        validUntil: input.validUntil,
         notes: input.notes,
         subtotal: moneyString(subtotal),
         vatAmount: moneyString(vatAmount),
@@ -86,6 +94,54 @@ export const billingService = {
       select: INVOICE_SELECT,
     })
     await writeAudit(db, audit, { action: 'CREATE', entityType: 'BrokerageInvoice', entityId: invoice.id })
+    return invoice
+  },
+
+  /**
+   * Convert an accepted QUOTE into a billable INVOICE. The line items and
+   * frozen totals are copied verbatim so the amount the client agreed to is
+   * exactly what they are billed; the new invoice links back to its source
+   * quote (1:1). A quote can be converted only once.
+   */
+  async convertToInvoice(
+    db: TenantClient,
+    audit: AuditContext,
+    quoteId: string,
+    input: { invoiceNumber: string; dueDate?: Date },
+  ) {
+    const quote = await this.get(db, quoteId)
+    if (quote.kind !== 'QUOTE') throw new BusinessRuleError('Only a quote can be converted to an invoice')
+    if (quote.convertedTo) {
+      throw new BusinessRuleError(`This quote was already converted to invoice ${quote.convertedTo.invoiceNumber}`)
+    }
+
+    const invoice = await db.brokerageInvoice.create({
+      data: {
+        clientId: quote.client.id,
+        kind: 'INVOICE',
+        invoiceNumber: input.invoiceNumber,
+        dueDate: input.dueDate,
+        notes: quote.notes,
+        subtotal: moneyString(d(String(quote.subtotal))),
+        vatAmount: moneyString(d(String(quote.vatAmount))),
+        total: moneyString(d(String(quote.total))),
+        convertedFromId: quote.id,
+        items: {
+          create: quote.items.map((item) => ({
+            description: item.description,
+            shipmentId: item.shipmentId,
+            quantity: String(item.quantity),
+            unitPrice: String(item.unitPrice),
+            amount: moneyString(d(String(item.amount))),
+          })),
+        },
+      } as never,
+      select: INVOICE_SELECT,
+    })
+    await writeAudit(db, audit, {
+      action: 'CREATE', entityType: 'BrokerageInvoice', entityId: invoice.id,
+      changes: { after: { convertedFromQuoteId: quote.id } },
+    })
     return invoice
   },
 
@@ -110,6 +166,9 @@ export const billingService = {
     input: { brokerageInvoiceId: string; amount: string; method: string; reference?: string; receivedAt?: Date },
   ) {
     const invoice = await this.get(db, input.brokerageInvoiceId)
+    if (invoice.kind === 'QUOTE') {
+      throw new BusinessRuleError('Cannot record a payment against a quote; convert it to an invoice first')
+    }
     if (invoice.status === 'VOID') throw new BusinessRuleError('Cannot record a payment on a VOID invoice')
     if (invoice.status === 'DRAFT') throw new BusinessRuleError('Send the invoice before recording payments')
 

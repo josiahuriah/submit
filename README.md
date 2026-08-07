@@ -132,7 +132,7 @@ declarations are legal documents; the audit trail is non-negotiable.
 
 ---
 
-## API surface (26 routes)
+## API surface (27 routes)
 
 ```
 POST   /api/auth/register|login|logout        GET /api/auth/me
@@ -146,13 +146,21 @@ POST   /api/invoices       PATCH|DELETE /api/invoices/:id
 GET|POST /api/invoices/:id/line-items         PATCH|DELETE /api/line-items/:id
 GET    /api/hs-codes/search?q=rum
 GET|POST /api/billing/invoices                GET /api/billing/invoices/:id
-POST   /api/billing/invoices/:id/send|payments
+POST   /api/billing/invoices/:id/send|payments|convert
 POST   /api/customs-entries/:id/refresh
 ```
 
 Responses: `{ data, meta? }` on success, `{ error: { code, message, details? } }`
 on failure. Money is always a string (`"13405.78"`). Auth: httpOnly session
 cookie (browser) or `Authorization: Bearer <jwt>` (API clients).
+
+**Quotes vs invoices.** `POST /api/billing/invoices` generates either a
+billable `INVOICE` (default) or a non-binding `QUOTE` (proforma estimate) via
+the `kind` field — both share the same subtotal/VAT/total math. A quote never
+accrues payments; once the client accepts, `POST
+/api/billing/invoices/:id/convert` copies its line items and frozen totals into
+a new invoice (fresh `invoiceNumber` required) and links the two 1:1. List
+screens filter with `?kind=QUOTE` / `?kind=INVOICE`.
 
 ## HS code data
 

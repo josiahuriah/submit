@@ -166,8 +166,13 @@ export const submitDeclarationSchema = z.object({
 
 export const brokerageInvoiceCreateSchema = z.object({
   clientId: id,
+  // INVOICE (default) bills the client; QUOTE produces a non-binding proforma
+  // estimate using the same math. Quotes never accrue payments.
+  kind: z.enum(['INVOICE', 'QUOTE']).default('INVOICE'),
   invoiceNumber: z.string().min(1).max(60),
   dueDate: z.coerce.date().optional(),
+  // Quotes only: date after which the estimate lapses.
+  validUntil: z.coerce.date().optional(),
   vatRate: z.string().regex(RATE_REGEX).default('0.10'),
   notes: z.string().max(2000).optional(),
   items: z
@@ -180,6 +185,13 @@ export const brokerageInvoiceCreateSchema = z.object({
       }),
     )
     .min(1),
+})
+
+// Convert an accepted QUOTE into a billable INVOICE. A fresh invoice number is
+// required because quote and invoice numbers share the same per-org sequence.
+export const quoteConvertSchema = z.object({
+  invoiceNumber: z.string().min(1).max(60),
+  dueDate: z.coerce.date().optional(),
 })
 
 export const paymentCreateSchema = z.object({

@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { ok, created } from '@/lib/api-response'
 
 const listQuery = paginationQuery.extend({
+  kind: z.enum(['INVOICE', 'QUOTE']).optional(),
   status: z.enum(['DRAFT', 'SENT', 'PARTIALLY_PAID', 'PAID', 'VOID']).optional(),
   clientId: z.string().optional(),
 })
