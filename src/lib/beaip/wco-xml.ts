@@ -27,6 +27,7 @@ import type {
   BeaipInvoice,
   BeaipParty,
 } from './types'
+import { d } from '@/lib/calculations/money'
 
 export const WCO_DECLARATION_NS = 'http://globaletrade.services/Declaration'
 
@@ -108,23 +109,26 @@ function party(p: BeaipParty) {
  * 67 insurance, 104 other transport charges. Exchange RateNumeric is
  * "not required for incoming", so only the currency is sent.
  */
-function chargeDeduction(code: string, amount: string, currency: string) {
+function chargeDeduction(code: string, amount: string, currency: string, exchangeRate?: string) {
   return {
     ChargesTypeCode: code,
     OtherChargeDeductionAmount: amount,
-    CurrencyExchange: { CurrencyTypeCode: currency },
+    CurrencyExchange: {
+      CurrencyTypeCode: currency,
+      ...(exchangeRate && currency !== 'BSD' ? { RateNumeric: exchangeRate } : {}),
+    },
   }
 }
 
 function isNonZero(money: string): boolean {
-  return Number(money) !== 0
+  return !d(money).isZero()
 }
 
 /** Shipment-level CustomsValuation for one invoice (order-linked to Invoice). */
 function invoiceValuation(inv: BeaipInvoice) {
   return {
     ChargeDeduction: [
-      chargeDeduction('77', inv.subTotal, inv.currency),
+      chargeDeduction('77', inv.subTotal, inv.currency, inv.exchangeRate),
       ...(isNonZero(inv.freightApportioned)
         ? [chargeDeduction('64', inv.freightApportioned, 'BSD')]
         : []),
@@ -140,6 +144,11 @@ function invoiceValuation(inv: BeaipInvoice) {
 
 /** GovernmentAgencyGoodsItem — one per line item, schema order throughout. */
 function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber: string | null) {
+  const tariffQuantity = line.dutyAssessmentQuantity
+    ? { value: line.dutyAssessmentQuantity, unit: line.dutyAssessmentUnit }
+    : line.exciseAssessmentQuantity
+      ? { value: line.exciseAssessmentQuantity, unit: line.exciseAssessmentUnit }
+      : { value: line.quantity, unit: line.unit }
   return {
     Commodity: {
       SequenceNumeric: sequence,
@@ -151,15 +160,16 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
       AdditionalDocument: { ID: line.invoiceNumber, TypeCode: '380' }, // 380 = commercial invoice
       Classification: { ID: line.hsCode, IdentificationTypeCode: 'HS' },
       GoodsMeasure: {
-        // Only weightKg exists per line — emitted as both gross and net until
-        // the model distinguishes them (gap-analysis Phase 3).
         ...(line.weightKg
-          ? {
-              GrossMassMeasure: { '#text': line.weightKg, '@_unitCode': 'KGM' },
-              NetNetWeightMeasure: { '#text': line.weightKg, '@_unitCode': 'KGM' },
-            }
+          ? { GrossMassMeasure: { '#text': line.weightKg, '@_unitCode': 'KGM' } }
           : {}),
-        TariffQuantity: { '#text': line.quantity, '@_unitCode': line.unit },
+        ...(line.netWeightKg
+          ? { NetNetWeightMeasure: { '#text': line.netWeightKg, '@_unitCode': 'KGM' } }
+          : {}),
+        TariffQuantity: {
+          '#text': tariffQuantity.value,
+          '@_unitCode': tariffQuantity.unit ?? line.unit,
+        },
       },
       ...(containerNumber ? { TransportEquipment: { ID: containerNumber } } : {}),
     },
@@ -173,6 +183,17 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
     },
     GovernmentProcedure: { CurrentCode: line.cpcCode },
     ...(line.countryOfOrigin ? { Origin: { CountryCode: line.countryOfOrigin } } : {}),
+    ...(line.packageCount
+      ? {
+          Packaging: {
+            SequenceNumeric: sequence,
+            QuantityQuantity: {
+              '#text': line.packageCount,
+              '@_unitCode': line.packageTypeCode ?? 'PK',
+            },
+          },
+        }
+      : {}),
   }
 }
 
@@ -209,7 +230,7 @@ export function buildWcoDeclarationXml(
     Declaration: {
       '@_xmlns': WCO_DECLARATION_NS,
       AcceptanceDateTime: dt(acceptance),
-      FunctionCode: options.functionCode ?? '9',
+      FunctionCode: options.functionCode ?? d.functionCode,
       FunctionalReferenceID: d.functionalReferenceId,
       TypeCode: d.regimeCode,
       ...(d.grossWeightKg
@@ -228,9 +249,22 @@ export function buildWcoDeclarationXml(
               ...(t.transportMode
                 ? { TypeCode: TRANSPORT_MODE_CODES[t.transportMode] ?? t.transportMode }
                 : {}),
+              ...(t.transportNationalityCode
+                ? { RegistrationNationalityCode: t.transportNationalityCode }
+                : {}),
               ...(t.arrivalDate ? { ArrivalDateTime: dt(t.arrivalDate) } : {}),
               ...(t.containerNumber
-                ? { TransportEquipment: { ID: t.containerNumber } }
+                ? {
+                    TransportEquipment: {
+                      ...(t.containerFullnessCode
+                        ? { FullnessCode: t.containerFullnessCode }
+                        : {}),
+                      ID: t.containerNumber,
+                      ...(t.containerSealNumber
+                        ? { Seal: { ID: t.containerSealNumber } }
+                        : {}),
+                    },
+                  }
                 : {}),
             },
           }
@@ -247,9 +281,13 @@ export function buildWcoDeclarationXml(
                   ...(t.transportMode
                     ? { TypeCode: TRANSPORT_MODE_CODES[t.transportMode] ?? t.transportMode }
                     : {}),
+                  ...(t.transportNationalityCode
+                    ? { RegistrationNationalityCode: t.transportNationalityCode }
+                    : {}),
                 },
               }
             : {}),
+          ...(t.goodsLocationCode ? { GoodsLocation: { ID: t.goodsLocationCode } } : {}),
           ...(transportContractDocuments.length > 0
             ? { TransportContractDocument: transportContractDocuments }
             : {}),
@@ -258,6 +296,7 @@ export function buildWcoDeclarationXml(
                 UnloadingLocation: {
                   ID: t.unloadingPortCode,
                   ...(t.arrivalDate ? { ArrivalDateTime: dt(t.arrivalDate) } : {}),
+                  ...(t.warehouseCode ? { Warehouse: { ID: t.warehouseCode } } : {}),
                 },
               }
             : {}),
@@ -276,8 +315,12 @@ export function buildWcoDeclarationXml(
         Invoice: d.invoices.map((inv) => ({
           ID: inv.invoiceNumber,
           ...(inv.invoiceDate ? { IssueDateTime: dt(inv.invoiceDate) } : {}),
+          ...(inv.incotermCode ? { TypeCode: inv.incotermCode } : {}),
         })),
         Supplier: d.invoices.map((inv) => party(inv.supplier)),
+        TradeTerms: d.invoices
+          .filter((inv) => inv.incotermLocation)
+          .map((inv) => ({ LocationID: inv.incotermLocation! })),
         UCR: { TraderAssignedReferenceID: d.brokerReference },
       },
       ...(cpcGroup ? { GovernmentProcedure: { CurrentCode: cpcGroup } } : {}),

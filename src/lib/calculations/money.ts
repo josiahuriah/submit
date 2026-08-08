@@ -3,7 +3,8 @@
  * banned from this codebase for money (0.1 + 0.2 !== 0.3 is not a rounding
  * error customs will forgive).
  *
- * All values are BSD; no currency conversion exists in the domain.
+ * Customs assessment outputs are BSD. Invoice-currency FOB is converted with
+ * the invoice's frozen BSD exchange rate before apportionment and taxation.
  */
 import Decimal from 'decimal.js'
 

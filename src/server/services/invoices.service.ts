@@ -14,22 +14,27 @@ import { writeAudit, type AuditContext } from '@/lib/audit'
 import { BusinessRuleError, NotFoundError } from '@/lib/errors'
 
 const INVOICE_SELECT = {
-  id: true, invoiceNumber: true, invoiceDate: true, currency: true, subTotal: true,
+  id: true, invoiceNumber: true, invoiceDate: true, currency: true, exchangeRate: true,
+  incotermCode: true, incotermLocation: true, subTotal: true,
   shipmentId: true,
   supplier: { select: { id: true, name: true } },
   _count: { select: { lineItems: true } },
 } as const
 
 const LINE_SELECT = {
-  id: true, invoiceId: true, lineNumber: true, description: true,
+  id: true, invoiceId: true, invoice: { select: { invoiceNumber: true } }, lineNumber: true, description: true,
   commercialDescription: true, pageNumber: true, hsCode: true, hsCodeId: true,
   cpcCode: true,
   quantity: true, unit: true, unitPrice: true, totalValue: true, weightKg: true,
-  countryOfOrigin: true, exemptionType: true, exemptionRef: true,
-  cifValue: true, dutyAmount: true, vatAmount: true, levyAmount: true, exciseAmount: true,
+  netWeightKg: true, countryOfOrigin: true, exemptionType: true, exemptionRef: true,
+  packageCount: true, packageTypeCode: true, unitsPerPackage: true,
+  unitVolume: true, volumeUnit: true, alcoholStrength: true, alcoholStrengthBasis: true,
+  fobValueBsd: true, cifValue: true, dutyAmount: true, vatAmount: true, levyAmount: true, exciseAmount: true,
   freightApportioned: true, insuranceApportioned: true, otherCostApportioned: true,
   dutyBasis: true, dutyRate: true, specificRate: true, specificRateUnit: true,
-  vatRate: true, levyRate: true, exciseRate: true,
+  dutyAssessmentQuantity: true, vatRate: true, levyRate: true,
+  exciseBasis: true, exciseRate: true, exciseSpecificRate: true,
+  exciseSpecificRateUnit: true, exciseAssessmentQuantity: true,
 } as const
 
 async function assertShipmentEditable(db: TenantClient, shipmentId: string) {
@@ -63,6 +68,9 @@ export const invoicesService = {
     invoiceNumber: string
     invoiceDate: Date
     currency?: string
+    exchangeRate?: string
+    incotermCode?: string
+    incotermLocation?: string
     subTotal?: string
   }) {
     await assertShipmentEditable(db, data.shipmentId)

@@ -4,8 +4,7 @@
  * Dashboard — the shipments ledger.
  *
  * Numbers are the product: money columns are right-aligned tabular-num mono,
- * and Calculate / Submit are wired live so the whole DRAFT → calculated →
- * SUBMITTED workflow is demonstrable from this one screen.
+ * and Calculate / Prepare XML lead into the supported Customs-review workflow.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -88,8 +87,6 @@ export default function DashboardPage() {
     router.push('/login')
   }
 
-  const canSubmit = me && ['BROKER', 'ADMIN', 'OWNER'].includes(me.role)
-
   return (
     <div className="min-h-screen">
       <header className="border-b bg-white" style={{ borderColor: 'var(--line)' }}>
@@ -118,7 +115,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-2xl font-bold">Shipments</h1>
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-              Calculate duties before submission — totals are exact to the cent.
+              Calculate predicted charges, then prepare a Customs-review XML artifact.
             </p>
           </div>
         </div>
@@ -178,17 +175,15 @@ export default function DashboardPage() {
                         >
                           Calculate
                         </button>
-                        {canSubmit && (
-                          <button
-                            onClick={() => act(s.id, 'submit', 'Submission')}
-                            disabled={busyId === s.id || !s.calculatedAt}
-                            title={s.calculatedAt ? 'Submit to BEAIP' : 'Calculate first'}
-                            className="rounded px-2 py-1 text-xs font-semibold text-white disabled:opacity-50"
-                            style={{ background: 'var(--accent)' }}
-                          >
-                            Submit
-                          </button>
-                        )}
+                        <button
+                          onClick={() => router.push(`/shipments/${s.id}/entry`)}
+                          disabled={busyId === s.id}
+                          title="Open declaration preparation"
+                          className="rounded px-2 py-1 text-xs font-semibold text-white disabled:opacity-50"
+                          style={{ background: 'var(--accent)' }}
+                        >
+                          Prepare XML
+                        </button>
                       </div>
                     )}
                   </td>

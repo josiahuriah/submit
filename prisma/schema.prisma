@@ -20,12 +20,12 @@
 //   created by migrations. Only RLS (prisma/sql/rls.sql) stays out-of-band,
 //   because Prisma does not model policies.
 //
-// Version: 2.1.0
-// Changelog vs 2.0.0:
-// - Added: HSCodeRate.dutyBasis / specificRate / specificRateUnit to support
-//   specific (per-unit) duties — required for correct alcohol calculations,
-//   a known gap in CayDeclarations.
-// - Added: CustomsEntry BEAIP round-trip fields (beaipReference, payloads).
+// Version: 2.2.0
+// Changelog vs 2.1.0:
+// - Added independent effective-dated duty/excise bases, legal-source metadata,
+//   alcohol measurement inputs, and frozen assessment quantities.
+// - Added declaration identity/transport/party/invoice fields required by the
+//   TFP v1.4.4 XML mapping and versioned Customs review artifacts.
 // =============================================================================
 
 generator client {
@@ -49,18 +49,22 @@ datasource db {
 // =============================================================================
 
 model Organization {
-  id            String   @id @default(cuid())
-  name          String
-  slug          String   @unique
-  email         String?
-  phone         String?
-  address       String?
-  tinNumber     String?
-  licenseNumber String?
-  logoUrl       String?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                        String   @id @default(cuid())
+  name                      String
+  slug                      String   @unique
+  email                     String?
+  phone                     String?
+  address                   String?
+  tinNumber                 String?
+  licenseNumber             String?
+  /// Declaration/Submitter/ID (TFP field R059). Kept distinct from TIN and
+  /// broker licence because the government specification treats them as
+  /// different identifiers.
+  companyRegistrationNumber String?
+  logoUrl                   String?
+  isActive                  Boolean  @default(true)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 
   users             User[]
   clients           Client[]
@@ -88,7 +92,8 @@ model User {
   id             String    @id @default(cuid())
   organizationId String
   email          String    @unique
-  passwordHash   String
+  passwordHash   String? // null for Google-only accounts
+  googleId       String?   @unique // Google `sub` claim, set once linked
   firstName      String
   lastName       String
   role           UserRole  @default(CLERK)
@@ -247,8 +252,17 @@ model HSCode {
 
 enum DutyBasis {
   AD_VALOREM /// duty = customs value x dutyRate
-  SPECIFIC /// duty = quantity x specificRate  (e.g. $X per litre of spirits)
+  SPECIFIC /// duty = assessment quantity x specificRate
   COMPOUND /// engine applies the greater of the ad valorem and specific amounts
+  ADDITIVE /// engine adds ad valorem and specific amounts (e.g. beer)
+}
+
+enum ExciseBasis {
+  NONE
+  AD_VALOREM
+  SPECIFIC
+  COMPOUND
+  ADDITIVE
 }
 
 /// Rates live in their own table so we can track history and answer
@@ -262,9 +276,12 @@ model HSCodeRate {
   specificRate     Decimal?  @db.Decimal(12, 4) // BSD per specificRateUnit
   specificRateUnit String? // "L", "LPA" (litres pure alcohol), "KG"...
 
-  vatRate    Decimal @default(0.1000) @db.Decimal(6, 4)
-  levyRate   Decimal @default(0) @db.Decimal(6, 4) // environmental levy (ad valorem portion)
-  exciseRate Decimal @default(0) @db.Decimal(6, 4)
+  vatRate                Decimal     @default(0.1000) @db.Decimal(6, 4)
+  levyRate               Decimal     @default(0) @db.Decimal(6, 4) // environmental levy (ad valorem portion)
+  exciseBasis            ExciseBasis @default(NONE)
+  exciseRate             Decimal     @default(0) @db.Decimal(6, 4) // ad valorem excise fraction
+  exciseSpecificRate     Decimal?    @db.Decimal(12, 4)
+  exciseSpecificRateUnit String? // "IMP_GAL", "PROOF_GAL", "KG"...
 
   processingFeeExempt Boolean @default(false)
 
@@ -272,6 +289,10 @@ model HSCodeRate {
   effectiveTo   DateTime? // NULL = currently active
   changeReason  String?
   gazetteRef    String?
+  sourceName    String?
+  sourceUrl     String?
+  sourcePage    String?
+  isVerified    Boolean   @default(false)
   createdAt     DateTime  @default(now())
 
   hsCode HSCode @relation(fields: [hsCodeId], references: [id])
@@ -297,6 +318,9 @@ model Client {
   email          String?
   phone          String?
   address        String?
+  city           String?
+  countryCode    String?
+  postcode       String?
   contactPerson  String?
   notes          String?
   isActive       Boolean    @default(true)
@@ -318,6 +342,8 @@ model Supplier {
   name           String
   country        String? // ISO alpha-2
   address        String?
+  city           String?
+  postcode       String?
   email          String?
   phone          String?
   isActive       Boolean  @default(true)
@@ -388,15 +414,26 @@ enum PackageType {
 }
 
 model Shipment {
-  id             String @id @default(cuid())
+  id             String  @id @default(cuid())
   organizationId String
   manifestId     String?
   clientId       String
   createdById    String
 
-  shipmentNumber  String // org-scoped human reference, e.g. "SHP-2026-00042"
-  blNumber        String? // bill of lading / airway bill
-  containerNumber String?
+  shipmentNumber        String // org-scoped human reference, e.g. "SHP-2026-00042"
+  blNumber              String? // bill of lading / airway bill
+  containerNumber       String?
+  containerSealNumber   String?
+  containerFullnessCode String?
+
+  // Declaration preparation fields. Values backed only by the supplied sample
+  // remain explicit and reviewable rather than hidden mapper constants.
+  declarationDate          DateTime @default(now())
+  declarationFunctionCode  String   @default("9") // 9 original, 5 amendment, 1 cancellation
+  regimeCode               String   @default("4") // pending official TTFB_SYS_REGIME worksheet
+  goodsLocationCode        String?
+  warehouseCode            String?
+  transportNationalityCode String?
 
   declarationOfficeId String // exactly one customs office per shipment
   goodsType           GoodsType     @default(GENERAL)
@@ -405,6 +442,7 @@ model Shipment {
   transportMode       TransportMode @default(SEA) // denormalized from voyage.vessel.mode
   description         String?
   grossWeightKg       Decimal?      @db.Decimal(12, 3)
+  netWeightKg         Decimal?      @db.Decimal(12, 3)
 
   status      ShipmentStatus @default(DRAFT)
   submittedAt DateTime?
@@ -480,16 +518,20 @@ model ShipmentDocument {
 
 /// A supplier's commercial invoice attached to a shipment.
 model Invoice {
-  id             String   @id @default(cuid())
-  organizationId String
-  shipmentId     String
-  supplierId     String
-  invoiceNumber  String
-  invoiceDate    DateTime
-  currency       String   @default("BSD")
-  subTotal       Decimal  @default(0) @db.Decimal(14, 2)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default(cuid())
+  organizationId   String
+  shipmentId       String
+  supplierId       String
+  invoiceNumber    String
+  invoiceDate      DateTime
+  currency         String   @default("BSD")
+  /// BSD per one unit of invoice currency. Required for non-BSD invoices.
+  exchangeRate     Decimal  @default(1) @db.Decimal(18, 8)
+  incotermCode     String?
+  incotermLocation String?
+  subTotal         Decimal  @default(0) @db.Decimal(14, 2)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
   shipment     Shipment     @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
@@ -508,8 +550,22 @@ enum ExemptionType {
   CONDITIONAL
 }
 
+enum VolumeUnit {
+  ML
+  CL
+  L
+  US_FL_OZ
+  IMP_FL_OZ
+  IMP_GAL
+}
+
+enum AlcoholStrengthBasis {
+  ABV_PERCENT
+  US_PROOF
+}
+
 model LineItem {
-  id             String @id @default(cuid())
+  id             String  @id @default(cuid())
   organizationId String
   invoiceId      String
   hsCodeId       String?
@@ -525,28 +581,44 @@ model LineItem {
   /// what the overwhelming majority of lines are; no authoritative CPC list is
   /// encoded here, so the value is stored as entered and validated only for
   /// shape.
-  cpcCode               String    @default("4000")
+  cpcCode               String   @default("4000")
   quantity              Decimal  @db.Decimal(12, 3)
   unit                  String   @default("PCS")
   unitPrice             Decimal  @db.Decimal(12, 4)
   totalValue            Decimal  @db.Decimal(12, 2) // line FOB
   weightKg              Decimal? @db.Decimal(12, 3)
+  netWeightKg           Decimal? @db.Decimal(12, 3)
   countryOfOrigin       String?
+
+  // Package/measurement inputs used to derive tariff assessment quantities.
+  packageCount         Int?
+  packageTypeCode      String?
+  unitsPerPackage      Int?
+  unitVolume           Decimal?              @db.Decimal(12, 4)
+  volumeUnit           VolumeUnit?
+  alcoholStrength      Decimal?              @db.Decimal(6, 3)
+  alcoholStrengthBasis AlcoholStrengthBasis?
 
   // Apportioned shipment-level costs (calculation engine output)
   freightApportioned   Decimal @default(0) @db.Decimal(12, 2)
   insuranceApportioned Decimal @default(0) @db.Decimal(12, 2)
   otherCostApportioned Decimal @default(0) @db.Decimal(12, 2)
+  fobValueBsd          Decimal @default(0) @db.Decimal(12, 2)
   cifValue             Decimal @default(0) @db.Decimal(12, 2)
 
   // Rates as applied (frozen at calculation time for auditability)
-  dutyBasis        DutyBasis @default(AD_VALOREM)
-  dutyRate         Decimal   @default(0) @db.Decimal(6, 4)
-  specificRate     Decimal?  @db.Decimal(12, 4)
-  specificRateUnit String?
-  vatRate          Decimal   @default(0) @db.Decimal(6, 4)
-  levyRate         Decimal   @default(0) @db.Decimal(6, 4)
-  exciseRate       Decimal   @default(0) @db.Decimal(6, 4)
+  dutyBasis                DutyBasis   @default(AD_VALOREM)
+  dutyRate                 Decimal     @default(0) @db.Decimal(6, 4)
+  specificRate             Decimal?    @db.Decimal(12, 4)
+  specificRateUnit         String?
+  dutyAssessmentQuantity   Decimal?    @db.Decimal(18, 6)
+  vatRate                  Decimal     @default(0) @db.Decimal(6, 4)
+  levyRate                 Decimal     @default(0) @db.Decimal(6, 4)
+  exciseBasis              ExciseBasis @default(NONE)
+  exciseRate               Decimal     @default(0) @db.Decimal(6, 4)
+  exciseSpecificRate       Decimal?    @db.Decimal(12, 4)
+  exciseSpecificRateUnit   String?
+  exciseAssessmentQuantity Decimal?    @db.Decimal(18, 6)
 
   // Calculated amounts
   dutyAmount   Decimal @default(0) @db.Decimal(12, 2)
@@ -574,7 +646,7 @@ model LineItem {
 }
 
 // =============================================================================
-// CUSTOMS DECLARATIONS (BEAIP round trip)
+// CUSTOMS DECLARATIONS / REVIEW ARTIFACTS
 // =============================================================================
 
 enum CustomsEntryStatus {
@@ -602,17 +674,23 @@ model CustomsEntry {
   organizationId String
   shipmentId     String
 
-  entryNumber     String?
-  declarationType DeclarationType    @default(C13)
-  status          CustomsEntryStatus @default(DRAFT)
+  entryNumber      String?
+  declarationType  DeclarationType    @default(C13)
+  status           CustomsEntryStatus @default(DRAFT)
+  functionCode     String             @default("9")
+  regimeCode       String?
+  schemaVersion    String?
+  mappingVersion   String?
+  generatedAt      DateTime?
+  validationReport Json?
 
-  // BEAIP round trip
+  // Reserved for the future verified Single Window round trip.
   beaipReference  String? // reference number returned by BEAIP
   submittedAt     DateTime?
   assessedAt      DateTime?
   releasedAt      DateTime?
   rejectionReason String?
-  requestPayload  Json? // exact XML/JSON we sent (audit trail)
+  requestPayload  Json? // exact XML string or JSON payload sent/exported (audit trail)
   responsePayload Json? // exact response we received
 
   totalPayable Decimal @default(0) @db.Decimal(14, 2)

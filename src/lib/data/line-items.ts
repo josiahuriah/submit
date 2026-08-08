@@ -22,6 +22,7 @@ import { calculationsService } from '@/server/services/calculations.service'
 import { lineItemCreateSchema } from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
 import { toShipmentTotals } from '@/lib/data/shipments'
+import { d } from '@/lib/calculations/money'
 import type { HsRate, LineItem, ServerLineCharges, ShipmentTotals } from '@/lib/types'
 
 /** Every line on a shipment, priced by the server where a calculation exists. */
@@ -141,18 +142,29 @@ async function refused(
 export async function commitLineItem(
   shipmentId: string,
   draft: {
+    invoiceId: string
     hsCode: string
     quantity: string
     unit: string
     description: string
     cpcCode: string
     unitPrice: string
+    countryOfOrigin: string
+    weightKg: string
+    netWeightKg: string
+    packageCount: string
+    packageTypeCode: string
+    unitsPerPackage: string
+    unitVolume: string
+    volumeUnit: 'ML' | 'CL' | 'L' | 'US_FL_OZ' | 'IMP_FL_OZ' | 'IMP_GAL'
+    alcoholStrength: string
+    alcoholStrengthBasis: 'ABV_PERCENT' | 'US_PROOF'
   },
 ): Promise<CommitLineResult> {
   const { db, audit } = await writeContext('shipments:write')
 
   const invoice = await db.invoice.findFirst({
-    where: { shipmentId },
+    where: { id: draft.invoiceId, shipmentId },
     select: { id: true },
     orderBy: { invoiceDate: 'asc' },
   })
@@ -165,8 +177,8 @@ export async function commitLineItem(
   const hs = await hsCodesService.search(draft.hsCode, 1)
   const matched = hs.find((h) => h.code === draft.hsCode)
 
-  const quantity = Number(draft.quantity) || 1
-  const unitPrice = Number(draft.unitPrice) || 0
+  const quantity = d(draft.quantity || '1')
+  const unitPrice = d(draft.unitPrice || '0')
 
   const input = lineItemCreateSchema.parse({
     invoiceId: invoice.id,
@@ -174,10 +186,22 @@ export async function commitLineItem(
     hsCode: draft.hsCode,
     cpcCode: draft.cpcCode.trim().toUpperCase() || '4000',
     description: draft.description || matched?.description || draft.hsCode,
-    quantity: String(quantity),
+    quantity: quantity.toString(),
     unit: draft.unit || 'PCS',
     unitPrice: unitPrice.toFixed(4),
-    totalValue: (quantity * unitPrice).toFixed(2),
+    totalValue: quantity.times(unitPrice).toDecimalPlaces(2).toFixed(2),
+    countryOfOrigin: draft.countryOfOrigin.trim() || undefined,
+    weightKg: draft.weightKg.trim() || undefined,
+    netWeightKg: draft.netWeightKg.trim() || undefined,
+    packageCount: draft.packageCount.trim() || undefined,
+    packageTypeCode: draft.packageTypeCode.trim() || undefined,
+    unitsPerPackage: draft.unitsPerPackage.trim() || undefined,
+    unitVolume: draft.unitVolume.trim() || undefined,
+    volumeUnit: draft.unitVolume.trim() ? draft.volumeUnit : undefined,
+    alcoholStrength: draft.alcoholStrength.trim() || undefined,
+    alcoholStrengthBasis: draft.alcoholStrength.trim()
+      ? draft.alcoholStrengthBasis
+      : undefined,
   })
 
   try {
@@ -243,13 +267,15 @@ function num(value: unknown): number {
  * a created-but-unpriced line has cifValue 0 and all-zero amounts.
  */
 function toCharges(row: LineRow): ServerLineCharges | null {
-  const cif = num(row.cifValue)
-  const amounts = [row.dutyAmount, row.vatAmount, row.levyAmount, row.exciseAmount].map(num)
-  if (cif === 0 && amounts.every((a) => a === 0)) return null
+  const cif = d(dec(row.cifValue))
+  const amounts = [row.dutyAmount, row.vatAmount, row.levyAmount, row.exciseAmount].map((amount) =>
+    d(dec(amount)),
+  )
+  if (cif.isZero() && amounts.every((amount) => amount.isZero())) return null
 
-  const payable = amounts.reduce((total, a) => total + a, 0)
+  const payable = amounts.reduce((total, amount) => total.plus(amount), d(0))
   return {
-    fob: dec(row.totalValue),
+    fob: dec(row.fobValueBsd),
     cif: dec(row.cifValue),
     duty: dec(row.dutyAmount),
     excise: dec(row.exciseAmount),
@@ -269,6 +295,9 @@ function toLineItem(row: LineRow): LineItem {
     description: row.description,
     cpcCode: row.cpcCode,
     unitPrice: num(row.unitPrice),
+    totalValue: dec(row.totalValue),
+    invoiceId: row.invoiceId,
+    invoiceNumber: row.invoice.invoiceNumber,
     pageNumber: row.pageNumber,
     hsDescription: row.commercialDescription ?? undefined,
     charges: toCharges(row),
@@ -286,9 +315,24 @@ function toHsRate(row: HsRow): HsRate {
   return {
     code: row.code,
     description: row.description,
-    duty: rate ? num(rate.dutyRate) : 0,
-    vat: rate ? num(rate.vatRate) : 0,
-    levy: rate ? num(rate.levyRate) : 0,
-    excise: rate ? num(rate.exciseRate) : 0,
+    unit: row.unit,
+    dutyBasis: rate?.dutyBasis ?? 'AD_VALOREM',
+    duty: rate ? dec(rate.dutyRate) : '0',
+    specificRate: rate?.specificRate === null || rate?.specificRate === undefined
+      ? null
+      : dec(rate.specificRate),
+    specificRateUnit: rate?.specificRateUnit ?? null,
+    vat: rate ? dec(rate.vatRate) : '0.10',
+    levy: rate ? dec(rate.levyRate) : '0',
+    exciseBasis: rate?.exciseBasis ?? 'NONE',
+    excise: rate ? dec(rate.exciseRate) : '0',
+    exciseSpecificRate:
+      rate?.exciseSpecificRate === null || rate?.exciseSpecificRate === undefined
+        ? null
+        : dec(rate.exciseSpecificRate),
+    exciseSpecificRateUnit: rate?.exciseSpecificRateUnit ?? null,
+    sourceName: rate?.sourceName ?? null,
+    sourcePage: rate?.sourcePage ?? null,
+    isVerified: rate?.isVerified ?? false,
   }
 }

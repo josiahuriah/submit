@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { apportion } from '@/lib/calculations/apportionment'
 import { calculateShipment } from '@/lib/calculations/duty-calculator'
+import { calculateAlcoholQuantities, resolveSpecificQuantity } from '@/lib/calculations/measurement'
 import { Decimal, sum, toMoney } from '@/lib/calculations/money'
 
 const eq = (a: Decimal, b: string) => expect(a.toFixed(2)).toBe(b)
@@ -173,5 +174,107 @@ describe('calculateShipment', () => {
     eq(toMoney(sum(result.lines.map((l) => l.dutyAmount))), result.totalDuty.toFixed(2))
     // CIF total = FOB + all charges, to the penny.
     eq(result.totalCifValue, toMoney(sum(['333.33', '666.67', '123.45', '250.10', '33.33', '7.77'])).toFixed(2))
+  })
+
+  it('adds ad valorem and specific duty for beer', () => {
+    const result = calculateShipment(
+      [
+        {
+          id: 'beer',
+          totalValue: '1000.00',
+          quantity: '10',
+          dutyAssessmentQuantity: '19.8',
+          rates: {
+            dutyBasis: 'ADDITIVE',
+            dutyRate: '0.10',
+            specificRate: '10.00',
+            vatRate: '0.10',
+            levyRate: '0',
+            exciseRate: '0',
+          },
+        },
+      ],
+      { freightCharge: '0', insuranceCharge: '0', otherCharges: '0' },
+    )
+    // Beer: 10% of CIF (100.00) + 19.8 imperial gallons x $10 (198.00).
+    eq(result.totalDuty, '298.00')
+  })
+
+  it('applies current spirits excise per imperial gallon', () => {
+    const result = calculateShipment(
+      [
+        {
+          id: 'rum',
+          totalValue: '1000.00',
+          quantity: '10',
+          exciseAssessmentQuantity: '19.8',
+          rates: {
+            dutyBasis: 'AD_VALOREM',
+            dutyRate: '0',
+            vatRate: '0.10',
+            levyRate: '0',
+            exciseBasis: 'SPECIFIC',
+            exciseRate: '0',
+            exciseSpecificRate: '13.00',
+          },
+        },
+      ],
+      { freightCharge: '0', insuranceCharge: '0', otherCharges: '0' },
+    )
+    // Excise = 19.8 imperial gallons x $13 = 257.40.
+    eq(result.totalExcise, '257.40')
+    // Line VAT = (1000 + 257.40) x 10% = 125.74; fee VAT = 1.00.
+    eq(result.totalVat, '126.74')
+  })
+
+  it('converts invoice currency to BSD before CIF and duty', () => {
+    const result = calculateShipment(
+      [
+        {
+          id: 'usd-line',
+          totalValue: '100.00',
+          exchangeRate: '1.50000000',
+          quantity: '1',
+          rates: {
+            dutyBasis: 'AD_VALOREM',
+            dutyRate: '0.10',
+            vatRate: '0.10',
+            levyRate: '0',
+            exciseRate: '0',
+          },
+        },
+      ],
+      { freightCharge: '0', insuranceCharge: '0', otherCharges: '0' },
+    )
+    // FOB BSD = 100.00 x 1.5 = 150.00; duty = 15.00.
+    eq(result.totalFobValue, '150.00')
+    eq(result.totalDuty, '15.00')
+  })
+})
+
+describe('alcohol assessment quantities', () => {
+  it('converts cases and ABV using the Customs training factors', () => {
+    const result = calculateAlcoholQuantities({
+      packageQuantity: '10',
+      unitsPerPackage: '12',
+      unitVolume: '750',
+      volumeUnit: 'ML',
+      alcoholStrength: '40',
+      alcoholStrengthBasis: 'ABV_PERCENT',
+    })
+
+    // 10 x 12 x 750ml = 90L; Customs deck: 90 x 0.22 = 19.8 imperial gallons.
+    expect(result.totalLitres.toFixed(3)).toBe('90.000')
+    expect(result.imperialGallons.toFixed(3)).toBe('19.800')
+    // British proof factor = (40 x 1.75) / 100 = 0.70; 19.8 x 0.70 = 13.86.
+    expect(result.proofGallons?.toFixed(3)).toBe('13.860')
+  })
+
+  it('converts a bulk litre declaration directly to imperial gallons', () => {
+    const result = resolveSpecificQuantity('IMP_GAL', {
+      lineQuantity: '600',
+      lineUnit: 'L',
+    })
+    expect(result.toFixed(2)).toBe('132.00')
   })
 })

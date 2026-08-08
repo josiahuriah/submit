@@ -35,16 +35,15 @@ function raw(over: Partial<RawTariffRecord> = {}): RawTariffRecord {
 }
 
 describe('normalizeCode', () => {
-  it('reformats xxxx.dddd to the xxxx.dd.dd form BEAIP accepts', () => {
+  it('reformats xxxx.dddd to the internal xxxx.dd.dd declaration form', () => {
     expect(normalizeCode('0201.1000')).toBe('0201.10.00')
     expect(normalizeCode('2208.3000')).toBe('2208.30.00')
   })
 
-  it('produces codes that satisfy the BEAIP submission validator', () => {
-    const beaip = /^\d{4}\.\d{2}(\.\d{2})?$/
-    expect(beaip.test(normalizeCode('8703.2310'))).toBe(true)
-    // The raw form is exactly what BEAIP rejects — the reason this exists.
-    expect(beaip.test('8703.2310')).toBe(false)
+  it('produces codes that satisfy the declaration preflight format', () => {
+    const declarationCode = /^\d{4}\.\d{2}\.\d{2}$/
+    expect(declarationCode.test(normalizeCode('8703.2310'))).toBe(true)
+    expect(declarationCode.test('8703.2310')).toBe(false)
   })
 
   it('refuses an unrecognized code shape rather than guessing', () => {
@@ -92,7 +91,8 @@ describe('normalizeTariffEntry', () => {
 
 describe('normalizeTariffFile', () => {
   it('never overwrites a curated line', () => {
-    // 2208.6000 -> 2208.60.00 is vodka: curated as SPECIFIC $12.00/L, but the
+    // 2208.6000 -> 2208.60.00 is vodka: curated with effective-dated specific
+    // excise, but the
     // extraction claims duty 0. Importing it would zero the duty on spirits.
     const records = [raw({ code: '2208.6000', dutyRate: '0.0000', generalRate: 'Free' })]
     const report = normalizeTariffFile(records, (code) => code === '2208.60.00')

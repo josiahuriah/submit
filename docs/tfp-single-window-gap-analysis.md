@@ -7,6 +7,12 @@ Written 2026-07-31. Sources: `TFP GOV CBR DEC Message Specification v1.4.4`
 document" the campaign calls for, produced early because the spec arrived
 before the WSDL.
 
+> Updated 2026-08-08: this is the historical discovery analysis. The formal,
+> implementation-aligned register is now
+> [`docs/tfp/field-mapping-matrix.md`](tfp/field-mapping-matrix.md). Schema,
+> mapping, calculation and UI gaps marked below have since been closed where
+> the supplied documents permit; withheld government code masters remain open.
+
 ---
 
 ## 1. What the three files actually are
@@ -68,14 +74,10 @@ it will add length/pattern/enumeration checks the stub waves through.
 These invalidate assumptions baked into `src/lib/beaip/production-client.ts`
 and the campaign skill:
 
-1. **The wire format is a WCO 3.8 XML document, not our JSON-ish payload in a
-   SOAP wrapper.** `buildEnvelope()` currently serializes `BeaipDeclaration`
-   wholesale as `bea:Payload` under a placeholder namespace. The real message
-   is the `Declaration` document above. The production client's header claim
-   that "only element names need adjusting" is wrong — we need a real mapping
-   layer (`BeaipDeclaration` → WCO Declaration XML). The
-   `BeaipClient`/`BeaipDeclaration` seam itself survives; only the client's
-   serialization is obsolete.
+1. **The wire format is a WCO 3.8 XML document, not a guessed SOAP payload.**
+   The hypothetical SOAP production client, mock submission, status polling,
+   and environment cutover flag were removed on 2026-08-08. The supported
+   workflow is now shipment → preflight → versioned WCO XML review artifact.
 2. **Transport is still unknown.** The integration steps put "communicate to
    endpoint" at step 4, *after* the file gate at steps 2–3. Nothing in these
    documents mentions SOAP, WSDL, or endpoints. Do not touch the SOAP plumbing
@@ -109,10 +111,10 @@ existing data with only formatting.
 | Element | M/C | Our source | Gap |
 |---|---|---|---|
 | `FunctionalReferenceID` | M | `Shipment.shipmentNumber` (spec allows sender's unique ref) | OK |
-| `FunctionCode` | M | constant `9` (original) | OK |
-| `TypeCode` (Regime) | M | — | **GAP**: needs `TTFB_SYS_REGIME` worksheet; sample uses `4` |
+| `FunctionCode` | M | `Shipment.declarationFunctionCode` | MAPPED (`9`/`5`/`1`) |
+| `TypeCode` (Regime) | M | `Shipment.regimeCode` | **PARTIAL**: stored/editable; needs `TTFB_SYS_REGIME` worksheet; sample uses `4` |
 | `DeclarationOffice/ID` | M | `CustomsOffice.code` (NAS/FPO/…) | **PARTIAL**: official codes look numeric (`01`); mapping needs the Port worksheet |
-| `Submitter/ID` | M | — | **GAP**: needs broker Company Registration Number; `Organization` has only `tinNumber`/`licenseNumber` |
+| `Submitter/ID` | M | `Organization.companyRegistrationNumber` | MAPPED and preflight-required; government must confirm identifier semantics |
 | `AcceptanceDateTime` | C | submission timestamp | OK (`yyyy-MM-dd HH:mm:ss`) |
 | `TotalGrossMassMeasure` | C | `Shipment.grossWeightKg`, unitCode `KGM` | OK |
 | `TotalPackageQuantity` | C | `Shipment.packageCount` | PARTIAL: `PackageType` enum → `TTFB_SYS_PACKAGE_UOM` mapping needed |
@@ -127,21 +129,21 @@ existing data with only formatting.
 
 | Element | M/C | Our source | Gap |
 |---|---|---|---|
-| `Importer`, `Consignee` + `Address` | C | `Client.name`, `tinNumber`, `address` (single string) | **PARTIAL**: spec wants CityName/CountryCode/Line/PostcodeID; `Client` has no structured address or country |
-| `Exporter`, `Consignor`, `Supplier` + `Address` | C | `Supplier.name`, `country`, `address` (single string) | PARTIAL: same structuring gap |
+| `Importer`, `Consignee` + `Address` | C | `Client.name`, TIN, address/city/country/postcode | MAPPED |
+| `Exporter`, `Consignor`, `Supplier` + `Address` | C | `Supplier` structured fields | Exporter/Supplier mapped; Consignor remains conditional |
 | `BorderTransportMeans` Name/TypeCode/Nationality/ArrivalDateTime | C | `manifest.voyage.vessel.name`, `TransportMode` enum, `voyage.arrivalDate` | PARTIAL: mode enum → `TTFB_SYS_TRANSPORT_MODE` codes; vessel nationality not stored |
-| `BorderTransportMeans/TransportEquipment` (container, seal, fullness) | C | `Shipment.containerNumber` (one string) | PARTIAL: no seal/characteristic/fullness, single container only |
+| `BorderTransportMeans/TransportEquipment` (container, seal, fullness) | C | Shipment container/seal/fullness fields | MAPPED for one container; codes provisional |
 | `Consignment/ArrivalTransportMeans` | C | same vessel data | OK-ish |
-| `Consignment/GoodsLocation` | C | — | GAP (location-of-goods code) |
+| `Consignment/GoodsLocation` | C | `Shipment.goodsLocationCode` | MAPPED; code list withheld |
 | `Consignment/TransportContractDocument` BL (705) / Manifest (785) | C | `Shipment.blNumber`, `Manifest.manifestNumber` | OK |
 | `Consignment/UnloadingLocation` + `ArrivalDateTime` | C | `voyage.journey.destinationPort.unLocode` (`BSNAS`), `voyage.arrivalDate` | OK |
-| `Consignment/UnloadingLocation/Warehouse` | C | — | GAP (warehouse code; matters for C17-style regimes) |
+| `Consignment/UnloadingLocation/Warehouse` | C | `Shipment.warehouseCode` | MAPPED; code list withheld |
 | `EntryOffice` / `ExitOffice` | C | destination / origin port codes via `Journey` | OK |
 | `ExportCountry` | C | origin port country or supplier country | PARTIAL (pick a rule) |
 | `Destination/CountryCode` | C | constant `BS` for imports | OK |
-| `CustomsValuation` (one per invoice, **same order as `Invoice` elements** — that ordering is the invoice linkage) | C | `Invoice.subTotal` + `currency` (77); freight/insurance/other are **shipment-level** (`freightCharge` etc.) | **PARTIAL**: charges not held per invoice; **no exchange-rate field exists anywhere** (77-amount is in invoice currency + `CurrencyExchange`) |
+| `CustomsValuation` (one per invoice, **same order as `Invoice` elements** — that ordering is the invoice linkage) | C | Invoice subtotal/currency/exchange rate + line-level apportioned costs summed per invoice | MAPPED |
 | `Invoice` ID/date | C | `Invoice.invoiceNumber`, `invoiceDate` | OK |
-| `TradeTerms` (incoterm) | C | — | **GAP**: no incoterm field (spec table says `ConditionCode`, XSD says `LocationID` — follow the XSD) |
+| `TradeTerms` (incoterm) | C | `Invoice.incotermCode` + `incotermLocation` | MAPPED following XSD sequence |
 | `UCR` | C | `shipmentNumber` if wanted | OK (optional) |
 
 ### GovernmentAgencyGoodsItem (one per line item)
@@ -155,13 +157,13 @@ existing data with only formatting.
 | `Commodity/AdditionalDocument` (invoice link, 380) | C | parent `Invoice.invoiceNumber` | OK |
 | `Commodity/AdditionalInformation` (alcohol %, COUNTRYGROUP…) | C | — | GAP: worksheet-dependent; **ties directly to the open excise-data gap** (chapters 22/87) |
 | `Commodity/Classification/ID` + `IdentificationTypeCode=HS` | C | `hsCode` `"2208.30.00"` | **PARTIAL**: sample shows undotted 8-digit (`10113452`), length 11 — dotted vs undotted must be confirmed via `TCMS_TRF_HSCODE` worksheet |
-| `Commodity/GoodsMeasure` gross/net/tariff-qty | C | `weightKg` (single — no gross/net split), `quantity` + `unit` | PARTIAL: UOM code mapping; decide gross-vs-net sourcing |
+| `Commodity/GoodsMeasure` gross/net/tariff-qty | C | gross/net weights + frozen duty/excise assessment quantity/unit | MAPPED; UOM code master pending |
 | `Commodity/ProductCharacteristics` (chassis, engine, make…) | C | — | GAP: vehicles only; no vehicle fields modeled |
 | `Commodity/TransportEquipment` | C | `Shipment.containerNumber` | OK |
 | `CustomsValuation` (item level) | C | `freightApportioned` (64), `insuranceApportioned` (67), `otherCostApportioned` (104), `cifValue` (`ExitToEntryChargeAmount`) | **OK — strongest match in the model**; the apportionment engine output maps 1:1 |
 | `GovernmentProcedure/CurrentCode` (item CPC) | C | `cpcCode` (`4000`) | OK-ish: spec table says `4000`, sample says `40000` — confirm via CPC worksheet |
 | `Origin/CountryCode` | C | `countryOfOrigin` | OK |
-| `Packaging` (count + supplementary quantities) | C | shipment-level `packageCount` only | PARTIAL: no per-item packages |
+| `Packaging` (count + supplementary quantities) | C | per-item package count/type plus alcohol package measurements | MAPPED; package code master pending |
 | `PreviousDocument` | C | — | N/A (child declarations) |
 
 ## 5. Withheld reference data (needed before business validation, not before the file gate)
@@ -174,15 +176,15 @@ Document types, Container Type, Vehicle Make/Model, and
 Producing the sample file unlocks these (per the government's stated process).
 Until then, hardcode sample-consistent placeholders and label them.
 
-## 6. Proposed plan
+## 6. Implementation status and next gate
 
-**Phase 1 — pass the file gate — DONE 2026-07-31:**
+**Phase 1 — pass the file gate — implemented:**
 1. ✅ `src/lib/beaip/wco-xml.ts` emits the namespaced `Declaration` document in
    exact XSD element order. `BeaipDeclaration` extended (parties, invoices,
    transport, per-line values/apportioned costs/CPC); mapping extracted to
    `src/server/services/declaration-mapper.ts`, shared by the submit path and
    the generator so the wire payload cannot drift. Labeled placeholders:
-   Regime=`4`, Submitter falls back `licenseNumber → tinNumber → CRN-PENDING`,
+   Regime=`4`; Submitter uses only `Organization.companyRegistrationNumber`,
    transport-mode + package-UOM code maps (UN/EDIFACT guesses) in `wco-xml.ts`.
 2. ✅ `npm run wco:generate` (`scripts/generate-wco-declaration.ts`) generates
    from a calculated shipment and validates via `xmllint` against
@@ -193,20 +195,20 @@ Until then, hardcode sample-consistent placeholders and label them.
 3. ✅ Deliverable generated and validated from the seeded demo shipment:
    `docs/tfp/generated/declaration-SHP-2026-00001.xml`. Item CIF values sum
    exactly to the shipment total (apportionment intact). **Before sending to
-   the integration team**: replace `CRN-PENDING` with the real broker CR
-   number (set `Organization.licenseNumber`) and sanity-check the office code
+   the integration team**: set the real Company Registration Number and sanity-check the office code
    (`NAS` vs the numeric codes the sample hints at).
 
 **Phase 2 — after the worksheets arrive:** code-mapping tables (regime, office,
 UOM, package UOM, transport mode), real `TFB_Common_Types.xsd` validation,
 HS-code format confirmation.
 
-**Phase 3 — schema changes (owner approval, `submit-schema-and-migrations`):**
-structured addresses on Client/Supplier, invoice-level exchange rate +
-per-invoice charges, incoterm, Organization CR number, optional per-item
-packaging/net weight, vehicle characteristics if the brokerage handles
-vehicles.
+**Phase 3 — schema/UI/calculation changes — implemented 2026-08-08 except
+vehicle characteristics:** structured addresses, invoice exchange rate and
+incoterms, organization CR number, per-item packaging/net weight, independent
+duty/excise bases, effective-dated rate sources, alcohol assessment quantities,
+and a declaration-profile UI.
 
-**Phase 4 —** rejoin the campaign skill at Gates 2–3 once endpoint/transport
-documentation (steps 4–5) arrives; rewrite `production-client.ts`
-serialization around `wco-xml.ts` at that point, not before.
+**Phase 4 —** Customs reviews the generated XML and supplies the real common
+types/code masters. Only after endpoint/transport documentation arrives should
+a new submission adapter be designed around the accepted XML. There is no
+production or mock endpoint client to "flip on" in the current codebase.

@@ -11,6 +11,7 @@
  * LRU cache: the tariff changes ~annually; identical searches repeat all day.
  */
 import { basePrisma } from '@/lib/db/prisma'
+import type { Prisma } from '@/generated/prisma/client'
 
 interface CacheEntry<T> { at: number; value: T }
 const CACHE_MAX = 500
@@ -45,28 +46,46 @@ export interface HsSearchResult {
   requiresPermit: boolean
   permitType: string | null
   currentRate: {
-    dutyBasis: 'AD_VALOREM' | 'SPECIFIC' | 'COMPOUND'
+    dutyBasis: 'AD_VALOREM' | 'SPECIFIC' | 'COMPOUND' | 'ADDITIVE'
     dutyRate: unknown
     specificRate: unknown
     specificRateUnit: string | null
     vatRate: unknown
     levyRate: unknown
+    exciseBasis: 'NONE' | 'AD_VALOREM' | 'SPECIFIC' | 'COMPOUND' | 'ADDITIVE'
     exciseRate: unknown
+    exciseSpecificRate: unknown
+    exciseSpecificRateUnit: string | null
+    effectiveFrom: Date
+    effectiveTo: Date | null
+    sourceName: string | null
+    sourceUrl: string | null
+    sourcePage: string | null
+    isVerified: boolean
   } | null
 }
 
-const RESULT_SELECT = {
+function resultSelect(now: Date) {
+  return {
   id: true, code: true, description: true, chapter: true, heading: true,
   unit: true, requiresPermit: true, permitType: true,
   rateHistory: {
-    where: { effectiveTo: null },
+    where: {
+      effectiveFrom: { lte: now },
+      OR: [{ effectiveTo: null }, { effectiveTo: { gt: now } }],
+    },
     select: {
       dutyBasis: true, dutyRate: true, specificRate: true, specificRateUnit: true,
-      vatRate: true, levyRate: true, exciseRate: true,
+      vatRate: true, levyRate: true, exciseBasis: true, exciseRate: true,
+      exciseSpecificRate: true, exciseSpecificRateUnit: true,
+      effectiveFrom: true, effectiveTo: true, sourceName: true, sourceUrl: true,
+      sourcePage: true, isVerified: true,
     },
+    orderBy: { effectiveFrom: 'desc' as const },
     take: 1,
   },
-} as const
+  } satisfies Prisma.HSCodeSelect
+}
 
 export const hsCodesService = {
   async search(query: string, limit = 20): Promise<HsSearchResult[]> {
@@ -82,7 +101,7 @@ export const hsCodesService = {
           ? { code: { startsWith: query.trim() } }
           : { description: { contains: query, mode: 'insensitive' } }),
       },
-      select: RESULT_SELECT,
+      select: resultSelect(new Date()),
       orderBy: { code: 'asc' },
       take: limit,
     })
@@ -100,5 +119,43 @@ export const hsCodesService = {
     }))
     cacheSet(key, shaped)
     return shaped
+  },
+
+  /** Complete effective-dated ledger for one tariff line, newest first. */
+  async rateHistory(code: string) {
+    const hsCode = await basePrisma.hSCode.findUnique({
+      where: { code },
+      select: {
+        code: true,
+        description: true,
+        unit: true,
+        isActive: true,
+        rateHistory: {
+          select: {
+            id: true,
+            dutyBasis: true,
+            dutyRate: true,
+            specificRate: true,
+            specificRateUnit: true,
+            vatRate: true,
+            levyRate: true,
+            exciseBasis: true,
+            exciseRate: true,
+            exciseSpecificRate: true,
+            exciseSpecificRateUnit: true,
+            effectiveFrom: true,
+            effectiveTo: true,
+            changeReason: true,
+            gazetteRef: true,
+            sourceName: true,
+            sourceUrl: true,
+            sourcePage: true,
+            isVerified: true,
+          },
+          orderBy: { effectiveFrom: 'desc' },
+        },
+      },
+    })
+    return hsCode
   },
 }

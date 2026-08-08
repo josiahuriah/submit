@@ -44,6 +44,10 @@ export async function addInvoice(
     invoiceNumber: string
     invoiceDate: string // YYYY-MM-DD
     subTotal: string
+    currency: string
+    exchangeRate: string
+    incotermCode: string
+    incotermLocation: string
   },
 ): Promise<AddInvoiceResult> {
   const claims = await requireSession()
@@ -56,7 +60,6 @@ export async function addInvoice(
     userAgent: headerList.get('user-agent') ?? undefined,
   }
 
-  const subTotal = Number(draft.subTotal)
   let input
   try {
     input = invoiceCreateSchema.parse({
@@ -64,10 +67,11 @@ export async function addInvoice(
       supplierId: draft.supplierId,
       invoiceNumber: draft.invoiceNumber.trim(),
       invoiceDate: draft.invoiceDate,
-      subTotal:
-        draft.subTotal.trim() === '' || !Number.isFinite(subTotal)
-          ? undefined
-          : subTotal.toFixed(2),
+      currency: draft.currency.trim().toUpperCase() || 'BSD',
+      exchangeRate: draft.exchangeRate.trim() || '1',
+      incotermCode: draft.incotermCode.trim() || undefined,
+      incotermLocation: draft.incotermLocation.trim() || undefined,
+      subTotal: draft.subTotal.trim() || undefined,
     })
   } catch {
     return { invoiceId: null, error: 'Check the form: supplier, invoice number and date are required.' }

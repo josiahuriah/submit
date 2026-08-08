@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Declaration xmlns="http://globaletrade.services/Declaration">
     <AcceptanceDateTime>
-        <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-31 06:55:38</DateTimeString>
+        <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-08-08 15:29:08</DateTimeString>
     </AcceptanceDateTime>
     <FunctionCode>9</FunctionCode>
     <FunctionalReferenceID>SHP-2026-00001</FunctionalReferenceID>
@@ -9,7 +9,7 @@
     <TotalGrossMassMeasure unitCode="KGM">2450</TotalGrossMassMeasure>
     <TotalPackageQuantity unitCode="PX">6</TotalPackageQuantity>
     <Submitter>
-        <ID>CRN-PENDING</ID>
+        <ID>CR-DEV-0001</ID>
     </Submitter>
     <DeclarationOffice>
         <ID>NAS</ID>
@@ -17,11 +17,16 @@
     <BorderTransportMeans>
         <Name>Tropic Freedom</Name>
         <TypeCode>1</TypeCode>
+        <RegistrationNationalityCode>BS</RegistrationNationalityCode>
         <ArrivalDateTime>
             <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-03 05:00:00</DateTimeString>
         </ArrivalDateTime>
         <TransportEquipment>
+            <FullnessCode>FULL</FullnessCode>
             <ID>TCLU7305421</ID>
+            <Seal>
+                <ID>SEAL-260701</ID>
+            </Seal>
         </TransportEquipment>
     </BorderTransportMeans>
     <Declarant>
@@ -36,7 +41,11 @@
             <ArrivalTransportMeans>
                 <Name>Tropic Freedom</Name>
                 <TypeCode>1</TypeCode>
+                <RegistrationNationalityCode>BS</RegistrationNationalityCode>
             </ArrivalTransportMeans>
+            <GoodsLocation>
+                <ID>NASPORT</ID>
+            </GoodsLocation>
             <TransportContractDocument>
                 <ID>TROP26070001</ID>
                 <TypeCode>705</TypeCode>
@@ -50,6 +59,9 @@
                 <ArrivalDateTime>
                     <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-03 05:00:00</DateTimeString>
                 </ArrivalDateTime>
+                <Warehouse>
+                    <ID>WH-01</ID>
+                </Warehouse>
             </UnloadingLocation>
         </Consignment>
         <CustomsValuation>
@@ -111,13 +123,13 @@
                     <TypeCode>380</TypeCode>
                 </AdditionalDocument>
                 <Classification>
-                    <ID>2208.40.00</ID>
+                    <ID>2208.40.10</ID>
                     <IdentificationTypeCode>HS</IdentificationTypeCode>
                 </Classification>
                 <GoodsMeasure>
                     <GrossMassMeasure unitCode="KGM">780</GrossMassMeasure>
-                    <NetNetWeightMeasure unitCode="KGM">780</NetNetWeightMeasure>
-                    <TariffQuantity unitCode="L">600</TariffQuantity>
+                    <NetNetWeightMeasure unitCode="KGM">720</NetNetWeightMeasure>
+                    <TariffQuantity unitCode="IMP_GAL">132</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
                     <ID>TCLU7305421</ID>
@@ -141,6 +153,10 @@
             <Origin>
                 <CountryCode>US</CountryCode>
             </Origin>
+            <Packaging>
+                <SequenceNumeric>1</SequenceNumeric>
+                <QuantityQuantity unitCode="CT">50</QuantityQuantity>
+            </Packaging>
         </GovernmentAgencyGoodsItem>
         <GovernmentAgencyGoodsItem>
             <Commodity>
@@ -158,7 +174,7 @@
                 </Classification>
                 <GoodsMeasure>
                     <GrossMassMeasure unitCode="KGM">450</GrossMassMeasure>
-                    <NetNetWeightMeasure unitCode="KGM">450</NetNetWeightMeasure>
+                    <NetNetWeightMeasure unitCode="KGM">430</NetNetWeightMeasure>
                     <TariffQuantity unitCode="PCS">1500</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
@@ -183,6 +199,10 @@
             <Origin>
                 <CountryCode>US</CountryCode>
             </Origin>
+            <Packaging>
+                <SequenceNumeric>2</SequenceNumeric>
+                <QuantityQuantity unitCode="CT">30</QuantityQuantity>
+            </Packaging>
         </GovernmentAgencyGoodsItem>
         <GovernmentAgencyGoodsItem>
             <Commodity>
@@ -200,7 +220,7 @@
                 </Classification>
                 <GoodsMeasure>
                     <GrossMassMeasure unitCode="KGM">1220</GrossMassMeasure>
-                    <NetNetWeightMeasure unitCode="KGM">1220</NetNetWeightMeasure>
+                    <NetNetWeightMeasure unitCode="KGM">1100</NetNetWeightMeasure>
                     <TariffQuantity unitCode="PCS">8</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
@@ -225,6 +245,10 @@
             <Origin>
                 <CountryCode>US</CountryCode>
             </Origin>
+            <Packaging>
+                <SequenceNumeric>3</SequenceNumeric>
+                <QuantityQuantity unitCode="CT">8</QuantityQuantity>
+            </Packaging>
         </GovernmentAgencyGoodsItem>
         <Importer>
             <Name>Paradise Liquors Ltd</Name>
@@ -235,6 +259,7 @@
             <IssueDateTime>
                 <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-06-27 20:00:00</DateTimeString>
             </IssueDateTime>
+            <TypeCode>FOB</TypeCode>
         </Invoice>
         <Supplier>
             <Name>Caribbean Spirits Export</Name>
@@ -242,6 +267,9 @@
                 <CountryCode>US</CountryCode>
             </Address>
         </Supplier>
+        <TradeTerms>
+            <LocationID>Port Everglades</LocationID>
+        </TradeTerms>
         <UCR>
             <TraderAssignedReferenceID>SHP-2026-00001</TraderAssignedReferenceID>
         </UCR>

@@ -11,7 +11,8 @@
  *                  AD_VALOREM: CIF × dutyRate
  *                  SPECIFIC:   quantity × specificRate   (alcohol, fuel, …)
  *                  COMPOUND:   greater of the two (per tariff notes)
- *   Excise     = CIF × exciseRate            (vehicles, tobacco, …)
+ *                  ADDITIVE:   ad valorem + specific (e.g. beer)
+ *   Excise     = independently AD_VALOREM / SPECIFIC / COMPOUND / ADDITIVE
  *   Env. levy  = CIF × levyRate
  *   VAT        = (CIF + duty + excise + levy) × vatRate
  *   Processing = 1% of shipment CIF, min $10, max $750 (shipment level),
@@ -32,7 +33,8 @@ import { apportion, type ApportionmentBasis } from './apportionment'
 
 // --- Types -------------------------------------------------------------------
 
-export type DutyBasisInput = 'AD_VALOREM' | 'SPECIFIC' | 'COMPOUND'
+export type ChargeBasisInput = 'NONE' | 'AD_VALOREM' | 'SPECIFIC' | 'COMPOUND' | 'ADDITIVE'
+export type DutyBasisInput = Exclude<ChargeBasisInput, 'NONE'>
 export type ExemptionInput = 'NONE' | 'FULL' | 'PARTIAL' | 'CONDITIONAL'
 
 export interface LineRates {
@@ -41,13 +43,20 @@ export interface LineRates {
   specificRate?: DecimalInput | null // BSD per unit
   vatRate: DecimalInput
   levyRate: DecimalInput
+  /** Defaults to AD_VALOREM for backward-compatible ordinary excise rates. */
+  exciseBasis?: ChargeBasisInput
   exciseRate: DecimalInput
+  exciseSpecificRate?: DecimalInput | null
 }
 
 export interface CalculationLineInput {
   id: string
-  totalValue: DecimalInput // line FOB
+  totalValue: DecimalInput // line FOB in invoice currency
+  /** BSD per one unit of invoice currency; defaults to 1. */
+  exchangeRate?: DecimalInput
   quantity: DecimalInput
+  dutyAssessmentQuantity?: DecimalInput | null
+  exciseAssessmentQuantity?: DecimalInput | null
   weightKg?: DecimalInput | null
   rates: LineRates
   exemptionType?: ExemptionInput
@@ -74,6 +83,7 @@ export interface LineCalculationResult {
   freightApportioned: Decimal
   insuranceApportioned: Decimal
   otherCostApportioned: Decimal
+  fobValue: Decimal
   cifValue: Decimal
   dutyAmount: Decimal
   vatAmount: Decimal
@@ -111,9 +121,15 @@ export function calculateShipment(
   const basis = options.apportionmentBasis ?? 'VALUE'
 
   // 1. Apportion each shipment-level charge across lines (exact-sum).
+  const fobById = new Map(
+    lines.map((line) => [
+      line.id,
+      toMoney(d(line.totalValue).times(d(line.exchangeRate ?? '1'))),
+    ]),
+  )
   const apportionable = lines.map((l) => ({
     id: l.id,
-    totalValue: l.totalValue,
+    totalValue: fobById.get(l.id) ?? ZERO,
     weightKg: l.weightKg,
   }))
   const freightShares = indexById(apportion(charges.freightCharge, apportionable, basis))
@@ -125,13 +141,13 @@ export function calculateShipment(
     const freight = freightShares.get(line.id) ?? ZERO
     const insurance = insuranceShares.get(line.id) ?? ZERO
     const other = otherShares.get(line.id) ?? ZERO
-    const fob = toMoney(line.totalValue)
+    const fob = fobById.get(line.id) ?? ZERO
     const cif = toMoney(fob.plus(freight).plus(insurance).plus(other))
 
     const exempt = line.exemptionType === 'FULL'
 
     const duty = exempt ? ZERO : calculateDuty(cif, line)
-    const excise = exempt ? ZERO : toMoney(cif.times(d(line.rates.exciseRate)))
+    const excise = exempt ? ZERO : calculateExcise(cif, line)
     const levy = exempt ? ZERO : toMoney(cif.times(d(line.rates.levyRate)))
     const vatBase = cif.plus(duty).plus(excise).plus(levy)
     const vat = toMoney(vatBase.times(d(line.rates.vatRate)))
@@ -141,6 +157,7 @@ export function calculateShipment(
       freightApportioned: freight,
       insuranceApportioned: insurance,
       otherCostApportioned: other,
+      fobValue: fob,
       cifValue: cif,
       dutyAmount: duty,
       vatAmount: vat,
@@ -151,7 +168,7 @@ export function calculateShipment(
   })
 
   // 3. Shipment roll-ups.
-  const totalFobValue = toMoney(sum(lines.map((l) => l.totalValue)))
+  const totalFobValue = toMoney(sum(lineResults.map((l) => l.fobValue)))
   const totalCifValue = toMoney(sum(lineResults.map((l) => l.cifValue)))
   const totalDuty = toMoney(sum(lineResults.map((l) => l.dutyAmount)))
   const totalLevy = toMoney(sum(lineResults.map((l) => l.levyAmount)))
@@ -184,19 +201,47 @@ export function calculateShipment(
 /** Duty for a single line according to its basis. */
 export function calculateDuty(cif: Decimal, line: CalculationLineInput): Decimal {
   const { dutyBasis, dutyRate, specificRate } = line.rates
-  const adValorem = toMoney(cif.times(d(dutyRate)))
-  const specific = toMoney(d(line.quantity).times(d(specificRate)))
+  return calculateCharge(
+    cif,
+    dutyBasis,
+    dutyRate,
+    specificRate,
+    line.dutyAssessmentQuantity ?? line.quantity,
+  )
+}
 
-  switch (dutyBasis) {
+/** Excise is its own charge domain; it must never borrow the duty basis. */
+export function calculateExcise(cif: Decimal, line: CalculationLineInput): Decimal {
+  return calculateCharge(
+    cif,
+    line.rates.exciseBasis ?? 'AD_VALOREM',
+    line.rates.exciseRate,
+    line.rates.exciseSpecificRate,
+    line.exciseAssessmentQuantity ?? line.quantity,
+  )
+}
+
+function calculateCharge(
+  cif: Decimal,
+  basis: ChargeBasisInput,
+  adValoremRate: DecimalInput,
+  specificRate: DecimalInput | null | undefined,
+  assessmentQuantity: DecimalInput,
+): Decimal {
+  const adValorem = toMoney(cif.times(d(adValoremRate)))
+  const specific = toMoney(d(assessmentQuantity).times(d(specificRate)))
+
+  switch (basis) {
+    case 'NONE':
+      return ZERO
     case 'AD_VALOREM':
       return adValorem
     case 'SPECIFIC':
       return specific
     case 'COMPOUND':
-      // Bahamian compound tariff lines apply the GREATER of the two.
       return Decimal.max(adValorem, specific)
-    default:
-      return adValorem
+    case 'ADDITIVE':
+      return toMoney(adValorem.plus(specific))
   }
 }
 

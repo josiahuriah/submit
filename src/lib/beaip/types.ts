@@ -1,9 +1,5 @@
 /**
- * BEAIP integration contracts.
- * One interface, two implementations (mock + production) selected by env —
- * the rest of the codebase never knows which one it's talking to.
- *
- * The declaration shape carries everything the TFP Single Window's
+ * Internal declaration contract carrying everything the TFP Single Window's
  * TFB_WCO_DEC v1.4.4 message needs (see docs/tfp-single-window-gap-analysis.md).
  * Serialization to the WCO XML document lives in wco-xml.ts.
  */
@@ -28,6 +24,10 @@ export interface BeaipInvoice {
   /** ISO datetime string, or null when the date is unknown. */
   invoiceDate: string | null
   currency: string
+  /** BSD per one unit of invoice currency. */
+  exchangeRate: string
+  incotermCode: string | null
+  incotermLocation: string | null
   subTotal: string
   supplier: BeaipParty
   /** Engine-apportioned shipment costs summed over this invoice's lines. */
@@ -43,6 +43,8 @@ export interface BeaipTransport {
   /** ISO datetime of arrival (voyage.arrivalDate). */
   arrivalDate: string | null
   containerNumber: string | null
+  containerSealNumber: string | null
+  containerFullnessCode: string | null
   manifestNumber: string | null
   /** UN/LOCODEs from the voyage's journey. */
   unloadingPortCode: string | null
@@ -50,6 +52,9 @@ export interface BeaipTransport {
   exitPortCode: string | null
   /** ISO alpha-2; origin port country, falling back to supplier country. */
   exportCountryCode: string | null
+  transportNationalityCode: string | null
+  goodsLocationCode: string | null
+  warehouseCode: string | null
 }
 
 export interface BeaipDeclarationLine {
@@ -65,6 +70,9 @@ export interface BeaipDeclarationLine {
   quantity: string
   unit: string
   weightKg: string | null
+  netWeightKg: string | null
+  packageCount: number | null
+  packageTypeCode: string | null
   /** Line FOB in the invoice currency (Commodity/ValueAmount). */
   totalValue: string
   currency: string
@@ -77,6 +85,10 @@ export interface BeaipDeclarationLine {
   vatAmount: string
   levyAmount: string
   exciseAmount: string
+  dutyAssessmentQuantity: string | null
+  dutyAssessmentUnit: string | null
+  exciseAssessmentQuantity: string | null
+  exciseAssessmentUnit: string | null
 }
 
 export interface BeaipDeclaration {
@@ -86,6 +98,10 @@ export interface BeaipDeclaration {
    * Regime worksheet arrives; the spec's sample uses "4".
    */
   regimeCode: string
+  /** EDIFACT 1225: 9 original, 5 amendment, 1 cancellation. */
+  functionCode: '9' | '5' | '1'
+  /** ISO date used for rate selection and artifact provenance. */
+  declarationDate: string
   /** FunctionalReferenceID — sender's unique reference (our shipment number). */
   functionalReferenceId: string
   brokerReference: string // our shipment number
@@ -111,28 +127,4 @@ export interface BeaipDeclaration {
   processingFee: string
   totalPayable: string
   lines: BeaipDeclarationLine[]
-}
-
-export interface BeaipSubmissionResult {
-  success: boolean
-  /** Reference number assigned by BEAIP (e.g. entry registration number). */
-  beaipReference: string | null
-  entryNumber: string | null
-  status: 'ACCEPTED' | 'REJECTED'
-  message: string
-  /** The exact payload we sent — persisted for the audit trail. */
-  requestPayload: unknown
-  /** The exact response we received. */
-  responsePayload: unknown
-}
-
-export interface BeaipClient {
-  readonly mode: 'mock' | 'production'
-  submitDeclaration(declaration: BeaipDeclaration): Promise<BeaipSubmissionResult>
-  /** Query the status of a previously submitted declaration. */
-  getDeclarationStatus(beaipReference: string): Promise<{
-    status: string
-    message: string
-    responsePayload: unknown
-  }>
 }

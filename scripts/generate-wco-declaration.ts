@@ -20,6 +20,7 @@ import path from 'node:path'
 import { basePrisma } from '../src/lib/db/prisma'
 import { createTenantClient } from '../src/lib/db/tenant-client'
 import { buildWcoDeclarationXml } from '../src/lib/beaip'
+import { preflightTfpDeclaration } from '../src/lib/beaip/tfp-field-mapping'
 import {
   loadDeclarationSource,
   toBeaipDeclaration,
@@ -62,6 +63,14 @@ async function main() {
   }
 
   const declaration = toBeaipDeclaration(source, 'C13')
+  const preflight = preflightTfpDeclaration(declaration)
+  if (!preflight.ready) {
+    const blockers = preflight.issues
+      .filter((issue) => issue.severity === 'BLOCKER')
+      .map((issue) => `${issue.field}: ${issue.message}`)
+      .join('\n  ')
+    throw new Error(`Declaration failed TFP preflight:\n  ${blockers}`)
+  }
   const xml = buildWcoDeclarationXml(declaration)
 
   const outDir = path.join(process.cwd(), 'docs', 'tfp', 'generated')
@@ -71,8 +80,10 @@ async function main() {
   console.log(`✓ wrote ${path.relative(process.cwd(), outPath)}`)
   console.log(
     `  ${declaration.lines.length} goods item(s), ${declaration.invoices.length} invoice(s), ` +
-      `office ${declaration.customsOfficeCode}, regime ${declaration.regimeCode} (placeholder)`,
+      `office ${declaration.customsOfficeCode}, regime ${declaration.regimeCode} (provisional code master)`,
   )
+  const warnings = preflight.issues.filter((issue) => issue.severity === 'WARNING')
+  console.log(`  ${warnings.length} code-master warning(s) recorded for Customs review`)
 
   const result = validateWcoXml(outPath)
   if (result.ok) {

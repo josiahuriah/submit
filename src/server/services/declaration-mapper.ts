@@ -1,13 +1,12 @@
 /**
- * Shipment → BeaipDeclaration mapping, shared by the declarations service
- * (submit path) and scripts/generate-wco-declaration.ts (the TFP sample-file
- * gate). One select, one mapper — the wire payload can never drift from what
- * the submit path sends.
+ * Shipment → BeaipDeclaration mapping shared by the review-artifact service
+ * and the TFP generator script. One select, one mapper keeps CLI and UI XML
+ * generation aligned.
  *
  * Placeholders pending government worksheets (labeled here, nowhere else):
- *   - regimeCode "4"  — TTFB_SYS_REGIME withheld; the spec's sample uses 4.
- *   - submitterId     — needs the broker's Company Registration Number; falls
- *     back to Organization.licenseNumber, then tinNumber, then "CRN-PENDING".
+ *   - regimeCode "4" remains the schema default pending TTFB_SYS_REGIME.
+ *   - submitterId is ONLY Organization.companyRegistrationNumber. The XML
+ *     preflight blocks an empty value; TIN and broker licence are not aliases.
  */
 import type { TenantClient } from '@/lib/db/tenant-client'
 import type { BeaipDeclaration, BeaipInvoice, BeaipParty } from '@/lib/beaip'
@@ -15,18 +14,25 @@ import { moneyString, sum } from '@/lib/calculations/money'
 import type { DeclarationType } from '@/generated/prisma/enums'
 
 /** PLACEHOLDER: Regime code (wire TypeCode) until TTFB_SYS_REGIME arrives. */
-export const REGIME_CODE_PLACEHOLDER = '4'
-
 export const DECLARATION_SOURCE_SELECT = {
   id: true,
   shipmentNumber: true,
   status: true,
   blNumber: true,
   containerNumber: true,
+  containerSealNumber: true,
+  containerFullnessCode: true,
   packageCount: true,
   packageType: true,
   transportMode: true,
   grossWeightKg: true,
+  netWeightKg: true,
+  declarationDate: true,
+  declarationFunctionCode: true,
+  regimeCode: true,
+  goodsLocationCode: true,
+  warehouseCode: true,
+  transportNationalityCode: true,
   calculatedAt: true,
   updatedAt: true,
   totalCifValue: true,
@@ -36,8 +42,19 @@ export const DECLARATION_SOURCE_SELECT = {
   totalExcise: true,
   processingFee: true,
   totalPayable: true,
-  organization: { select: { name: true, tinNumber: true, licenseNumber: true } },
-  client: { select: { name: true, tinNumber: true, address: true } },
+  organization: {
+    select: { name: true, tinNumber: true, companyRegistrationNumber: true },
+  },
+  client: {
+    select: {
+      name: true,
+      tinNumber: true,
+      address: true,
+      city: true,
+      countryCode: true,
+      postcode: true,
+    },
+  },
   declarationOffice: { select: { code: true } },
   manifest: {
     select: {
@@ -61,8 +78,13 @@ export const DECLARATION_SOURCE_SELECT = {
       invoiceNumber: true,
       invoiceDate: true,
       currency: true,
+      exchangeRate: true,
+      incotermCode: true,
+      incotermLocation: true,
       subTotal: true,
-      supplier: { select: { name: true, country: true, address: true } },
+      supplier: {
+        select: { name: true, country: true, address: true, city: true, postcode: true },
+      },
       lineItems: {
         select: {
           lineNumber: true,
@@ -74,6 +96,9 @@ export const DECLARATION_SOURCE_SELECT = {
           quantity: true,
           unit: true,
           weightKg: true,
+          netWeightKg: true,
+          packageCount: true,
+          packageTypeCode: true,
           totalValue: true,
           freightApportioned: true,
           insuranceApportioned: true,
@@ -83,6 +108,10 @@ export const DECLARATION_SOURCE_SELECT = {
           vatAmount: true,
           levyAmount: true,
           exciseAmount: true,
+          dutyAssessmentQuantity: true,
+          specificRateUnit: true,
+          exciseAssessmentQuantity: true,
+          exciseSpecificRateUnit: true,
         },
         orderBy: { lineNumber: 'asc' },
       },
@@ -119,7 +148,15 @@ export function toBeaipDeclaration(
     name: shipment.client.name,
     id: shipment.client.tinNumber,
     address: shipment.client.address
-      ? { cityName: null, countryCode: null, line: shipment.client.address, postcode: null }
+      || shipment.client.city
+      || shipment.client.countryCode
+      || shipment.client.postcode
+      ? {
+          cityName: shipment.client.city,
+          countryCode: shipment.client.countryCode,
+          line: shipment.client.address,
+          postcode: shipment.client.postcode,
+        }
       : null,
   }
 
@@ -127,16 +164,19 @@ export function toBeaipDeclaration(
     invoiceNumber: inv.invoiceNumber,
     invoiceDate: inv.invoiceDate?.toISOString() ?? null,
     currency: inv.currency,
+    exchangeRate: String(inv.exchangeRate),
+    incotermCode: inv.incotermCode,
+    incotermLocation: inv.incotermLocation,
     subTotal: moneyString(String(inv.subTotal)),
     supplier: {
       name: inv.supplier.name,
       id: null,
-      address: inv.supplier.address
+      address: inv.supplier.address || inv.supplier.city || inv.supplier.country || inv.supplier.postcode
         ? {
-            cityName: null,
+            cityName: inv.supplier.city,
             countryCode: inv.supplier.country,
             line: inv.supplier.address,
-            postcode: null,
+            postcode: inv.supplier.postcode,
           }
         : inv.supplier.country
           ? { cityName: null, countryCode: inv.supplier.country, line: null, postcode: null }
@@ -165,6 +205,9 @@ export function toBeaipDeclaration(
       quantity: String(l.quantity),
       unit: l.unit,
       weightKg: l.weightKg === null ? null : String(l.weightKg),
+      netWeightKg: l.netWeightKg === null ? null : String(l.netWeightKg),
+      packageCount: l.packageCount,
+      packageTypeCode: l.packageTypeCode,
       totalValue: moneyString(String(l.totalValue)),
       currency: inv.currency,
       freightApportioned: moneyString(String(l.freightApportioned)),
@@ -175,16 +218,24 @@ export function toBeaipDeclaration(
       vatAmount: moneyString(String(l.vatAmount)),
       levyAmount: moneyString(String(l.levyAmount)),
       exciseAmount: moneyString(String(l.exciseAmount)),
+      dutyAssessmentQuantity:
+        l.dutyAssessmentQuantity === null ? null : String(l.dutyAssessmentQuantity),
+      dutyAssessmentUnit: l.specificRateUnit,
+      exciseAssessmentQuantity:
+        l.exciseAssessmentQuantity === null ? null : String(l.exciseAssessmentQuantity),
+      exciseAssessmentUnit: l.exciseSpecificRateUnit,
     })),
   )
 
   return {
     declarationType,
-    regimeCode: REGIME_CODE_PLACEHOLDER,
+    regimeCode: shipment.regimeCode,
+    functionCode: shipment.declarationFunctionCode as '9' | '5' | '1',
+    declarationDate: shipment.declarationDate.toISOString(),
     functionalReferenceId: shipment.shipmentNumber,
     brokerReference: shipment.shipmentNumber,
     customsOfficeCode: shipment.declarationOffice.code,
-    submitterId: org.licenseNumber ?? org.tinNumber ?? 'CRN-PENDING',
+    submitterId: org.companyRegistrationNumber ?? '',
     declarant,
     importer,
     consignee: importer,
@@ -197,11 +248,16 @@ export function toBeaipDeclaration(
       transportMode: shipment.transportMode,
       arrivalDate: voyage?.arrivalDate?.toISOString() ?? null,
       containerNumber: shipment.containerNumber,
+      containerSealNumber: shipment.containerSealNumber,
+      containerFullnessCode: shipment.containerFullnessCode,
       manifestNumber: shipment.manifest?.manifestNumber ?? null,
       unloadingPortCode: journey?.destinationPort.unLocode ?? null,
       entryPortCode: journey?.destinationPort.unLocode ?? null,
       exitPortCode: journey?.originPort.unLocode ?? null,
       exportCountryCode: journey?.originPort.country ?? firstSupplierCountry,
+      transportNationalityCode: shipment.transportNationalityCode,
+      goodsLocationCode: shipment.goodsLocationCode,
+      warehouseCode: shipment.warehouseCode,
     },
     invoices,
     totalCifValue: moneyString(String(shipment.totalCifValue)),

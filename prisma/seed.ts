@@ -110,16 +110,74 @@ interface SeedHsCode {
   sectionName?: string
   requiresPermit?: boolean
   permitType?: string
-  rate: {
-    dutyBasis?: 'AD_VALOREM' | 'SPECIFIC' | 'COMPOUND'
+  rate: SeedRate
+  rateHistory?: SeedRate[]
+}
+
+interface SeedRate {
+    dutyBasis?: 'AD_VALOREM' | 'SPECIFIC' | 'COMPOUND' | 'ADDITIVE'
     dutyRate?: string
     specificRate?: string
     specificRateUnit?: string
     vatRate?: string
     levyRate?: string
+    exciseBasis?: 'NONE' | 'AD_VALOREM' | 'SPECIFIC' | 'COMPOUND' | 'ADDITIVE'
     exciseRate?: string
-  }
+    exciseSpecificRate?: string
+    exciseSpecificRateUnit?: string
+    effectiveFrom?: Date
+    effectiveTo?: Date | null
+    changeReason?: string
+    gazetteRef?: string
+    sourceName?: string
+    sourceUrl?: string
+    sourcePage?: string
+    isVerified?: boolean
 }
+
+const EXCISE_2023 = {
+  effectiveFrom: new Date('2023-07-01T00:00:00Z'),
+  effectiveTo: new Date('2025-07-01T00:00:00Z'),
+  changeReason: 'Excise Act, 2023 — historical alcohol rate',
+  gazetteRef: 'No. 28 of 2023',
+  sourceName: 'Excise Act, 2023',
+  sourceUrl:
+    'https://laws.bahamas.gov.bs/cms/images/LEGISLATION/PRINCIPAL/2023/2023-0028/2023-0028.pdf',
+  isVerified: true,
+} as const
+
+const EXCISE_2025 = {
+  effectiveFrom: new Date('2025-07-01T00:00:00Z'),
+  effectiveTo: null,
+  changeReason: 'Excise (Amendment) Act, 2025 — alcohol rate and unit change',
+  gazetteRef: 'No. 42 of 2025',
+  sourceName: 'Excise (Amendment) Act, 2025',
+  sourceUrl:
+    'https://laws.bahamas.gov.bs/cms/images/LEGISLATION/AMENDING/2025/2025-0042A/2025-0042A.pdf',
+  sourcePage: '2',
+  isVerified: true,
+} as const
+
+const EXCISE_AD_VALOREM_2023 = {
+  effectiveFrom: new Date('2023-07-01T00:00:00Z'),
+  effectiveTo: null,
+  changeReason: 'Excise Act, 2023 — ad-valorem beverage rate',
+  gazetteRef: 'No. 28 of 2023',
+  sourceName: 'Excise Act, 2023',
+  sourceUrl:
+    'https://laws.bahamas.gov.bs/cms/images/LEGISLATION/PRINCIPAL/2023/2023-0028/2023-0028.pdf',
+  sourcePage: '12-13',
+  isVerified: true,
+} as const
+
+const TARIFF_2023 = {
+  effectiveFrom: new Date('2023-07-01T00:00:00Z'),
+  effectiveTo: null,
+  sourceName: '2023 Bahamas Tariff Schedule',
+  sourcePage: '173',
+  gazetteRef: 'Tariff Act, 2023',
+  isVerified: true,
+} as const
 
 const HS_SUBSET: SeedHsCode[] = [
   // Ch. 02–21 — foodstuffs
@@ -130,13 +188,54 @@ const HS_SUBSET: SeedHsCode[] = [
   { code: '1905.31.00', description: 'Sweet biscuits', unit: 'KG', chapterName: 'Preparations of cereals', rate: { dutyRate: '0.10' } },
   { code: '2009.11.00', description: 'Orange juice, frozen', unit: 'L', chapterName: 'Beverages, juices', rate: { dutyRate: '0.30' } },
 
-  // Ch. 22 — alcohol: SPECIFIC and COMPOUND duty bases (the differentiator)
-  { code: '2203.00.10', description: 'Beer made from malt, in bottles or cans', unit: 'L', chapterName: 'Beverages, spirits and vinegar', rate: { dutyBasis: 'SPECIFIC', specificRate: '2.00', specificRateUnit: 'L', dutyRate: '0' } },
-  { code: '2204.10.00', description: 'Sparkling wine', unit: 'L', chapterName: 'Beverages, spirits and vinegar', rate: { dutyBasis: 'SPECIFIC', specificRate: '5.00', specificRateUnit: 'L', dutyRate: '0' } },
-  { code: '2204.21.00', description: 'Wine of fresh grapes, in containers ≤ 2L', unit: 'L', chapterName: 'Beverages, spirits and vinegar', rate: { dutyBasis: 'SPECIFIC', specificRate: '3.00', specificRateUnit: 'L', dutyRate: '0' } },
-  { code: '2208.30.00', description: 'Whiskies', unit: 'L', chapterName: 'Beverages, spirits and vinegar', rate: { dutyBasis: 'SPECIFIC', specificRate: '12.00', specificRateUnit: 'L', dutyRate: '0' } },
-  { code: '2208.40.00', description: 'Rum and other spirits from sugar-cane products', unit: 'L', chapterName: 'Beverages, spirits and vinegar', rate: { dutyBasis: 'SPECIFIC', specificRate: '10.00', specificRateUnit: 'L', dutyRate: '0' } },
-  { code: '2208.60.00', description: 'Vodka', unit: 'L', chapterName: 'Beverages, spirits and vinegar', rate: { dutyBasis: 'SPECIFIC', specificRate: '12.00', specificRateUnit: 'L', dutyRate: '0' } },
+  // Ch. 22 — tariff/excise rules verified against the supplied tariff, Customs
+  // calculation deck, Excise Act 2023, and the amendment effective 2025-07-01.
+  // Beer is ADDITIVE: 10% of CIF + BSD 10 per imperial gallon.
+  { code: '2203.00.10', description: 'Ale', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...TARIFF_2023, dutyBasis: 'ADDITIVE', dutyRate: '0.10', specificRate: '10.00', specificRateUnit: 'IMP_GAL' } },
+  { code: '2203.00.20', description: 'Porter', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...TARIFF_2023, dutyBasis: 'ADDITIVE', dutyRate: '0.10', specificRate: '10.00', specificRateUnit: 'IMP_GAL' } },
+  { code: '2203.00.30', description: 'Stout', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...TARIFF_2023, dutyBasis: 'ADDITIVE', dutyRate: '0.10', specificRate: '10.00', specificRateUnit: 'IMP_GAL' } },
+  { code: '2203.00.90', description: 'Other beers', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...TARIFF_2023, dutyBasis: 'ADDITIVE', dutyRate: '0.10', specificRate: '10.00', specificRateUnit: 'IMP_GAL' } },
+
+  // Wine remains free of general customs duty but carries ad-valorem excise.
+  { code: '2204.10.00', description: 'Sparkling wine', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...EXCISE_AD_VALOREM_2023, dutyRate: '0', exciseBasis: 'AD_VALOREM', exciseRate: '0.50' } },
+  { code: '2204.21.10', description: 'Wine-based coolers, containers not over 2L', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...EXCISE_AD_VALOREM_2023, dutyRate: '0', exciseBasis: 'AD_VALOREM', exciseRate: '0.35' } },
+  { code: '2204.21.90', description: 'Other wine, containers not over 2L', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...EXCISE_AD_VALOREM_2023, dutyRate: '0', exciseBasis: 'AD_VALOREM', exciseRate: '0.50' } },
+  { code: '2204.22.00', description: 'Wine, containers over 2L but not over 10L', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...EXCISE_AD_VALOREM_2023, dutyRate: '0', exciseBasis: 'AD_VALOREM', exciseRate: '0.50' } },
+  { code: '2204.29.00', description: 'Other wine', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...EXCISE_AD_VALOREM_2023, dutyRate: '0', exciseBasis: 'AD_VALOREM', exciseRate: '0.50' } },
+  { code: '2204.30.00', description: 'Other grape must', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...EXCISE_AD_VALOREM_2023, dutyRate: '0', exciseBasis: 'AD_VALOREM', exciseRate: '0.35' } },
+
+  // Brandy, whisky, rum, gin and vodka changed from $15/proof gallon to
+  // $13/imperial gallon on 2025-07-01. Both versions remain for auditability.
+  ...[
+    ['2208.20.10', 'Brandy, bottles not exceeding 46% vol.'],
+    ['2208.20.90', 'Other grape spirits'],
+    ['2208.30.10', 'Whisky, bottles not exceeding 46% vol.'],
+    ['2208.30.90', 'Other whisky'],
+    ['2208.40.10', 'Rum, bottles not exceeding 46% vol.'],
+    ['2208.40.90', 'Other rum and sugar-cane spirits'],
+    ['2208.50.10', 'Gin, bottles not exceeding 46% vol.'],
+    ['2208.50.90', 'Other gin and Geneva'],
+    ['2208.60.00', 'Vodka'],
+  ].map(([code, description]) => ({
+    code,
+    description,
+    unit: 'IMP_GAL',
+    chapterName: 'Beverages, spirits and vinegar',
+    rate: { ...EXCISE_2025, dutyRate: '0', exciseBasis: 'SPECIFIC' as const, exciseSpecificRate: '13.00', exciseSpecificRateUnit: 'IMP_GAL' },
+    rateHistory: [{ ...EXCISE_2023, dutyRate: '0', exciseBasis: 'SPECIFIC' as const, exciseSpecificRate: '15.00', exciseSpecificRateUnit: 'PROOF_GAL', sourcePage: '12-13' }],
+  })),
+  ...[
+    ['2208.70.00', 'Liqueurs and cordials'],
+    ['2208.90.90', 'Other spirituous beverages'],
+  ].map(([code, description]) => ({
+    code,
+    description,
+    unit: 'IMP_GAL',
+    chapterName: 'Beverages, spirits and vinegar',
+    rate: { ...EXCISE_2025, dutyRate: '0', exciseBasis: 'SPECIFIC' as const, exciseSpecificRate: '13.00', exciseSpecificRateUnit: 'IMP_GAL' },
+    rateHistory: [{ ...EXCISE_2023, dutyRate: '0', exciseBasis: 'SPECIFIC' as const, exciseSpecificRate: '15.00', exciseSpecificRateUnit: 'IMP_GAL', sourcePage: '13' }],
+  })),
+  { code: '2208.90.10', description: 'Spirits-based coolers', unit: 'IMP_GAL', chapterName: 'Beverages, spirits and vinegar', rate: { ...EXCISE_AD_VALOREM_2023, dutyRate: '0', exciseBasis: 'AD_VALOREM', exciseRate: '0.35', sourcePage: '13' } },
 
   // Ch. 24 — tobacco (compound example)
   { code: '2402.20.00', description: 'Cigarettes containing tobacco', unit: 'KG', chapterName: 'Tobacco', rate: { dutyBasis: 'COMPOUND', dutyRate: '2.20', specificRate: '260.00', specificRateUnit: 'KG', exciseRate: '0' } },
@@ -192,8 +291,6 @@ const HS_SUBSET: SeedHsCode[] = [
   { code: '9302.00.00', description: 'Revolvers and pistols', unit: 'PCS', chapterName: 'Arms and ammunition', requiresPermit: true, permitType: 'Royal Bahamas Police Force', rate: { dutyRate: '0.45' } },
 ]
 
-const RATE_EFFECTIVE_FROM = TARIFF_EDITION.effectiveFrom
-
 async function seedHsCode(entry: SeedHsCode) {
   const [chapterPart] = entry.code.split('.')
   const chapter = chapterPart!.slice(0, 2)
@@ -220,28 +317,43 @@ async function seedHsCode(entry: SeedHsCode) {
     },
   })
 
-  // One current rate per code: close nothing, upsert on (hsCodeId, effectiveFrom).
+  for (const historical of entry.rateHistory ?? []) {
+    await seedHsRate(hsCode.id, historical)
+  }
+  await seedHsRate(hsCode.id, entry.rate)
+}
+
+async function seedHsRate(hsCodeId: string, rate: SeedRate) {
+  const effectiveFrom = rate.effectiveFrom ?? TARIFF_EDITION.effectiveFrom
   const existing = await prisma.hSCodeRate.findFirst({
-    where: { hsCodeId: hsCode.id, effectiveFrom: RATE_EFFECTIVE_FROM },
+    where: { hsCodeId, effectiveFrom },
   })
   const rateData = {
-    dutyBasis: entry.rate.dutyBasis ?? 'AD_VALOREM',
-    dutyRate: entry.rate.dutyRate ?? '0',
-    specificRate: entry.rate.specificRate ?? null,
-    specificRateUnit: entry.rate.specificRateUnit ?? null,
-    vatRate: entry.rate.vatRate ?? '0.10',
-    levyRate: entry.rate.levyRate ?? '0',
-    exciseRate: entry.rate.exciseRate ?? '0',
+    dutyBasis: rate.dutyBasis ?? 'AD_VALOREM',
+    dutyRate: rate.dutyRate ?? '0',
+    specificRate: rate.specificRate ?? null,
+    specificRateUnit: rate.specificRateUnit ?? null,
+    vatRate: rate.vatRate ?? '0.10',
+    levyRate: rate.levyRate ?? '0',
+    exciseBasis: rate.exciseBasis ?? 'NONE',
+    exciseRate: rate.exciseRate ?? '0',
+    exciseSpecificRate: rate.exciseSpecificRate ?? null,
+    exciseSpecificRateUnit: rate.exciseSpecificRateUnit ?? null,
+    effectiveTo: rate.effectiveTo ?? null,
+    changeReason: rate.changeReason ?? TARIFF_EDITION.changeReason,
+    gazetteRef: rate.gazetteRef ?? null,
+    sourceName: rate.sourceName ?? TARIFF_EDITION.name,
+    sourceUrl: rate.sourceUrl ?? null,
+    sourcePage: rate.sourcePage ?? null,
+    isVerified: rate.isVerified ?? false,
   } as const
   if (existing) {
     await prisma.hSCodeRate.update({ where: { id: existing.id }, data: rateData })
   } else {
     await prisma.hSCodeRate.create({
       data: {
-        hsCodeId: hsCode.id,
-        effectiveFrom: RATE_EFFECTIVE_FROM,
-        effectiveTo: null,
-        changeReason: TARIFF_EDITION.changeReason,
+        hsCodeId,
+        effectiveFrom,
         ...rateData,
       },
     })
@@ -292,7 +404,15 @@ async function main() {
   // calculation engine is most sensitive to, and the extraction cannot
   // supply them. The full file then fills in everything else around them.
   for (const entry of HS_SUBSET) await seedHsCode(entry)
-  console.log(`  ✓ ${HS_SUBSET.length} curated HS codes (verified rates)`)
+  console.log(`  ✓ ${new Set(HS_SUBSET.map((entry) => entry.code)).size} curated HS codes/rate histories`)
+
+  // Older demo-only broad codes were never real national tariff lines. Keep
+  // historical rows intact but remove them from search and active calculation.
+  const legacyIncorrectCodes = ['2204.21.00', '2208.30.00', '2208.40.00']
+  await prisma.hSCode.updateMany({
+    where: { code: { in: legacyIncorrectCodes } },
+    data: { isActive: false },
+  })
 
   const fullFile = path.join(__dirname, 'data', 'hs-codes.json')
   if (!existsSync(fullFile)) {

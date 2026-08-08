@@ -56,6 +56,9 @@ export const clientCreateSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().max(30).optional(),
   address: z.string().max(400).optional(),
+  city: z.string().max(100).optional(),
+  countryCode: z.string().length(2).toUpperCase().optional(),
+  postcode: z.string().max(20).optional(),
   contactPerson: z.string().max(120).optional(),
   notes: z.string().max(2000).optional(),
 })
@@ -69,6 +72,8 @@ export const supplierCreateSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().max(30).optional(),
   address: z.string().max(400).optional(),
+  city: z.string().max(100).optional(),
+  postcode: z.string().max(20).optional(),
 })
 export const supplierUpdateSchema = supplierCreateSchema.partial().extend({
   isActive: z.boolean().optional(),
@@ -102,8 +107,17 @@ export const shipmentCreateSchema = z.object({
   transportMode: z.enum(['SEA', 'AIR', 'LAND']).default('SEA'),
   blNumber: z.string().max(60).optional(),
   containerNumber: z.string().max(20).optional(),
+  containerSealNumber: z.string().max(35).optional(),
+  containerFullnessCode: z.string().max(10).optional(),
+  declarationDate: z.coerce.date().optional(),
+  declarationFunctionCode: z.enum(['9', '5', '1']).default('9'),
+  regimeCode: z.string().min(1).max(17).default('4'),
+  goodsLocationCode: z.string().max(35).optional(),
+  warehouseCode: z.string().max(35).optional(),
+  transportNationalityCode: z.string().length(2).toUpperCase().optional(),
   description: z.string().max(1000).optional(),
   grossWeightKg: quantity.optional(),
+  netWeightKg: quantity.optional(),
   freightCharge: moneyOptional,
   insuranceCharge: moneyOptional,
   otherCharges: moneyOptional,
@@ -125,7 +139,13 @@ export const invoiceCreateSchema = z.object({
   supplierId: id,
   invoiceNumber: z.string().min(1).max(60),
   invoiceDate: z.coerce.date(),
-  currency: z.literal('BSD').default('BSD'),
+  currency: z.string().regex(/^[A-Z]{3}$/, 'ISO 4217 currency code').default('BSD'),
+  exchangeRate: z
+    .string()
+    .regex(/^\d{1,10}(\.\d{1,8})?$/, 'Invalid BSD exchange rate')
+    .default('1'),
+  incotermCode: z.string().max(10).toUpperCase().optional(),
+  incotermLocation: z.string().max(100).optional(),
   subTotal: moneyOptional,
 })
 export const invoiceUpdateSchema = invoiceCreateSchema.partial().omit({ shipmentId: true })
@@ -133,10 +153,12 @@ export const invoiceUpdateSchema = invoiceCreateSchema.partial().omit({ shipment
 export const lineItemCreateSchema = z.object({
   invoiceId: id,
   hsCodeId: id.optional(),
-  hsCode: z.string().min(4).max(15), // denormalized code string, e.g. "2208.40.10"
+  hsCode: z
+    .string()
+    .regex(/^\d{4}\.\d{2}\.\d{2}$/, 'Use the full tariff format 0000.00.00'),
   // Customs Procedure Code, e.g. "4000". Shape-checked only: no authoritative
   // CPC list is encoded, so an unknown-but-well-formed code is accepted and
-  // surfaces at submission rather than being rejected at entry.
+  // surfaces during Customs review rather than being rejected at entry.
   cpcCode: z.string().regex(/^[0-9A-Z-]{3,10}$/, 'Invalid CPC code').default('4000'),
   description: z.string().min(1).max(500),
   commercialDescription: z.string().max(200).optional(),
@@ -146,20 +168,51 @@ export const lineItemCreateSchema = z.object({
   unitPrice: z.string().regex(/^\d{1,13}(\.\d{1,4})?$/, 'Invalid unit price'),
   totalValue: money,
   weightKg: quantity.optional(),
+  netWeightKg: quantity.optional(),
   countryOfOrigin: z.string().length(2).toUpperCase().optional(),
+  packageCount: z.coerce.number().int().positive().optional(),
+  packageTypeCode: z.string().max(10).optional(),
+  unitsPerPackage: z.coerce.number().int().positive().optional(),
+  unitVolume: quantity.optional(),
+  volumeUnit: z.enum(['ML', 'CL', 'L', 'US_FL_OZ', 'IMP_FL_OZ', 'IMP_GAL']).optional(),
+  alcoholStrength: z
+    .string()
+    .regex(/^\d{1,3}(\.\d{1,3})?$/, 'Invalid alcohol strength')
+    .optional(),
+  alcoholStrengthBasis: z.enum(['ABV_PERCENT', 'US_PROOF']).optional(),
   exemptionType: z.enum(['NONE', 'FULL', 'PARTIAL', 'CONDITIONAL']).default('NONE'),
   exemptionRef: z.string().max(60).optional(),
 })
 export const lineItemUpdateSchema = lineItemCreateSchema.partial().omit({ invoiceId: true })
 
-// --- calculation / submission ----------------------------------------------------------------
+// --- calculation / review artifact ------------------------------------------------------------
 
 export const calculateOptionsSchema = z.object({
   apportionmentBasis: z.enum(['VALUE', 'WEIGHT']).default('VALUE'),
 })
 
-export const submitDeclarationSchema = z.object({
+export const declarationArtifactSchema = z.object({
   declarationType: z.enum(['C13', 'C14', 'C17', 'C18', 'OTHER']).default('C13'),
+  functionCode: z.enum(['9', '5', '1']).optional(),
+})
+
+const optionalQuantityField = z.union([quantity, z.literal('')])
+export const declarationProfileUpdateSchema = z.object({
+  companyRegistrationNumber: z.string().max(60),
+  declarationDate: z.coerce.date(),
+  declarationFunctionCode: z.enum(['9', '5', '1']),
+  regimeCode: z.string().min(1).max(17),
+  goodsLocationCode: z.string().max(35),
+  warehouseCode: z.string().max(35),
+  transportNationalityCode: z.union([z.string().length(2).toUpperCase(), z.literal('')]),
+  blNumber: z.string().max(60),
+  containerNumber: z.string().max(20),
+  containerSealNumber: z.string().max(35),
+  containerFullnessCode: z.string().max(10),
+  packageCount: z.coerce.number().int().positive(),
+  packageType: z.enum(['CONTAINER', 'PALLET', 'CARTON', 'CRATE', 'DRUM', 'BUNDLE', 'LOOSE', 'VEHICLE', 'OTHER']),
+  grossWeightKg: optionalQuantityField,
+  netWeightKg: optionalQuantityField,
 })
 
 // --- billing --------------------------------------------------------------------------------

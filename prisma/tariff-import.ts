@@ -21,8 +21,8 @@
  * THE FOUR TRANSFORM DECISIONS (owner-approved 2026-07-28)
  *
  * 1. CODE FORMAT — the extraction writes `2208.3000`; this system (and the
- *    BEAIP submission validator in src/lib/beaip/mock-client.ts, which enforces
- *    ^\d{4}\.\d{2}(\.\d{2})?$) requires `2208.30.00`. Every raw code is
+ *    internal declaration and XML preflight contract, which enforces the full
+ *    dotted national code) requires `2208.30.00`. Every raw code is
  *    xxxx.dddd, so the split is mechanical. WITHOUT this, all 1,544 codes would
  *    be rejected at filing time rather than at entry.
  *
@@ -35,7 +35,7 @@
  *
  * 3. CURATED LINES ARE NEVER OVERWRITTEN — seed.ts's HS_SUBSET carries
  *    hand-verified SPECIFIC and COMPOUND rates for alcohol, tobacco, fuel and
- *    vehicles (e.g. vodka at $12.00/L, cigarettes compound). The extraction has
+ *    vehicles (e.g. spirits with effective-dated excise, cigarettes compound). The extraction has
  *    dutyRate 0 and no excise for those same lines, so importing them would
  *    zero out the duty on exactly the goods this product calculates most
  *    carefully. isCurated() guards them; skipped codes are reported.

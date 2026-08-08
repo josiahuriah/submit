@@ -1,16 +1,16 @@
 /**
  * End-to-end smoke: exercises the real services against seeded data.
- *   1. calculate SHP-2026-00001 (rum SPECIFIC + t-shirts AD_VALOREM + fridge w/ levy)
+ *   1. calculate SHP-2026-00001 (rum excise + t-shirts ad valorem + fridge levy)
  *   2. verify duty math spot checks
- *   3. submit via mock BEAIP
- *   4. confirm CustomsEntry recorded and shipment flipped to SUBMITTED
- * Then resets the shipment back to DRAFT so the script is re-runnable.
+ *   3. generate the Customs-reviewable TFP XML artifact
+ *   4. confirm the artifact is recorded without submitting/changing status
  */
 import 'dotenv/config'
 import { basePrisma } from '../src/lib/db/prisma'
 import { createTenantClient } from '../src/lib/db/tenant-client'
 import { calculationsService } from '../src/server/services/calculations.service'
-import { declarationsService } from '../src/server/services/declarations.service'
+import { declarationArtifactsService } from '../src/server/services/declaration-artifacts.service'
+import { d } from '../src/lib/calculations/money'
 
 async function main() {
   const org = await basePrisma.organization.findUniqueOrThrow({ where: { slug: 'bahama-brokerage' } })
@@ -38,35 +38,35 @@ async function main() {
   console.table(calc.totals)
 
   // Spot checks:
-  // Line 1 rum — 600 L × $10/L specific duty = $6,000 duty regardless of value.
+  // Line 1 rum — 600 L × 0.22 = 132 imperial gallons × $13 current excise.
   const rumLine = calc.lines[0]!
-  console.log(`   Rum duty (expect 6000.00): ${rumLine.dutyAmount}`)
-  if (rumLine.dutyAmount !== '6000.00') throw new Error('SPECIFIC duty check failed')
+  console.log(`   Rum excise (expect 1716.00): ${rumLine.exciseAmount}`)
+  if (rumLine.exciseAmount !== '1716.00' || rumLine.dutyAmount !== '0.00') {
+    throw new Error('Specific alcohol excise check failed')
+  }
 
   // Charges apportioned must sum exactly to 1850+320+145 = 2315.00 across CIFs:
   // totalCif - totalFob should equal 2315.00
-  const cifMinusFob = (Number(calc.totals.totalCifValue) - Number(calc.totals.totalFobValue)).toFixed(2)
+  const cifMinusFob = d(calc.totals.totalCifValue).minus(calc.totals.totalFobValue).toFixed(2)
   console.log(`   CIF − FOB (expect 2315.00): ${cifMinusFob}`)
   if (cifMinusFob !== '2315.00') throw new Error('Apportionment exactness check failed')
 
-  console.log('2) Submitting to BEAIP (mock)...')
-  const result = await declarationsService.submit(db, audit, shipment.id, 'C13')
-  console.log(`   ${result.message}`)
-  console.log(`   Entry status: ${result.entry.status}, ref: ${result.entry.beaipReference}`)
+  console.log('2) Generating Customs-review XML (no endpoint call)...')
+  const result = await declarationArtifactsService.generate(db, audit, shipment.id, {
+    declarationType: 'C13',
+  })
+  console.log(`   ${result.fileName}`)
+  console.log(`   Artifact status: ${result.artifact.status}`)
 
   const after = await db.shipment.findUnique({
     where: { id: shipment.id },
     select: { status: true, submittedAt: true },
   })
-  console.log(`   Shipment status: ${after?.status} at ${after?.submittedAt?.toISOString()}`)
-  if (after?.status !== 'SUBMITTED') throw new Error('Status transition failed')
-
-  // Reset for next run / UI demo.
-  await basePrisma.shipment.update({
-    where: { id: shipment.id },
-    data: { status: 'DRAFT', submittedAt: null },
-  })
-  console.log('\n✓ Smoke passed (shipment reset to DRAFT for demo use)')
+  console.log(`   Shipment status: ${after?.status}`)
+  if (after?.status !== 'DRAFT' || after.submittedAt !== null) {
+    throw new Error('Review artifact must not submit or advance the shipment')
+  }
+  console.log('\n✓ Smoke passed (review XML generated; no Customs endpoint called)')
 }
 
 main()

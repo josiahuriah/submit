@@ -6,8 +6,8 @@ import { Icons } from "@/components/ui/icons";
 import { money } from "@/lib/format";
 import { previewLine } from "@/lib/calc";
 import { commitLineItem, deleteLineItem, findHsRate, searchHsCodes } from "@/lib/data/line-items";
-import { SubmitButton } from "./submit-button";
-import type { HsRate, LineCharges, LineDraft, LineItem, ShipmentStatus, ShipmentTotals } from "@/lib/types";
+import { ReviewXmlButton } from "./review-xml-button";
+import type { HsRate, InvoiceSummary, LineCharges, LineDraft, LineItem, ShipmentStatus, ShipmentTotals } from "@/lib/types";
 
 /**
  * The interactive heart of the app.
@@ -29,24 +29,37 @@ function sumCents(values: string[]): number {
 }
 
 const EMPTY_DRAFT: LineDraft = {
+  invoiceId: "",
   hsCode: "",
   quantity: "1",
   unit: "PCS",
   description: "",
   cpcCode: "4000",
   unitPrice: "",
+  countryOfOrigin: "",
+  weightKg: "",
+  netWeightKg: "",
+  packageCount: "",
+  packageTypeCode: "CT",
+  unitsPerPackage: "",
+  unitVolume: "",
+  volumeUnit: "ML",
+  alcoholStrength: "",
+  alcoholStrengthBasis: "ABV_PERCENT",
 };
 
 export function LineEntry({
   shipmentId,
   status,
   hasInvoice,
+  invoices,
   initialLines,
   initialTotals,
 }: {
   shipmentId: string;
   status: ShipmentStatus;
   hasInvoice: boolean;
+  invoices: InvoiceSummary[];
   initialLines: LineItem[];
   initialTotals: ShipmentTotals | null;
 }) {
@@ -55,14 +68,14 @@ export function LineEntry({
   const entryLocked = status !== "DRAFT" || !hasInvoice;
   const [lines, setLines] = useState<LineItem[]>(initialLines);
   const [totals, setTotals] = useState<ShipmentTotals | null>(initialTotals);
-  const [draft, setDraft] = useState<LineDraft>(EMPTY_DRAFT);
+  const [draft, setDraft] = useState<LineDraft>({ ...EMPTY_DRAFT, invoiceId: invoices[0]?.id ?? "" });
   const [hsQuery, setHsQuery] = useState("");
   const [hits, setHits] = useState<HsRate[]>([]);
   const [draftRate, setDraftRate] = useState<HsRate | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  // HS search runs on the server (1,578 codes, pg_trgm index). Debounced so a
+  // HS search runs on the server (1,544 codes, pg_trgm index). Debounced so a
   // burst of keystrokes costs one query, not one per character.
   useEffect(() => {
     const query = hsQuery.trim();
@@ -108,7 +121,7 @@ export function LineEntry({
   const dc = previewLine(draft, draftRate);
 
   function commit() {
-    if (!draft.hsCode || !draft.unitPrice || pending || entryLocked) return;
+    if (!draft.invoiceId || !draft.hsCode || !draft.unitPrice || pending || entryLocked) return;
     const submitted = draft;
     setNotice(null);
     startTransition(async () => {
@@ -121,7 +134,7 @@ export function LineEntry({
         setNotice(result.error ?? result.calculationError);
         // Keep the draft on refusal so the broker's typing isn't thrown away.
         if (!result.error) {
-          setDraft(EMPTY_DRAFT);
+          setDraft({ ...EMPTY_DRAFT, invoiceId: submitted.invoiceId });
           setHsQuery("");
         }
       } catch (error) {
@@ -158,7 +171,7 @@ export function LineEntry({
       sumCents(priced.map((l) => l.charges![key])) / 100;
     return {
       columnTotals: {
-        fob: pick("cif"),
+        fob: pick("fob"),
         duty: pick("duty"),
         excise: pick("excise"),
         levy: pick("levy"),
@@ -172,6 +185,22 @@ export function LineEntry({
   const set = <K extends keyof LineDraft>(key: K, value: LineDraft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
 
+  const assessmentUnits = [draftRate?.specificRateUnit, draftRate?.exciseSpecificRateUnit]
+    .filter((unit): unit is string => Boolean(unit));
+  const needsAlcoholMeasure = assessmentUnits.some((unit) => ["L", "IMP_GAL", "PROOF_GAL"].includes(unit));
+  const formatRate = (rate: HsRate | null, charge: "duty" | "excise") => {
+    if (!rate) return "—";
+    const basis = charge === "duty" ? rate.dutyBasis : rate.exciseBasis;
+    const adValorem = charge === "duty" ? rate.duty : rate.excise;
+    const specific = charge === "duty" ? rate.specificRate : rate.exciseSpecificRate;
+    const unit = charge === "duty" ? rate.specificRateUnit : rate.exciseSpecificRateUnit;
+    if (basis === "NONE") return "none";
+    if (basis === "AD_VALOREM") return `${Number(adValorem) * 100}%`;
+    if (basis === "SPECIFIC") return `$${specific ?? "0"}/${unit ?? "unit"}`;
+    const operator = basis === "ADDITIVE" ? " + " : " or ";
+    return `${Number(adValorem) * 100}%${operator}$${specific ?? "0"}/${unit ?? "unit"}`;
+  };
+
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 18, alignItems: "start" }}>
       {/* ── main table ── */}
@@ -179,6 +208,22 @@ export function LineEntry({
         {notice && (
           <div style={{ padding: "9px 14px", background: "var(--sb-gold-soft)", borderBottom: "1px solid var(--sb-line)", fontSize: 12.5, color: "var(--sb-ink-2)" }}>
             {notice}
+          </div>
+        )}
+        <div style={{ padding: "10px 12px", display: "grid", gridTemplateColumns: "1.4fr .7fr .7fr .7fr .7fr .7fr", gap: 8, borderBottom: "1px solid var(--sb-line)", background: "var(--sb-surface-2)" }}>
+          <label><span className="sb-eyebrow">Commercial invoice</span><select className="sb-inp" value={draft.invoiceId} onChange={(e) => set("invoiceId", e.target.value)}>{invoices.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.invoiceNumber} · {invoice.supplierName}</option>)}</select></label>
+          <label><span className="sb-eyebrow">Commercial unit</span><input className="sb-inp sb-mono" value={draft.unit} onChange={(e) => set("unit", e.target.value.toUpperCase())} /></label>
+          <label><span className="sb-eyebrow">Origin</span><input className="sb-inp sb-mono" maxLength={2} value={draft.countryOfOrigin} onChange={(e) => set("countryOfOrigin", e.target.value.toUpperCase())} placeholder="US" /></label>
+          <label><span className="sb-eyebrow">Gross kg</span><input className="sb-inp sb-mono" value={draft.weightKg} onChange={(e) => set("weightKg", e.target.value)} /></label>
+          <label><span className="sb-eyebrow">Net kg</span><input className="sb-inp sb-mono" value={draft.netWeightKg} onChange={(e) => set("netWeightKg", e.target.value)} /></label>
+          <label><span className="sb-eyebrow">Packages / type</span><span style={{ display: "flex", gap: 4 }}><input className="sb-inp sb-mono" value={draft.packageCount} onChange={(e) => set("packageCount", e.target.value)} /><input className="sb-inp sb-mono" style={{ width: 48 }} value={draft.packageTypeCode} onChange={(e) => set("packageTypeCode", e.target.value.toUpperCase())} /></span></label>
+        </div>
+        {needsAlcoholMeasure && (
+          <div style={{ padding: "10px 12px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, borderBottom: "1px solid var(--sb-line)", background: "var(--sb-gold-soft)" }}>
+            <label><span className="sb-eyebrow">Units per package</span><input className="sb-inp sb-mono" value={draft.unitsPerPackage} onChange={(e) => set("unitsPerPackage", e.target.value)} placeholder="12" /></label>
+            <label><span className="sb-eyebrow">Volume per unit</span><span style={{ display: "flex", gap: 4 }}><input className="sb-inp sb-mono" value={draft.unitVolume} onChange={(e) => set("unitVolume", e.target.value)} placeholder="750" /><select className="sb-inp" value={draft.volumeUnit} onChange={(e) => set("volumeUnit", e.target.value as LineDraft["volumeUnit"])}>{["ML", "CL", "L", "US_FL_OZ", "IMP_FL_OZ", "IMP_GAL"].map((unit) => <option key={unit}>{unit}</option>)}</select></span></label>
+            <label><span className="sb-eyebrow">Alcohol strength</span><input className="sb-inp sb-mono" value={draft.alcoholStrength} onChange={(e) => set("alcoholStrength", e.target.value)} placeholder="40" /></label>
+            <label><span className="sb-eyebrow">Strength basis</span><select className="sb-inp" value={draft.alcoholStrengthBasis} onChange={(e) => set("alcoholStrengthBasis", e.target.value as LineDraft["alcoholStrengthBasis"])}><option value="ABV_PERCENT">% ABV</option><option value="US_PROOF">US proof</option></select></label>
           </div>
         )}
         <table className="sb-tbl">
@@ -215,14 +260,17 @@ export function LineEntry({
                       {hits.map((h, i) => (
                         <div
                           key={h.code}
-                          onClick={() => { set("hsCode", h.code); setHsQuery(""); }}
+                          onClick={() => {
+                            setDraft((current) => ({ ...current, hsCode: h.code, unit: h.unit ?? current.unit }));
+                            setHsQuery("");
+                          }}
                           style={{ padding: "7px 10px", cursor: "pointer", display: "flex", gap: 8, alignItems: "baseline",
                             borderBottom: i < hits.length - 1 ? "1px solid var(--sb-line-2)" : "none",
                             background: i === 0 ? "var(--sb-accent-soft)" : "#fff" }}
                         >
                           <b className="sb-mono" style={{ fontSize: 12.5 }}>{h.code}</b>
                           <span style={{ flex: 1, fontSize: 12.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{h.description}</span>
-                          <span className="sb-mono sb-meta">{Math.round(h.duty * 100)}%</span>
+                          <span className="sb-mono sb-meta">{formatRate(h, "duty")}</span>
                         </div>
                       ))}
                     </div>
@@ -231,6 +279,11 @@ export function LineEntry({
                 <div className="sb-meta" style={{ marginTop: 4, maxWidth: 150, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {draftRate ? draftRate.description : "—"}
                 </div>
+                {draftRate && (
+                  <div className="sb-meta" style={{ marginTop: 2, color: draftRate.isVerified ? "var(--sb-pos)" : "var(--sb-neg)" }}>
+                    {draftRate.isVerified ? "verified" : "unverified"}{draftRate.sourceName ? ` · ${draftRate.sourceName}` : ""}{draftRate.sourcePage ? ` p.${draftRate.sourcePage}` : ""}
+                  </div>
+                )}
               </td>
               <td style={{ verticalAlign: "top" }}>
                 <input className="sb-inp sb-mono" style={{ padding: "5px 6px", width: 46 }} value={draft.cpcCode} onChange={(e) => set("cpcCode", e.target.value)} />
@@ -245,14 +298,15 @@ export function LineEntry({
                 <input className="sb-inp sb-mono" style={{ padding: "5px 6px", width: 72, textAlign: "right" }} value={draft.unitPrice} onChange={(e) => set("unitPrice", e.target.value)} placeholder="0.00" />
               </td>
               <td className="sb-num" style={{ verticalAlign: "top", paddingTop: 11, color: "var(--sb-ink-2)" }}>
-                <div className="sb-mono" style={{ fontSize: 12 }}>{draftRate ? Math.round(draftRate.duty * 100) + "%" : "—"}</div>
+                <div className="sb-mono" style={{ fontSize: 11 }}>{formatRate(draftRate, "duty")}</div>
                 <div className="sb-mono" style={{ fontSize: 12.5 }}>{money(dc.duty)}</div>
               </td>
               <td className="sb-num" style={{ verticalAlign: "top", paddingTop: 11, color: dc.excise > 0 ? "var(--sb-excise)" : "var(--sb-ink-3)" }}>
+                <div className="sb-mono" style={{ fontSize: 11 }}>{formatRate(draftRate, "excise")}</div>
                 <div className="sb-mono" style={{ fontSize: 12.5 }}>{money(dc.excise)}</div>
               </td>
               <td className="sb-num" style={{ verticalAlign: "top", paddingTop: 11, color: "var(--sb-ink-2)" }}>
-                <div className="sb-mono" style={{ fontSize: 12 }}>{draftRate ? Math.round(draftRate.vat * 100) + "%" : "—"}</div>
+                <div className="sb-mono" style={{ fontSize: 12 }}>{draftRate ? Math.round(Number(draftRate.vat) * 100) + "%" : "—"}</div>
                 <div className="sb-mono" style={{ fontSize: 12.5 }}>{money(dc.vat)}</div>
               </td>
               <td className="sb-num" style={{ verticalAlign: "top", paddingTop: 11, color: "var(--sb-ink-2)" }}>
@@ -292,11 +346,12 @@ export function LineEntry({
                   </td>
                   <td style={{ verticalAlign: "top" }}>
                     <div>{l.description}</div>
+                    <div className="sb-meta">Invoice {l.invoiceNumber}</div>
                     {l.pageNumber !== null && <div className="sb-meta">p. {l.pageNumber}</div>}
                   </td>
                   {c === null ? (
                     <>
-                      <td className="sb-num" style={{ verticalAlign: "top" }}>{money(l.quantity * l.unitPrice)}</td>
+                      <td className="sb-num" style={{ verticalAlign: "top" }}>{money(l.totalValue)}</td>
                       <td className="sb-num sb-meta" colSpan={4} style={{ verticalAlign: "top", textAlign: "center" }}>
                         not yet calculated
                       </td>
@@ -331,7 +386,8 @@ export function LineEntry({
           <tfoot>
             <tr style={{ borderTop: "2px solid var(--sb-line)", background: "var(--sb-surface-2)" }}>
               <td colSpan={4} style={{ padding: "11px 12px" }}>
-                <span className="sb-h2">Totals</span> <span className="sb-meta">{lines.length} lines</span>
+                <span className="sb-h2">Line totals</span>{' '}
+                <span className="sb-meta">{lines.length} lines · excludes processing fee and its VAT</span>
               </td>
               <td className="sb-num sb-strong sb-mono">{money(columnTotals.fob)}</td>
               <td className="sb-num sb-strong sb-mono">{money(columnTotals.duty)}</td>
@@ -378,7 +434,7 @@ export function LineEntry({
                 ? `${unpriced} line${unpriced === 1 ? "" : "s"} added since the last calculation`
                 : "Duty + excise + levy + VAT + processing fee"}
           </div>
-          <SubmitButton
+          <ReviewXmlButton
             shipmentId={shipmentId}
             status={status}
             disabled={totals === null}

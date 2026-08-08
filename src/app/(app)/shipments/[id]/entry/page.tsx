@@ -6,7 +6,9 @@ import { Chip } from "@/components/ui/primitives";
 import { money } from "@/lib/format";
 import { LineEntry } from "./line-entry";
 import { AddInvoiceCard } from "./add-invoice-card";
-import { SubmitButton } from "./submit-button";
+import { ReviewXmlButton } from "./review-xml-button";
+import { getDeclarationProfile } from "@/lib/data/declaration-profile";
+import { DeclarationProfileCard } from "./declaration-profile-card";
 
 /**
  * LINE ITEM ENTRY — the crown jewel.
@@ -19,9 +21,8 @@ import { SubmitButton } from "./submit-button";
  */
 export default async function EntryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [shipment, lines] = await Promise.all([getShipment(id), getLineItems(id)]);
-  // Supplier picker data is only needed while the shipment lacks an invoice.
-  const suppliers = shipment.invoice ? [] : await listSupplierOptions();
+  const [shipment, lines, declarationProfile] = await Promise.all([getShipment(id), getLineItems(id), getDeclarationProfile(id)]);
+  const suppliers = await listSupplierOptions();
 
   return (
     <div className="sb-page" style={{ maxWidth: 1560 }}>
@@ -33,7 +34,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         </span>
         <Chip kind={shipment.status === "DRAFT" ? "draft" : "acc"}>{shipment.status}</Chip>
         <div style={{ flex: 1 }} />
-        <SubmitButton shipmentId={id} status={shipment.status} disabled={shipment.totals === null} />
+        <ReviewXmlButton shipmentId={id} status={shipment.status} disabled={shipment.totals === null} />
       </div>
 
       <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 4 }}>
@@ -43,35 +44,42 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         </span>
       </div>
 
-      {/* Invoice header — static, from the server */}
+      <DeclarationProfileCard shipmentId={id} initial={declarationProfile} />
+
+      {/* Invoice summary — one shipment can carry multiple commercial invoices. */}
       <div
         className="sb-card"
-        style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1.2fr", overflow: "hidden", margin: "14px 0" }}
+        style={{ overflow: "hidden", margin: "14px 0" }}
       >
-        {([
-          ["Supplier", shipment.invoice?.supplierName ?? "—", false],
-          [
-            "Invoice",
-            shipment.invoice ? `${shipment.invoice.invoiceNumber} · ${shipment.invoice.invoiceDate}` : "—",
-            false,
-          ],
-          ["Freight", money(shipment.freightCharge), true],
-          ["Insurance", money(shipment.insuranceCharge), true],
-          ["Invoice total", shipment.invoice ? money(shipment.invoice.subTotal) : "—", true],
-        ] as [string, string, boolean][]).map((c, i) => (
-          <div key={i} style={{ padding: "12px 16px", borderRight: i < 4 ? "1px solid var(--sb-line)" : "none" }}>
-            <div className="sb-eyebrow" style={{ marginBottom: 3 }}>{c[0]}</div>
-            <div className={c[2] ? "sb-mono sb-strong" : "sb-strong"}>{c[1]}</div>
-          </div>
-        ))}
+        <table className="sb-tbl">
+          <thead><tr><th>Supplier</th><th>Invoice</th><th>Currency / BSD rate</th><th>Incoterm</th><th className="sb-num">Invoice total</th></tr></thead>
+          <tbody>
+            {shipment.invoices.length === 0 ? (
+              <tr><td colSpan={5} className="sb-meta">No commercial invoices attached.</td></tr>
+            ) : shipment.invoices.map((invoice) => (
+              <tr key={invoice.id}>
+                <td className="sb-strong">{invoice.supplierName}</td>
+                <td className="sb-mono">{invoice.invoiceNumber} · {invoice.invoiceDate}</td>
+                <td className="sb-mono">{invoice.currency} · {invoice.exchangeRate}</td>
+                <td>{invoice.incotermCode ?? "—"}{invoice.incotermLocation ? ` ${invoice.incotermLocation}` : ""}</td>
+                <td className="sb-num sb-mono">{money(invoice.subTotal)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ display: "flex", gap: 24, padding: "9px 14px", borderTop: "1px solid var(--sb-line)" }}>
+          <span className="sb-meta">Shipment freight <b className="sb-mono">{money(shipment.freightCharge)}</b></span>
+          <span className="sb-meta">Insurance <b className="sb-mono">{money(shipment.insuranceCharge)}</b></span>
+        </div>
       </div>
 
-      {!shipment.invoice && <AddInvoiceCard shipmentId={id} suppliers={suppliers} />}
+      <AddInvoiceCard shipmentId={id} suppliers={suppliers} />
 
       <LineEntry
         shipmentId={id}
         status={shipment.status}
         hasInvoice={shipment.invoice !== null}
+        invoices={shipment.invoices}
         initialLines={lines}
         initialTotals={shipment.totals}
       />

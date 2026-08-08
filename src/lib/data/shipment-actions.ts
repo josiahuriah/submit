@@ -18,7 +18,6 @@ import { requirePermission, type Permission } from '@/lib/auth/rbac'
 import { createTenantClient } from '@/lib/db/tenant-client'
 import { basePrisma } from '@/lib/db/prisma'
 import { shipmentsService } from '@/server/services/shipments.service'
-import { declarationsService } from '@/server/services/declarations.service'
 import { catalogService } from '@/server/services/catalog.service'
 import { shipmentCreateSchema } from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
@@ -159,49 +158,4 @@ export async function createShipment(draft: {
     }
   }
   return { shipmentId: null, error: 'Could not allocate a shipment number — try again.' }
-}
-
-// --- submit ------------------------------------------------------------------
-
-export interface SubmitShipmentResult {
-  outcome: 'ACCEPTED' | 'REJECTED' | null
-  message: string | null
-  entryNumber: string | null
-  beaipReference: string | null
-  /** Expected failures (not DRAFT, stale calculation, RBAC) travel as data. */
-  error: string | null
-}
-
-export async function submitShipment(shipmentId: string): Promise<SubmitShipmentResult> {
-  let context
-  try {
-    context = await actionContext('shipments:submit')
-  } catch {
-    return {
-      outcome: null,
-      message: null,
-      entryNumber: null,
-      beaipReference: null,
-      error: 'Submitting requires the BROKER role.',
-    }
-  }
-  const { db, audit } = context
-
-  try {
-    // C13 (home consumption) is what the overwhelming majority of declarations
-    // are; a declaration-type picker is deliberately deferred.
-    const result = await declarationsService.submit(db, audit, shipmentId, 'C13')
-    return {
-      outcome: result.entry.status === 'REJECTED' ? 'REJECTED' : 'ACCEPTED',
-      message: result.message,
-      entryNumber: result.entry.entryNumber,
-      beaipReference: result.entry.beaipReference,
-      error: null,
-    }
-  } catch (error) {
-    if (error instanceof AppError) {
-      return { outcome: null, message: null, entryNumber: null, beaipReference: null, error: error.message }
-    }
-    throw error
-  }
 }

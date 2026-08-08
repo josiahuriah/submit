@@ -42,6 +42,7 @@ export interface ShipmentHeader {
   insuranceCharge: string;
   /** The first supplier invoice on the shipment, if one exists yet. */
   invoice: InvoiceSummary | null;
+  invoices: InvoiceSummary[];
 }
 
 /** Header summary of a supplier's commercial invoice. */
@@ -51,6 +52,10 @@ export interface InvoiceSummary {
   invoiceDate: string;
   supplierName: string;
   subTotal: string;
+  currency: string;
+  exchangeRate: string;
+  incotermCode: string | null;
+  incotermLocation: string | null;
 }
 
 /**
@@ -81,6 +86,9 @@ export interface LineItem {
   description: string;
   cpcCode: string;
   unitPrice: number;
+  totalValue: string;
+  invoiceId: string;
+  invoiceNumber: string;
   pageNumber: number | null;
   /** HS code description, for the sub-label under the code. */
   hsDescription?: string;
@@ -109,22 +117,62 @@ export interface ServerLineCharges {
 
 /** The subset of a line item the entry row edits before commit. */
 export interface LineDraft {
+  invoiceId: string;
   hsCode: string;
   quantity: string; // string while editing; coerced on commit
   unit: string;
   description: string;
   cpcCode: string;
   unitPrice: string;
+  countryOfOrigin: string;
+  weightKg: string;
+  netWeightKg: string;
+  packageCount: string;
+  packageTypeCode: string;
+  unitsPerPackage: string;
+  unitVolume: string;
+  volumeUnit: "ML" | "CL" | "L" | "US_FL_OZ" | "IMP_FL_OZ" | "IMP_GAL";
+  alcoholStrength: string;
+  alcoholStrengthBasis: "ABV_PERCENT" | "US_PROOF";
+}
+
+export interface DeclarationProfile {
+  companyRegistrationNumber: string;
+  canManageOrganization: boolean;
+  declarationDate: string;
+  declarationFunctionCode: "9" | "5" | "1";
+  regimeCode: string;
+  goodsLocationCode: string;
+  warehouseCode: string;
+  transportNationalityCode: string;
+  blNumber: string;
+  containerNumber: string;
+  containerSealNumber: string;
+  containerFullnessCode: string;
+  packageCount: string;
+  packageType: "CONTAINER" | "PALLET" | "CARTON" | "CRATE" | "DRUM" | "BUNDLE" | "LOOSE" | "VEHICLE" | "OTHER";
+  grossWeightKg: string;
+  netWeightKg: string;
 }
 
 /** An HS code with the rates the preview calculator needs. */
 export interface HsRate {
   code: string;
   description: string;
-  duty: number; // fraction, e.g. 0.45
-  vat: number;
-  levy: number;
-  excise: number; // ad-valorem fraction, or a per-unit amount if > 1
+  unit: string | null;
+  dutyBasis: "AD_VALOREM" | "SPECIFIC" | "COMPOUND" | "ADDITIVE";
+  duty: string; // fraction, e.g. "0.4500"
+  specificRate: string | null;
+  specificRateUnit: string | null;
+  vat: string;
+  levy: string;
+  exciseBasis: "NONE" | "AD_VALOREM" | "SPECIFIC" | "COMPOUND" | "ADDITIVE";
+  excise: string;
+  exciseSpecificRate: string | null;
+  exciseSpecificRateUnit: string | null;
+  sourceName: string | null;
+  sourcePage: string | null;
+  isVerified: boolean;
 }
 
 /** Result of the client-side duty preview for one line. */

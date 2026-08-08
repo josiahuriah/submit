@@ -19,7 +19,10 @@
  *   Payable = duty + excise + levy + vat
  */
 
-import type { HsRate, LineCharges } from "./types";
+import { calculateShipment } from "./calculations/duty-calculator";
+import { resolveSpecificQuantity } from "./calculations/measurement";
+import { d } from "./calculations/money";
+import type { HsRate, LineCharges, LineDraft } from "./types";
 
 /**
  * Compute a preview of charges for a single line.
@@ -27,25 +30,61 @@ import type { HsRate, LineCharges } from "./types";
  * @param rate   the HS code's current rates, or null if not yet chosen
  */
 export function previewLine(
-  line: { quantity: number | string; unitPrice: number | string },
+  line: LineDraft,
   rate: HsRate | null
 ): LineCharges {
-  const qty = Number(line.quantity) || 0;
-  const price = Number(line.unitPrice) || 0;
-  const fob = qty * price;
+  const quantity = d(line.quantity || "0");
+  const fob = quantity.times(d(line.unitPrice || "0"));
 
   if (!rate) {
-    return { fob, duty: 0, excise: 0, levy: 0, vat: 0, payable: 0 };
+    return { fob: fob.toNumber(), duty: 0, excise: 0, levy: 0, vat: 0, payable: 0 };
   }
 
-  // A rate.excise value > 1 is treated as a per-unit SPECIFIC amount (alcohol,
-  // fuel), otherwise it's an ad-valorem fraction of FOB.
-  const excise = rate.excise > 1 ? qty * rate.excise : fob * (rate.excise || 0);
-  const duty = fob * (rate.duty || 0);
-  const levy = fob * (rate.levy || 0);
-  const vat = (fob + duty + excise + levy) * (rate.vat || 0);
+  const specificQuantity = (unit: string | null) => {
+    try {
+      return resolveSpecificQuantity(unit, {
+        lineQuantity: quantity,
+        lineUnit: line.unit,
+        unitsPerPackage: line.unitsPerPackage || null,
+        unitVolume: line.unitVolume || null,
+        volumeUnit: line.unitVolume ? line.volumeUnit : null,
+        alcoholStrength: line.alcoholStrength || null,
+        alcoholStrengthBasis: line.alcoholStrength ? line.alcoholStrengthBasis : null,
+      });
+    } catch {
+      return d(0);
+    }
+  };
 
-  return { fob, duty, excise, levy, vat, payable: duty + excise + levy + vat };
+  const calculated = calculateShipment([
+    {
+      id: "preview",
+      totalValue: fob,
+      quantity,
+      dutyAssessmentQuantity: specificQuantity(rate.specificRateUnit),
+      exciseAssessmentQuantity: specificQuantity(rate.exciseSpecificRateUnit),
+      rates: {
+        dutyBasis: rate.dutyBasis,
+        dutyRate: rate.duty,
+        specificRate: rate.specificRate,
+        vatRate: rate.vat,
+        levyRate: rate.levy,
+        exciseBasis: rate.exciseBasis,
+        exciseRate: rate.excise,
+        exciseSpecificRate: rate.exciseSpecificRate,
+      },
+    },
+  ], { freightCharge: 0, insuranceCharge: 0, otherCharges: 0 });
+  const result = calculated.lines[0]!;
+
+  return {
+    fob: fob.toNumber(),
+    duty: result.dutyAmount.toNumber(),
+    excise: result.exciseAmount.toNumber(),
+    levy: result.levyAmount.toNumber(),
+    vat: result.vatAmount.toNumber(),
+    payable: result.lineTotalTaxes.toNumber(),
+  };
 }
 
 /** Shipment-level processing fee: 1% of total CIF, min $10, max $750. */

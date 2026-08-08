@@ -21,6 +21,8 @@ const hasXmllint = !spawnSync('xmllint', ['--version'], { encoding: 'utf8' }).er
 function fixture(): BeaipDeclaration {
   return {
     declarationType: 'C13',
+    functionCode: '9',
+    declarationDate: '2026-07-31T00:00:00.000Z',
     regimeCode: '4',
     functionalReferenceId: 'SHP-2026-00042',
     brokerReference: 'SHP-2026-00042',
@@ -47,12 +49,20 @@ function fixture(): BeaipDeclaration {
       entryPortCode: 'BSNAS',
       exitPortCode: 'USMIA',
       exportCountryCode: 'US',
+      containerSealNumber: 'SEAL-100',
+      containerFullnessCode: 'FULL',
+      transportNationalityCode: 'BS',
+      goodsLocationCode: 'NASPORT',
+      warehouseCode: 'WH-01',
     },
     invoices: [
       {
         invoiceNumber: 'INV-1001',
         invoiceDate: '2026-07-01T00:00:00.000Z',
         currency: 'USD',
+        exchangeRate: '1.00000000',
+        incotermCode: 'FOB',
+        incotermLocation: 'Miami',
         subTotal: '1500.00',
         supplier: {
           name: 'Miami Wholesale Co',
@@ -67,6 +77,9 @@ function fixture(): BeaipDeclaration {
         invoiceNumber: 'INV-1002',
         invoiceDate: null,
         currency: 'USD',
+        exchangeRate: '1.00000000',
+        incotermCode: null,
+        incotermLocation: null,
         subTotal: '800.00',
         supplier: { name: 'Georgia Traders', id: null, address: null },
         freightApportioned: '80.00',
@@ -93,6 +106,9 @@ function fixture(): BeaipDeclaration {
         quantity: '120',
         unit: 'L',
         weightKg: '150.000',
+        netWeightKg: '140.000',
+        packageCount: 10,
+        packageTypeCode: 'CT',
         totalValue: '1500.00',
         currency: 'USD',
         freightApportioned: '120.00',
@@ -103,6 +119,10 @@ function fixture(): BeaipDeclaration {
         vatAmount: '225.00',
         levyAmount: '0.00',
         exciseAmount: '0.00',
+        dutyAssessmentQuantity: null,
+        dutyAssessmentUnit: null,
+        exciseAssessmentQuantity: '26.400000',
+        exciseAssessmentUnit: 'IMP_GAL',
       },
       {
         lineNumber: 1,
@@ -115,6 +135,9 @@ function fixture(): BeaipDeclaration {
         quantity: '500',
         unit: 'PCS',
         weightKg: null,
+        netWeightKg: null,
+        packageCount: null,
+        packageTypeCode: null,
         totalValue: '800.00',
         currency: 'USD',
         freightApportioned: '80.00',
@@ -125,6 +148,10 @@ function fixture(): BeaipDeclaration {
         vatAmount: '95.00',
         levyAmount: '0.00',
         exciseAmount: '0.00',
+        dutyAssessmentQuantity: null,
+        dutyAssessmentUnit: null,
+        exciseAssessmentQuantity: null,
+        exciseAssessmentUnit: null,
       },
     ],
   }
@@ -203,6 +230,7 @@ describe('buildWcoDeclarationXml', () => {
       'Invoice',
       'Supplier',
       'Supplier',
+      'TradeTerms',
       'UCR',
     ])
   })
@@ -233,7 +261,7 @@ describe('buildWcoDeclarationXml', () => {
     const xml = build()
     expect(xml).toContain('<TotalPackageQuantity unitCode="CT">40</TotalPackageQuantity>')
     const border = childOrder(xml, 'BorderTransportMeans')
-    expect(border).toEqual(['Name', 'TypeCode', 'ArrivalDateTime', 'TransportEquipment'])
+    expect(border).toEqual(['Name', 'TypeCode', 'RegistrationNationalityCode', 'ArrivalDateTime', 'TransportEquipment'])
     expect(xml).toContain('<TypeCode>1</TypeCode>') // SEA → 1
   })
 

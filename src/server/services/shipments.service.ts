@@ -2,9 +2,9 @@
  * Shipments service — business rules live here, not in routes or the repo.
  *
  * Rules enforced:
- *   - Status machine: DRAFT → SUBMITTED → CLEARED; CANCELLED from
- *     DRAFT/SUBMITTED. Submission itself happens via declarations.service.
- *   - Only DRAFT shipments can be edited or deleted (submitted declarations
+ *   - Only DRAFT shipments can be edited, cancelled, or deleted. SUBMITTED and
+ *     CLEARED are reserved for the future verified Customs response workflow.
+ *   - Submitted declarations
  *     are legal documents — you amend via customs, not by editing history).
  */
 import type { TenantClient } from '@/lib/db/tenant-client'
@@ -14,13 +14,6 @@ import { BusinessRuleError, NotFoundError } from '@/lib/errors'
 import type { ShipmentStatus } from '@/generated/prisma/enums'
 
 const EDITABLE_STATUSES: ShipmentStatus[] = ['DRAFT']
-
-const ALLOWED_TRANSITIONS: Record<ShipmentStatus, ShipmentStatus[]> = {
-  DRAFT: ['SUBMITTED', 'CANCELLED'],
-  SUBMITTED: ['CLEARED', 'CANCELLED'],
-  CLEARED: [],
-  CANCELLED: [],
-}
 
 export const shipmentsService = {
   list(db: TenantClient, filters: ShipmentListFilters) {
@@ -71,30 +64,25 @@ export const shipmentsService = {
     return updated
   },
 
-  async transitionStatus(
+  async cancel(
     db: TenantClient,
     audit: AuditContext,
     shipmentId: string,
-    next: ShipmentStatus,
   ) {
     const existing = await shipmentsRepository.byId(db, shipmentId)
     if (!existing) throw new NotFoundError('Shipment')
-    if (!ALLOWED_TRANSITIONS[existing.status].includes(next)) {
-      throw new BusinessRuleError(`Cannot move a ${existing.status} shipment to ${next}`)
+    if (existing.status !== 'DRAFT') {
+      throw new BusinessRuleError(`Only a DRAFT shipment can be cancelled; this one is ${existing.status}`)
     }
-    const timestamps: Record<string, Date> = {}
-    if (next === 'SUBMITTED') timestamps.submittedAt = new Date()
-    if (next === 'CLEARED') timestamps.clearedAt = new Date()
 
     const updated = await shipmentsRepository.update(db, shipmentId, {
-      status: next,
-      ...timestamps,
+      status: 'CANCELLED',
     })
     await writeAudit(db, audit, {
       action: 'STATUS_CHANGE',
       entityType: 'Shipment',
       entityId: shipmentId,
-      changes: { before: { status: existing.status }, after: { status: next } },
+      changes: { before: { status: existing.status }, after: { status: 'CANCELLED' } },
     })
     return updated
   },
@@ -122,8 +110,19 @@ function diffable(s: Record<string, unknown>) {
     'status',
     'blNumber',
     'containerNumber',
+    'containerSealNumber',
+    'containerFullnessCode',
+    'declarationDate',
+    'declarationFunctionCode',
+    'regimeCode',
+    'goodsLocationCode',
+    'warehouseCode',
+    'transportNationalityCode',
     'description',
     'packageCount',
+    'packageType',
+    'grossWeightKg',
+    'netWeightKg',
     'freightCharge',
     'insuranceCharge',
     'otherCharges',

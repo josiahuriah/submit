@@ -116,6 +116,7 @@ function toShipmentHeader(row: DetailRow): ShipmentHeader {
     freightCharge: String(row.freightCharge),
     insuranceCharge: String(row.insuranceCharge),
     invoice: toInvoiceSummary(row.invoices[0]),
+    invoices: row.invoices.map((invoice) => toInvoiceSummary(invoice)!),
   }
 }
 
@@ -127,6 +128,10 @@ function toInvoiceSummary(invoice: DetailRow['invoices'][number] | undefined): I
     invoiceDate: isoDay(invoice.invoiceDate),
     supplierName: invoice.supplier.name,
     subTotal: String(invoice.subTotal),
+    currency: invoice.currency,
+    exchangeRate: String(invoice.exchangeRate),
+    incotermCode: invoice.incotermCode,
+    incotermLocation: invoice.incotermLocation,
   }
 }
 
