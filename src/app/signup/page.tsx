@@ -57,7 +57,7 @@ function SignupForm() {
         setError(body?.error?.message ?? 'Sign-up failed')
         return
       }
-      router.push('/dashboard')
+      router.push('/home')
     } finally {
       setBusy(false)
     }

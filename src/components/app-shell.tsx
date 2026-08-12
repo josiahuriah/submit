@@ -5,9 +5,8 @@ import { Icons } from "@/components/ui/icons";
 /**
  * The persistent chrome around every authenticated page: top bar + nav.
  *
- * This is a Server Component. In your real app, fetch the current user/org
- * here (from your session) and pass their name/initials into the org chip and
- * avatar instead of the hardcoded values below.
+ * This is a Server Component. The authenticated layout resolves the current
+ * organization and user initials and passes them into this chrome.
  */
 export function AppShell({
   children,
@@ -26,11 +25,13 @@ export function AppShell({
           submit<span className="sb-tld">.app</span>
         </div>
 
-        <div className="sb-gsearch">
-          <Icons.search />
-          <input placeholder="Search shipments, BL #, client, HS code…" />
+        <form className="sb-gsearch" action="/shipments">
+          <button type="submit" className="sb-gsearch-submit" aria-label="Search shipments">
+            <Icons.search />
+          </button>
+          <input name="search" aria-label="Search shipments" placeholder="Search shipment, BL #, description…" />
           <span className="sb-kbd">⌘K</span>
-        </div>
+        </form>
 
         <div style={{ flex: 1 }} />
 

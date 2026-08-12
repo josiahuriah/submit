@@ -151,6 +151,8 @@
 .sb-brand .sb-logo { width: 26px; height: 26px; border-radius: 7px; background: #EAF1F3; color: var(--sb-marine); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
 .sb-brand .sb-tld  { color: #7FC5D6; }
 .sb-gsearch { display: flex; align-items: center; gap: 8px; background: #ffffff1a; border: 1px solid #ffffff20; border-radius: var(--sb-r); padding: 6px 10px; min-width: 280px; color: #CFE0E5; }
+.sb-gsearch-submit { display: grid; place-items: center; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+.sb-gsearch-submit:hover { color: #fff; }
 .sb-gsearch input { background: none; border: none; outline: none; color: #fff; width: 100%; font-size: 13px; font-family: inherit; }
 .sb-gsearch input::placeholder { color: #9FC0C8; }
 .sb-kbd { font-family: var(--sb-font-mono); font-size: 11px; border: 1px solid #ffffff2e; border-radius: 4px; padding: 1px 5px; color: #AFCBD2; }

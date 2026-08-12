@@ -12,8 +12,9 @@ import { Icons } from "@/components/ui/icons";
  * filtering + search). This split keeps the JS bundle tiny — only the
  * interactive bits hydrate.
  */
-export default async function ShipmentsPage() {
-  const { rows } = await listShipments();
+export default async function ShipmentsPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
+  const { search } = await searchParams;
+  const { rows } = await listShipments({ search });
 
   return (
     <div className="sb-page">
@@ -26,7 +27,7 @@ export default async function ShipmentsPage() {
         </Link>
       </div>
 
-      <ShipmentsTable rows={rows} />
+      <ShipmentsTable rows={rows} initialQuery={search ?? ""} />
     </div>
   );
 }

@@ -15,6 +15,21 @@ import type { ShipmentStatus } from '@/generated/prisma/enums'
 
 const EDITABLE_STATUSES: ShipmentStatus[] = ['DRAFT']
 
+const CALCULATION_INPUT_FIELDS = new Set([
+  'clientId',
+  'declarationDate',
+  'grossWeightKg',
+  'netWeightKg',
+  'freightCharge',
+  'insuranceCharge',
+  'otherCharges',
+])
+
+/** Keep the review-artifact staleness guard explicit for shipment PATCHes. */
+export function shipmentUpdateInvalidatesCalculation(input: Record<string, unknown>) {
+  return Object.keys(input).some((field) => CALCULATION_INPUT_FIELDS.has(field))
+}
+
 export const shipmentsService = {
   list(db: TenantClient, filters: ShipmentListFilters) {
     return shipmentsRepository.list(db, filters)
@@ -54,7 +69,10 @@ export const shipmentsService = {
         `Shipment ${existing.shipmentNumber} is ${existing.status} and can no longer be edited`,
       )
     }
-    const updated = await shipmentsRepository.update(db, shipmentId, input)
+    const updateData = shipmentUpdateInvalidatesCalculation(input)
+      ? { ...input, calculatedAt: null }
+      : input
+    const updated = await shipmentsRepository.update(db, shipmentId, updateData)
     await writeAudit(db, audit, {
       action: 'UPDATE',
       entityType: 'Shipment',

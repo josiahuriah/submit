@@ -27,9 +27,9 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "CANCELLED", label: "Cancelled" },
 ];
 
-export function ShipmentsTable({ rows }: { rows: ShipmentListItem[] }) {
+export function ShipmentsTable({ rows, initialQuery = "" }: { rows: ShipmentListItem[]; initialQuery?: string }) {
   const [status, setStatus] = useState<TabId>("all");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
 
   // Counts per tab, derived from the full set (not the filtered view).
   const counts = useMemo(() => {
@@ -113,9 +113,9 @@ export function ShipmentsTable({ rows }: { rows: ShipmentListItem[] }) {
                       <Link href={`/shipments/${s.id}/entry`} className="sb-iconbtn" style={{ width: 26, height: 26, color: "var(--sb-accent)" }} aria-label="Open">
                         <Icons.eye />
                       </Link>
-                      <button className="sb-iconbtn" style={{ width: 26, height: 26, color: "var(--sb-ink-3)" }} aria-label="Edit">
+                      <Link href={`/shipments/${s.id}/edit`} className="sb-iconbtn" style={{ width: 26, height: 26, color: "var(--sb-ink-3)" }} aria-label="Edit">
                         <Icons.edit />
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>

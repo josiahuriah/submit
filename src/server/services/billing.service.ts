@@ -58,8 +58,19 @@ export const billingService = {
   },
 
   async create(db: TenantClient, audit: AuditContext, input: BrokerageInvoiceInput) {
-    const client = await db.client.findUnique({ where: { id: input.clientId }, select: { id: true } })
+    const client = await db.client.findUnique({ where: { id: input.clientId }, select: { id: true, isActive: true } })
     if (!client) throw new NotFoundError('Client')
+    if (!client.isActive) throw new BusinessRuleError('Cannot raise a new invoice for an inactive client')
+
+    const shipmentIds = [...new Set(input.items.flatMap((item) => item.shipmentId ? [item.shipmentId] : []))]
+    if (shipmentIds.length) {
+      const matchingShipments = await db.shipment.count({
+        where: { id: { in: shipmentIds }, clientId: input.clientId },
+      })
+      if (matchingShipments !== shipmentIds.length) {
+        throw new BusinessRuleError('Every billed shipment must belong to the selected client')
+      }
+    }
 
     const items = input.items.map((item) => ({
       description: item.description,
@@ -109,26 +120,39 @@ export const billingService = {
     audit: AuditContext,
     input: { brokerageInvoiceId: string; amount: string; method: string; reference?: string; receivedAt?: Date },
   ) {
-    const invoice = await this.get(db, input.brokerageInvoiceId)
-    if (invoice.status === 'VOID') throw new BusinessRuleError('Cannot record a payment on a VOID invoice')
-    if (invoice.status === 'DRAFT') throw new BusinessRuleError('Send the invoice before recording payments')
-
-    const paid = d(String(invoice.amountPaid))
-    const total = d(String(invoice.total))
     const amount = d(input.amount)
     if (amount.lessThanOrEqualTo(0)) throw new BusinessRuleError('Payment amount must be positive')
 
-    const newPaid = toMoney(paid.plus(amount))
-    if (newPaid.greaterThan(total)) {
-      throw new BusinessRuleError(
-        `Payment of ${moneyString(amount)} would exceed the outstanding balance of ${moneyString(total.minus(paid))}`,
-      )
-    }
+    // Lock before re-reading the balance. Without the row lock, two requests
+    // can both validate against the same amountPaid and silently overpay or
+    // lose one update even though each request uses a transaction.
+    const updated = await db.$tenantTransaction(async (tx) => {
+      const locked = await tx.$queryRaw<{ id: string }[]>`
+        SELECT "id" FROM "BrokerageInvoice"
+        WHERE "id" = ${input.brokerageInvoiceId}
+          AND "organizationId" = ${db.$organizationId}
+        FOR UPDATE
+      `
+      if (locked.length === 0) throw new NotFoundError('Brokerage invoice')
 
-    const nextStatus = newPaid.equals(total) ? 'PAID' : 'PARTIALLY_PAID'
+      const invoice = await tx.brokerageInvoice.findUnique({
+        where: { id: input.brokerageInvoiceId },
+        select: { status: true, amountPaid: true, total: true },
+      })
+      if (!invoice) throw new NotFoundError('Brokerage invoice')
+      if (invoice.status === 'VOID') throw new BusinessRuleError('Cannot record a payment on a VOID invoice')
+      if (invoice.status === 'DRAFT') throw new BusinessRuleError('Send the invoice before recording payments')
 
-    // Payment insert + running total must commit together.
-    await db.$tenantTransaction(async (tx) => {
+      const paid = d(String(invoice.amountPaid))
+      const total = d(String(invoice.total))
+      const newPaid = toMoney(paid.plus(amount))
+      if (newPaid.greaterThan(total)) {
+        throw new BusinessRuleError(
+          `Payment of ${moneyString(amount)} would exceed the outstanding balance of ${moneyString(total.minus(paid))}`,
+        )
+      }
+      const nextStatus = newPaid.equals(total) ? 'PAID' : 'PARTIALLY_PAID'
+
       await tx.payment.create({
         data: {
           organizationId: db.$organizationId,
@@ -143,13 +167,14 @@ export const billingService = {
         where: { id: input.brokerageInvoiceId },
         data: { amountPaid: moneyString(newPaid), status: nextStatus },
       })
+      return { nextStatus, invoice: await tx.brokerageInvoice.findUnique({ where: { id: input.brokerageInvoiceId }, select: INVOICE_SELECT }) }
     })
 
     await writeAudit(db, audit, {
       action: 'UPDATE', entityType: 'BrokerageInvoice', entityId: input.brokerageInvoiceId,
-      changes: { after: { event: 'PAYMENT', amount: moneyString(amount), status: nextStatus } },
+      changes: { after: { event: 'PAYMENT', amount: moneyString(amount), status: updated.nextStatus } },
     })
 
-    return this.get(db, input.brokerageInvoiceId)
+    return updated.invoice
   },
 }

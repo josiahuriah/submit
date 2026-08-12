@@ -11,13 +11,14 @@ import { NotFoundError } from '@/lib/errors'
 
 const CLIENT_SELECT = {
   id: true, name: true, clientType: true, tinNumber: true, email: true,
-  phone: true, address: true, contactPerson: true, notes: true,
+  phone: true, address: true, city: true, countryCode: true, postcode: true,
+  contactPerson: true, notes: true,
   isActive: true, createdAt: true,
 } as const
 
 const SUPPLIER_SELECT = {
   id: true, name: true, country: true, email: true, phone: true,
-  address: true, isActive: true, createdAt: true,
+  address: true, city: true, postcode: true, isActive: true, createdAt: true,
 } as const
 
 const MANIFEST_SELECT = {

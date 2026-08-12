@@ -17,7 +17,7 @@ import { DeclarationProfileCard } from "./declaration-profile-card";
  * static header, then hands everything to <LineEntry/> (client) which owns the
  * live entry row and instant duty preview.
  *
- * In Next.js 15, `params` is a Promise — hence the await.
+ * In current App Router releases, `params` is a Promise — hence the await.
  */
 export default async function EntryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -34,6 +34,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         </span>
         <Chip kind={shipment.status === "DRAFT" ? "draft" : "acc"}>{shipment.status}</Chip>
         <div style={{ flex: 1 }} />
+        {shipment.status === "DRAFT" && <Link href={`/shipments/${id}/edit`} className="sb-btn"><span aria-hidden>✎</span> Edit shipment</Link>}
         <ReviewXmlButton shipmentId={id} status={shipment.status} disabled={shipment.totals === null} />
       </div>
 

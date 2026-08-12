@@ -1,5 +1,11 @@
 # Frontend Integration — Session Handoff
 
+> Historical record: this describes the state at commit `b72bc45`. Its
+> unfinished-work list was superseded on 2026-08-08 by the operational `/home`,
+> client/supplier CRUD, manifest/shipment editing, billing/accounting screens,
+> ESLint configuration, and the fresh-account route workflow test. Use
+> `README.md` and the `.agents/skills/` runbooks for current status.
+
 Written 2026-07-29, at commit `b72bc45` (the repo's first commit).
 
 Context for whoever picks this up next. The `.claude/skills/` library is the

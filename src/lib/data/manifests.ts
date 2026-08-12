@@ -18,15 +18,18 @@ import { requirePermission } from '@/lib/auth/rbac'
 import { createTenantClient } from '@/lib/db/tenant-client'
 import { basePrisma } from '@/lib/db/prisma'
 import { catalogService } from '@/server/services/catalog.service'
-import { manifestCreateSchema } from '@/lib/validation/schemas'
+import { manifestCreateSchema, manifestUpdateSchema } from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
 
 export interface ManifestListItem {
   id: string
   manifestNumber: string
   status: string
+  voyageId: string
   vesselName: string
   voyageNumber: string
+  shippingAgentId: string | null
+  shippingAgentName: string | null
   arrival: string
   registeredAt: string
   notes: string | null
@@ -54,8 +57,11 @@ export async function listManifests(): Promise<ManifestListItem[]> {
     id: m.id,
     manifestNumber: m.manifestNumber,
     status: m.status,
+    voyageId: m.voyage.id,
     vesselName: m.voyage.vessel.name,
     voyageNumber: m.voyage.voyageNumber,
+    shippingAgentId: m.shippingAgent?.id ?? null,
+    shippingAgentName: m.shippingAgent?.name ?? null,
     arrival: isoDay(m.voyage.arrivalDate),
     registeredAt: isoDay(m.registeredAt),
     notes: m.notes,
@@ -108,6 +114,8 @@ export interface CreateManifestResult {
   error: string | null
 }
 
+export type UpdateManifestResult = CreateManifestResult
+
 export async function createManifest(draft: {
   manifestNumber: string
   voyageId: string
@@ -143,8 +151,11 @@ export async function createManifest(draft: {
         id: m.id,
         manifestNumber: m.manifestNumber,
         status: m.status,
+        voyageId: m.voyage.id,
         vesselName: m.voyage.vessel.name,
         voyageNumber: m.voyage.voyageNumber,
+        shippingAgentId: m.shippingAgent?.id ?? null,
+        shippingAgentName: m.shippingAgent?.name ?? null,
         arrival: isoDay(m.voyage.arrivalDate),
         registeredAt: isoDay(m.registeredAt),
         notes: m.notes,
@@ -155,5 +166,64 @@ export async function createManifest(draft: {
     if (error instanceof AppError) return { manifest: null, error: error.message }
     // The org-scoped unique on manifestNumber is the likely non-AppError cause.
     return { manifest: null, error: `A manifest numbered "${input.manifestNumber}" already exists.` }
+  }
+}
+
+export async function updateManifest(
+  manifestId: string,
+  draft: {
+    manifestNumber: string
+    voyageId: string
+    shippingAgentId: string
+    registeredAt: string
+    status: string
+    notes: string
+  },
+): Promise<UpdateManifestResult> {
+  const claims = await requireSession()
+  requirePermission(claims.role, 'shipments:write')
+  const headerList = await headers()
+  const db = createTenantClient(claims.orgId)
+  const audit = {
+    userId: claims.sub,
+    ip: headerList.get('x-forwarded-for')?.split(',')[0]?.trim(),
+    userAgent: headerList.get('user-agent') ?? undefined,
+  }
+
+  let input
+  try {
+    input = manifestUpdateSchema.parse({
+      manifestNumber: draft.manifestNumber.trim(),
+      voyageId: draft.voyageId,
+      shippingAgentId: draft.shippingAgentId || null,
+      registeredAt: draft.registeredAt || null,
+      status: draft.status,
+      notes: draft.notes.trim(),
+    })
+  } catch {
+    return { manifest: null, error: 'Check the manifest number, voyage, status and registration date.' }
+  }
+
+  try {
+    const m = await catalogService.updateManifest(db, audit, manifestId, input)
+    return {
+      manifest: {
+        id: m.id,
+        manifestNumber: m.manifestNumber,
+        status: m.status,
+        voyageId: m.voyage.id,
+        vesselName: m.voyage.vessel.name,
+        voyageNumber: m.voyage.voyageNumber,
+        shippingAgentId: m.shippingAgent?.id ?? null,
+        shippingAgentName: m.shippingAgent?.name ?? null,
+        arrival: isoDay(m.voyage.arrivalDate),
+        registeredAt: isoDay(m.registeredAt),
+        notes: m.notes,
+      },
+      error: null,
+    }
+  } catch (error) {
+    if (error instanceof AppError) return { manifest: null, error: error.message }
+    return { manifest: null, error: `Could not update manifest "${input.manifestNumber ?? manifestId}".` }
   }
 }

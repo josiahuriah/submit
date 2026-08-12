@@ -49,7 +49,7 @@ function LoginForm() {
         setError(body?.error?.message ?? 'Sign-in failed')
         return
       }
-      router.push('/dashboard')
+      router.push('/home')
     } finally {
       setBusy(false)
     }

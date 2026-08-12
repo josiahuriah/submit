@@ -8,16 +8,19 @@ export function cn(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(" ");
 }
 
-/**
- * Format a number as USD money. Accepts a number or a numeric string
- * (your API returns money as strings to preserve precision — this handles both).
- */
+import Decimal from "decimal.js";
+
+/** Format money without converting API decimal strings through a JS float. */
 export function money(value: number | string): string {
-  const n = typeof value === "string" ? Number(value) : value;
-  return "$" + (Number.isFinite(n) ? n : 0).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  try {
+    const fixed = new Decimal(value).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toFixed(2);
+    const negative = fixed.startsWith("-");
+    const [whole, cents] = (negative ? fixed.slice(1) : fixed).split(".");
+    const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return `${negative ? "-" : ""}$${grouped}.${cents}`;
+  } catch {
+    return "$0.00";
+  }
 }
 
 /** Format an ISO date (or Date) as "2026-05-18". */

@@ -63,6 +63,15 @@ export const clientCreateSchema = z.object({
   notes: z.string().max(2000).optional(),
 })
 export const clientUpdateSchema = clientCreateSchema.partial().extend({
+  tinNumber: z.string().max(30).nullable().optional(),
+  email: z.string().email().nullable().optional(),
+  phone: z.string().max(30).nullable().optional(),
+  address: z.string().max(400).nullable().optional(),
+  city: z.string().max(100).nullable().optional(),
+  countryCode: z.string().length(2).toUpperCase().nullable().optional(),
+  postcode: z.string().max(20).nullable().optional(),
+  contactPerson: z.string().max(120).nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
   isActive: z.boolean().optional(),
 })
 
@@ -76,6 +85,12 @@ export const supplierCreateSchema = z.object({
   postcode: z.string().max(20).optional(),
 })
 export const supplierUpdateSchema = supplierCreateSchema.partial().extend({
+  country: z.string().length(2, 'ISO alpha-2 country code').toUpperCase().nullable().optional(),
+  email: z.string().email().nullable().optional(),
+  phone: z.string().max(30).nullable().optional(),
+  address: z.string().max(400).nullable().optional(),
+  city: z.string().max(100).nullable().optional(),
+  postcode: z.string().max(20).nullable().optional(),
   isActive: z.boolean().optional(),
 })
 
@@ -89,6 +104,8 @@ export const manifestCreateSchema = z.object({
   notes: z.string().max(2000).optional(),
 })
 export const manifestUpdateSchema = manifestCreateSchema.partial().extend({
+  shippingAgentId: id.nullable().optional(),
+  registeredAt: z.coerce.date().nullable().optional(),
   status: z.enum(['OPEN', 'CLOSED']).optional(),
 })
 
@@ -122,7 +139,11 @@ export const shipmentCreateSchema = z.object({
   insuranceCharge: moneyOptional,
   otherCharges: moneyOptional,
 })
-export const shipmentUpdateSchema = shipmentCreateSchema.partial()
+export const shipmentUpdateSchema = shipmentCreateSchema.partial().extend({
+  manifestId: id.nullable().optional(),
+  grossWeightKg: quantity.nullable().optional(),
+  netWeightKg: quantity.nullable().optional(),
+})
 
 export const shipmentStatusSchema = z.enum(['DRAFT', 'SUBMITTED', 'CLEARED', 'CANCELLED'])
 

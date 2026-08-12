@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
 
     const result = await authService.loginOrRegisterWithGoogle(profile, state.orgName)
 
-    const res = NextResponse.redirect(new URL('/dashboard', req.url))
+    const res = NextResponse.redirect(new URL('/home', req.url))
     res.cookies.delete(GOOGLE_OAUTH_NONCE_COOKIE)
     await setSessionCookie(result.token)
     return res

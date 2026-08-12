@@ -19,8 +19,9 @@ import { createTenantClient } from '@/lib/db/tenant-client'
 import { basePrisma } from '@/lib/db/prisma'
 import { shipmentsService } from '@/server/services/shipments.service'
 import { catalogService } from '@/server/services/catalog.service'
-import { shipmentCreateSchema } from '@/lib/validation/schemas'
+import { shipmentCreateSchema, shipmentUpdateSchema } from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
+import { revalidatePath } from 'next/cache'
 
 async function actionContext(permission: Permission) {
   const claims = await requireSession()
@@ -50,6 +51,33 @@ export interface NewShipmentOptions {
   manifests: OptionItem[]
 }
 
+export interface ShipmentEditDraft {
+  shipmentNumber: string
+  clientId: string
+  declarationOfficeId: string
+  manifestId: string
+  blNumber: string
+  containerNumber: string
+  containerSealNumber: string
+  containerFullnessCode: string
+  declarationDate: string
+  declarationFunctionCode: string
+  regimeCode: string
+  goodsLocationCode: string
+  warehouseCode: string
+  transportNationalityCode: string
+  goodsType: string
+  packageType: string
+  packageCount: string
+  transportMode: string
+  description: string
+  grossWeightKg: string
+  netWeightKg: string
+  freightCharge: string
+  insuranceCharge: string
+  otherCharges: string
+}
+
 export async function listNewShipmentOptions(): Promise<NewShipmentOptions> {
   const claims = await requireSession()
   const db = createTenantClient(claims.orgId)
@@ -63,12 +91,108 @@ export async function listNewShipmentOptions(): Promise<NewShipmentOptions> {
     catalogService.listManifests(db, {}),
   ])
   return {
-    clients: clients.items.map((c) => ({ id: c.id, label: c.name })),
+    clients: clients.items.filter((c) => c.isActive).map((c) => ({ id: c.id, label: c.name })),
     offices: offices.map((o) => ({ id: o.id, label: `${o.code} — ${o.name}` })),
     manifests: manifests.items.map((m) => ({
       id: m.id,
       label: `${m.manifestNumber} · ${m.voyage.vessel.name} ${m.voyage.voyageNumber}`,
     })),
+  }
+}
+
+export async function getShipmentEditData(shipmentId: string): Promise<{
+  draft: ShipmentEditDraft
+  options: NewShipmentOptions
+}> {
+  const claims = await requireSession()
+  const db = createTenantClient(claims.orgId)
+  const [shipment, options] = await Promise.all([
+    shipmentsService.get(db, shipmentId),
+    listNewShipmentOptions(),
+  ])
+
+  return {
+    draft: {
+      shipmentNumber: shipment.shipmentNumber,
+      clientId: shipment.client.id,
+      declarationOfficeId: shipment.declarationOffice.id,
+      manifestId: shipment.manifest?.id ?? '',
+      blNumber: shipment.blNumber ?? '',
+      containerNumber: shipment.containerNumber ?? '',
+      containerSealNumber: shipment.containerSealNumber ?? '',
+      containerFullnessCode: shipment.containerFullnessCode ?? '',
+      declarationDate: shipment.declarationDate.toISOString().slice(0, 10),
+      declarationFunctionCode: shipment.declarationFunctionCode,
+      regimeCode: shipment.regimeCode,
+      goodsLocationCode: shipment.goodsLocationCode ?? '',
+      warehouseCode: shipment.warehouseCode ?? '',
+      transportNationalityCode: shipment.transportNationalityCode ?? '',
+      goodsType: shipment.goodsType,
+      packageType: shipment.packageType,
+      packageCount: String(shipment.packageCount),
+      transportMode: shipment.transportMode,
+      description: shipment.description ?? '',
+      grossWeightKg: shipment.grossWeightKg === null ? '' : String(shipment.grossWeightKg),
+      netWeightKg: shipment.netWeightKg === null ? '' : String(shipment.netWeightKg),
+      freightCharge: String(shipment.freightCharge),
+      insuranceCharge: String(shipment.insuranceCharge),
+      otherCharges: String(shipment.otherCharges),
+    },
+    options: {
+      ...options,
+      clients: options.clients.some((client) => client.id === shipment.client.id)
+        ? options.clients
+        : [{ id: shipment.client.id, label: shipment.client.name }, ...options.clients],
+    },
+  }
+}
+
+export async function updateShipment(
+  shipmentId: string,
+  draft: ShipmentEditDraft,
+): Promise<{ ok: boolean; error: string | null }> {
+  const { db, audit } = await actionContext('shipments:write')
+  let input
+  try {
+    input = shipmentUpdateSchema.parse({
+      shipmentNumber: draft.shipmentNumber.trim(),
+      clientId: draft.clientId,
+      declarationOfficeId: draft.declarationOfficeId,
+      manifestId: draft.manifestId || null,
+      blNumber: draft.blNumber.trim(),
+      containerNumber: draft.containerNumber.trim(),
+      containerSealNumber: draft.containerSealNumber.trim(),
+      containerFullnessCode: draft.containerFullnessCode.trim(),
+      declarationDate: draft.declarationDate,
+      declarationFunctionCode: draft.declarationFunctionCode,
+      regimeCode: draft.regimeCode.trim(),
+      goodsLocationCode: draft.goodsLocationCode.trim(),
+      warehouseCode: draft.warehouseCode.trim(),
+      transportNationalityCode: draft.transportNationalityCode.trim().toUpperCase() || undefined,
+      goodsType: draft.goodsType,
+      packageType: draft.packageType,
+      packageCount: draft.packageCount,
+      transportMode: draft.transportMode,
+      description: draft.description.trim(),
+      grossWeightKg: draft.grossWeightKg.trim() || null,
+      netWeightKg: draft.netWeightKg.trim() || null,
+      freightCharge: draft.freightCharge.trim() || '0',
+      insuranceCharge: draft.insuranceCharge.trim() || '0',
+      otherCharges: draft.otherCharges.trim() || '0',
+    })
+  } catch {
+    return { ok: false, error: 'Check required fields and numeric values before saving.' }
+  }
+
+  try {
+    await shipmentsService.update(db, audit, shipmentId, input)
+    revalidatePath('/shipments')
+    revalidatePath(`/shipments/${shipmentId}/entry`)
+    revalidatePath('/home')
+    return { ok: true, error: null }
+  } catch (error) {
+    if (error instanceof AppError) return { ok: false, error: error.message }
+    return { ok: false, error: 'Could not update the shipment.' }
   }
 }
 

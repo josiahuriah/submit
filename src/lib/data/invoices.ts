@@ -25,7 +25,7 @@ export async function listSupplierOptions(): Promise<SupplierOption[]> {
   const claims = await requireSession()
   const db = createTenantClient(claims.orgId)
   const page = await catalogService.listSuppliers(db, {})
-  return page.items.map((s) => ({
+  return page.items.filter((s) => s.isActive).map((s) => ({
     id: s.id,
     label: s.country ? `${s.name} (${s.country})` : s.name,
   }))

@@ -34,9 +34,9 @@ async function scoped() {
 }
 
 /** List shipments for the Shipments page. */
-export async function listShipments(): Promise<Page<ShipmentListItem>> {
+export async function listShipments(filters: { search?: string } = {}): Promise<Page<ShipmentListItem>> {
   const db = await scoped()
-  const page = await shipmentsService.list(db, {})
+  const page = await shipmentsService.list(db, filters)
   return { rows: page.items.map(toShipmentListItem), nextCursor: page.nextCursor }
 }
 
