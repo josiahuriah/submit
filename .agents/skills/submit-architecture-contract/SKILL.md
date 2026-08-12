@@ -51,7 +51,7 @@ from reading the code; re-check before relying on it.
 | 1 | Three-layer tenant isolation: (1) Prisma client extension injects `organizationId` into every query/write on the 12 tenant-scoped models, including `findUnique`; (2) `withAuth()` builds a per-request tenant client from verified JWT claims; (3) Postgres RLS with `FORCE ROW LEVEL SECURITY` + transaction-scoped `set_config('app.current_org_id', $org, true)` | Application code physically cannot forget the tenant filter (layer 1); orgId comes from the verified token, never user input (layer 2); a bug in layers 1–2 still cannot leak rows (layer 3). `FORCE` is required because Neon's `neondb_owner` owns the tables and owners bypass RLS otherwise. Transaction-scoped `set_config` is the only form safe under PgBouncer transaction pooling | Stated — README "Tenant isolation" table; header comments in `src/lib/db/tenant-client.ts` and `prisma/sql/rls.sql` |
 | 2 | The extension wraps every operation in a batch `$transaction([set_config, query])` | Guarantees `set_config` and the query run on the SAME pooled connection, and the setting dies with the transaction — session-level SET would leak onto whichever request borrows the connection next under PgBouncer | Stated — comments in `tenant-client.ts` (~lines 125–131) and `src/lib/db/prisma.ts` |
 | 3 | `db.$tenantTransaction(fn)` is the sanctioned escape hatch for multi-write atomicity (used by calculation persist and payment+balance update only). Inside it, RLS is the enforcement layer | The per-operation extension wrapping cannot span statements; one interactive transaction sets the RLS variable first | Stated — README + `tenant-client.ts` docstring; call sites in `calculations.service.ts:118`, `billing.service.ts:131` |
-| 4 | `basePrisma` (unscoped) lives ONLY in `src/lib/db/prisma.ts`, is consumed by `tenant-client.ts`, and is otherwise used only for global reference data (currently `hs-codes.service.ts`). Pre-auth flows (login/registration) use `systemQuery()` which sets an `app.bypass_rls` transaction flag | Global lookup models (HSCode, Port, CustomsOffice, Carrier, Vessel, Voyage, Journey, ShippingAgent, HSCodeRate) are shared reference data, not tenant rows; login must find a user before an org context exists. "This file is the only place a raw, unscoped client exists" | Stated — `prisma.ts` header comment; derived — grep confirms the current usage set |
+| 4 | `basePrisma` (unscoped) lives ONLY in `src/lib/db/prisma.ts`, is consumed by `tenant-client.ts`, and is otherwise used only for global reference data through `hs-codes.service.ts`, `transport-references.service.ts`, and one existing CustomsOffice picker in `shipment-actions.ts`. Pre-auth flows (login/registration) use `systemQuery()` which sets an `app.bypass_rls` transaction flag | Global lookup models (HSCode, Port, CustomsOffice, Carrier, Vessel, Voyage, Journey, ShippingAgent, HSCodeRate) are shared reference data, not tenant rows; login must find a user before an org context exists. "This file is the only place a raw, unscoped client exists" | Stated — `prisma.ts` header comment; derived — grep confirms the current usage set |
 | 5 | Layered flow: thin route (Zod validation only) → service (business rules + audit) → repository/TenantClient (data). Only shipments has a repository; catalog entities (clients/suppliers/manifests) go service→TenantClient directly | "A full repository layer would be ceremony without benefit" for simple CRUD; `shipments.repository.ts` is "the pattern to copy when an entity grows real query complexity" | Stated — README architecture line + `catalog.service.ts` header comment |
 | 6 | Permission checks happen in `withAuth(handler, { permission })` at the route boundary, mapped via `src/lib/auth/rbac.ts` (`VIEWER < CLERK < BROKER < ADMIN < OWNER`). Review artifact generation uses `shipments:write`; `shipments:submit` remains reserved for a future verified endpoint | Clerks can prepare stakeholder files; eventual legal filing stays BROKER+ | Stated — README "RBAC"; derived from artifact route and `rbac.ts` |
 | 7 | Calculation engine is pure, deterministic, decimal.js-only. Duty and excise independently support AD_VALOREM / SPECIFIC / COMPOUND / ADDITIVE; invoice FOB converts to BSD before largest-remainder apportionment; VAT includes duty/excise/levy and the bounded processing fee is VAT-able | Precise, auditable customs prediction without native-float drift | Stated — README + calculation modules |
@@ -69,7 +69,7 @@ recorded here.
 
 | Invariant | Check (copy-paste) | Expected (as of 2026-08-08) |
 |---|---|---|
-| `basePrisma` never leaks into request code | `grep -rln "basePrisma" src --include='*.ts'` | Exactly: `src/lib/db/prisma.ts`, `src/lib/db/tenant-client.ts`, `src/server/services/hs-codes.service.ts` (global HS-code reads only). Any file under `src/app/` appearing here is a tenant-isolation bug |
+| `basePrisma` never leaks into request code | `grep -rln "basePrisma" src --include='*.ts'` | Exactly: `src/lib/db/prisma.ts`, `src/lib/db/tenant-client.ts`, `src/server/services/hs-codes.service.ts`, `src/server/services/transport-references.service.ts`, and the known `src/lib/data/shipment-actions.ts` CustomsOffice picker. Any additional request/data file appearing here is a tenant-isolation bug |
 | `systemQuery` used only pre-auth | `grep -rln "systemQuery" src --include='*.ts'` | Exactly: `src/lib/db/prisma.ts`, `src/server/services/auth.service.ts` |
 | Every non-auth route goes through `withAuth` | `grep -rL "withAuth" $(find src/app/api -name route.ts)` | Exactly three files: `src/app/api/auth/login/route.ts`, `register/route.ts`, `logout/route.ts` (the only intentionally pre-auth routes; `auth/me` DOES use withAuth) |
 | Tenant model list consistent across layer 1 and layer 3 | `grep -A14 "TENANT_MODELS" src/lib/db/tenant-client.ts` and `grep -A4 "tenant_tables" prisma/sql/rls.sql` | Same 12 models in both: User, Client, Supplier, Manifest, Shipment, ShipmentDocument, Invoice, LineItem, CustomsEntry, BrokerageInvoice, Payment, AuditLog. Adding an `organizationId`-bearing model to schema.prisma without adding it to BOTH lists silently un-isolates it |
@@ -98,9 +98,9 @@ direct Prisma model calls beyond what the service exposes, no try/catch
 **Services** (`src/server/services/`) own business rules, cross-entity
 orchestration, audit writes (`writeAudit` from `src/lib/audit.ts`), and
 error throwing (AppError subclasses only). They receive a `TenantClient` —
-they never construct one and never import `basePrisma` (sole current
-exceptions: `hs-codes.service.ts` for global reference reads,
-`auth.service.ts` via `systemQuery` for pre-auth flows). They call the pure
+they never construct one and never import `basePrisma` (current exceptions:
+`hs-codes.service.ts` and `transport-references.service.ts` for global
+reference data, plus `auth.service.ts` via `systemQuery` for pre-auth flows). They call the pure
 calculation functions in `src/lib/calculations/`; they do not reimplement
 math.
 
@@ -166,7 +166,7 @@ Stated plainly. Re-verify status before acting on any of these.
 
 ## Provenance and maintenance
 
-Everything above was re-verified from the canonical repo on 2026-08-08
+Everything above was re-verified from the canonical repo on 2026-08-12
 (package.json version 0.3.0). One-liners to re-verify the volatile facts:
 
 - Version/stack: `grep '"version"' package.json && grep -E '"(next|zod|@prisma/client)"' package.json`

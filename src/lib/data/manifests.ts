@@ -6,9 +6,9 @@
  *
  * Two scoping rules, deliberately:
  *   - Manifests are TENANT data, read through a session-scoped TenantClient.
- *   - Voyages / vessels / shipping agents are GLOBAL transport fixtures shared
- *     by every brokerage, read via basePrisma (like HS codes) — still only
- *     reachable behind an authenticated page.
+ *   - Voyages / vessels / shipping agents are GLOBAL transport references
+ *     shared by every brokerage, accessed through transportReferencesService
+ *     and still only reachable behind an authenticated page.
  */
 'use server'
 
@@ -16,11 +16,18 @@ import { headers } from 'next/headers'
 import { requireSession } from '@/lib/auth/session'
 import { requirePermission } from '@/lib/auth/rbac'
 import { createTenantClient } from '@/lib/db/tenant-client'
-import { basePrisma } from '@/lib/db/prisma'
 import { catalogService } from '@/server/services/catalog.service'
-import { manifestCreateSchema, manifestUpdateSchema, shippingAgentCreateSchema, voyageCreateSchema } from '@/lib/validation/schemas'
+import { transportReferencesService } from '@/server/services/transport-references.service'
+import {
+  journeyCreateSchema,
+  manifestCreateSchema,
+  manifestUpdateSchema,
+  shippingAgentCreateSchema,
+  vesselCreateSchema,
+  voyageCreateSchema,
+} from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
-import { writeAudit } from '@/lib/audit'
+import type { AuditContext } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
 
 export interface ManifestListItem {
@@ -57,13 +64,41 @@ export interface JourneyOption {
   label: string
 }
 
+export interface CarrierOption {
+  id: string
+  label: string
+  mode: 'SEA' | 'AIR'
+}
+
+export interface PortOption {
+  id: string
+  label: string
+  unLocode: string
+}
+
 export interface ManifestReferenceOptions {
+  carriers: CarrierOption[]
+  ports: PortOption[]
   vessels: VesselOption[]
   journeys: JourneyOption[]
 }
 
 function isoDay(value: Date | null | undefined): string {
   return value ? value.toISOString().slice(0, 10) : '—'
+}
+
+async function manifestWriteContext() {
+  const claims = await requireSession()
+  requirePermission(claims.role, 'shipments:write')
+  const headerList = await headers()
+  return {
+    db: createTenantClient(claims.orgId),
+    audit: {
+      userId: claims.sub,
+      ip: headerList.get('x-forwarded-for')?.split(',')[0]?.trim(),
+      userAgent: headerList.get('user-agent') ?? undefined,
+    } satisfies AuditContext,
+  }
 }
 
 export async function listManifests(): Promise<ManifestListItem[]> {
@@ -88,22 +123,7 @@ export async function listManifests(): Promise<ManifestListItem[]> {
 /** Global voyage fixtures for the create form's picker. */
 export async function listVoyageOptions(): Promise<VoyageOption[]> {
   await requireSession()
-  const voyages = await basePrisma.voyage.findMany({
-    select: {
-      id: true,
-      voyageNumber: true,
-      arrivalDate: true,
-      vessel: { select: { name: true } },
-      journey: {
-        select: {
-          originPort: { select: { unLocode: true } },
-          destinationPort: { select: { unLocode: true } },
-        },
-      },
-    },
-    orderBy: { arrivalDate: 'desc' },
-    take: 50,
-  })
+  const voyages = await transportReferencesService.listVoyages()
   return voyages.map((v) => {
     const route = v.journey
       ? ` · ${v.journey.originPort.unLocode} → ${v.journey.destinationPort.unLocode}`
@@ -117,32 +137,23 @@ export async function listVoyageOptions(): Promise<VoyageOption[]> {
 
 export async function listAgentOptions(): Promise<AgentOption[]> {
   await requireSession()
-  const agents = await basePrisma.shippingAgent.findMany({
-    where: { isActive: true },
-    select: { id: true, name: true },
-    orderBy: { name: 'asc' },
-  })
-  return agents
+  return transportReferencesService.listShippingAgents()
 }
 
 export async function listManifestReferenceOptions(): Promise<ManifestReferenceOptions> {
   await requireSession()
-  const [vessels, journeys] = await Promise.all([
-    basePrisma.vessel.findMany({
-      where: { isActive: true, mode: { in: ['SEA', 'AIR'] } },
-      select: { id: true, name: true, mode: true, carrier: { select: { name: true } } },
-      orderBy: { name: 'asc' },
-    }),
-    basePrisma.journey.findMany({
-      select: {
-        id: true,
-        originPort: { select: { unLocode: true, name: true } },
-        destinationPort: { select: { unLocode: true, name: true } },
-      },
-      orderBy: { originPort: { unLocode: 'asc' } },
-    }),
-  ])
+  const { carriers, ports, vessels, journeys } = await transportReferencesService.listDirectory()
   return {
+    carriers: carriers.map((carrier) => ({
+      id: carrier.id,
+      label: `${carrier.name} · ${carrier.code}`,
+      mode: carrier.mode as 'SEA' | 'AIR',
+    })),
+    ports: ports.map((port) => ({
+      id: port.id,
+      label: `${port.unLocode} · ${port.name} (${port.country})`,
+      unLocode: port.unLocode,
+    })),
     vessels: vessels.map((vessel) => ({
       id: vessel.id,
       label: `${vessel.name} · ${vessel.carrier.name} · ${vessel.mode.toLowerCase()}`,
@@ -160,10 +171,7 @@ export async function createShippingAgent(draft: {
   email: string
   phone: string
 }): Promise<{ agent: AgentOption | null; error: string | null }> {
-  const claims = await requireSession()
-  requirePermission(claims.role, 'shipments:write')
-  const headerList = await headers()
-  const db = createTenantClient(claims.orgId)
+  const { db, audit } = await manifestWriteContext()
   let input
   try {
     input = shippingAgentCreateSchema.parse({
@@ -177,22 +185,71 @@ export async function createShippingAgent(draft: {
   }
 
   try {
-    const agent = await basePrisma.shippingAgent.create({
-      data: input,
-      select: { id: true, name: true },
-    })
-    await writeAudit(db, {
-      userId: claims.sub,
-      ip: headerList.get('x-forwarded-for')?.split(',')[0]?.trim(),
-      userAgent: headerList.get('user-agent') ?? undefined,
-    }, { action: 'CREATE', entityType: 'ShippingAgentReference', entityId: agent.id, changes: { after: input } })
+    const agent = await transportReferencesService.createShippingAgent(db, audit, input)
     revalidatePath('/manifests')
     return { agent, error: null }
   } catch (error) {
-    if ((error as { code?: string }).code === 'P2002') {
-      return { agent: null, error: `Shipping agent code "${input.code}" is already in use.` }
-    }
+    if (error instanceof AppError) return { agent: null, error: error.message }
     return { agent: null, error: 'Could not create the shipping agent.' }
+  }
+}
+
+export async function createVessel(draft: {
+  carrierId: string
+  name: string
+  mode: 'SEA' | 'AIR'
+  imoNumber: string
+}): Promise<{ vessel: VesselOption | null; error: string | null }> {
+  const { db, audit } = await manifestWriteContext()
+  let input
+  try {
+    input = vesselCreateSchema.parse({
+      carrierId: draft.carrierId,
+      name: draft.name.trim(),
+      mode: draft.mode,
+      imoNumber: draft.mode === 'SEA' ? draft.imoNumber.trim() || undefined : undefined,
+    })
+  } catch {
+    return { vessel: null, error: 'Select a matching carrier and enter a vessel or aircraft name.' }
+  }
+
+  try {
+    const vessel = await transportReferencesService.createVessel(db, audit, input)
+    const option = {
+      id: vessel.id,
+      label: `${vessel.name} · ${vessel.carrier.name} · ${vessel.mode.toLowerCase()}`,
+    }
+    revalidatePath('/manifests')
+    return { vessel: option, error: null }
+  } catch (error) {
+    if (error instanceof AppError) return { vessel: null, error: error.message }
+    return { vessel: null, error: 'Could not create the vessel or aircraft.' }
+  }
+}
+
+export async function createRoute(draft: {
+  originPortId: string
+  destinationPortId: string
+}): Promise<{ route: JourneyOption | null; error: string | null }> {
+  const { db, audit } = await manifestWriteContext()
+  let input
+  try {
+    input = journeyCreateSchema.parse(draft)
+  } catch {
+    return { route: null, error: 'Select two different ports.' }
+  }
+
+  try {
+    const route = await transportReferencesService.createJourney(db, audit, input)
+    const option = {
+      id: route.id,
+      label: `${route.originPort.unLocode} → ${route.destinationPort.unLocode}`,
+    }
+    revalidatePath('/manifests')
+    return { route: option, error: null }
+  } catch (error) {
+    if (error instanceof AppError) return { route: null, error: error.message }
+    return { route: null, error: 'Could not create the route.' }
   }
 }
 
@@ -203,10 +260,7 @@ export async function createVoyage(draft: {
   departureDate: string
   arrivalDate: string
 }): Promise<{ voyage: VoyageOption | null; error: string | null }> {
-  const claims = await requireSession()
-  requirePermission(claims.role, 'shipments:write')
-  const headerList = await headers()
-  const db = createTenantClient(claims.orgId)
+  const { db, audit } = await manifestWriteContext()
   let input
   try {
     input = voyageCreateSchema.parse({
@@ -221,21 +275,7 @@ export async function createVoyage(draft: {
   }
 
   try {
-    const voyage = await basePrisma.voyage.create({
-      data: input,
-      select: {
-        id: true,
-        voyageNumber: true,
-        arrivalDate: true,
-        vessel: { select: { name: true } },
-        journey: {
-          select: {
-            originPort: { select: { unLocode: true } },
-            destinationPort: { select: { unLocode: true } },
-          },
-        },
-      },
-    })
+    const voyage = await transportReferencesService.createVoyage(db, audit, input)
     const route = voyage.journey
       ? ` · ${voyage.journey.originPort.unLocode} → ${voyage.journey.destinationPort.unLocode}`
       : ''
@@ -243,17 +283,10 @@ export async function createVoyage(draft: {
       id: voyage.id,
       label: `${voyage.vessel.name} · ${voyage.voyageNumber}${route} · arr ${isoDay(voyage.arrivalDate)}`,
     }
-    await writeAudit(db, {
-      userId: claims.sub,
-      ip: headerList.get('x-forwarded-for')?.split(',')[0]?.trim(),
-      userAgent: headerList.get('user-agent') ?? undefined,
-    }, { action: 'CREATE', entityType: 'VoyageReference', entityId: voyage.id, changes: { after: input } })
     revalidatePath('/manifests')
     return { voyage: option, error: null }
   } catch (error) {
-    if ((error as { code?: string }).code === 'P2002') {
-      return { voyage: null, error: `Voyage "${input.voyageNumber}" already exists for that vessel.` }
-    }
+    if (error instanceof AppError) return { voyage: null, error: error.message }
     return { voyage: null, error: 'Could not create the voyage. Check that the selected vessel and journey still exist.' }
   }
 }
@@ -272,15 +305,7 @@ export async function createManifest(draft: {
   shippingAgentId: string
   notes: string
 }): Promise<CreateManifestResult> {
-  const claims = await requireSession()
-  requirePermission(claims.role, 'shipments:write')
-  const headerList = await headers()
-  const db = createTenantClient(claims.orgId)
-  const audit = {
-    userId: claims.sub,
-    ip: headerList.get('x-forwarded-for')?.split(',')[0]?.trim(),
-    userAgent: headerList.get('user-agent') ?? undefined,
-  }
+  const { db, audit } = await manifestWriteContext()
 
   let input
   try {
@@ -330,15 +355,7 @@ export async function updateManifest(
     notes: string
   },
 ): Promise<UpdateManifestResult> {
-  const claims = await requireSession()
-  requirePermission(claims.role, 'shipments:write')
-  const headerList = await headers()
-  const db = createTenantClient(claims.orgId)
-  const audit = {
-    userId: claims.sub,
-    ip: headerList.get('x-forwarded-for')?.split(',')[0]?.trim(),
-    userAgent: headerList.get('user-agent') ?? undefined,
-  }
+  const { db, audit } = await manifestWriteContext()
 
   let input
   try {

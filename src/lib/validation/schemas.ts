@@ -116,6 +116,22 @@ export const shippingAgentCreateSchema = z.object({
   phone: z.string().max(30).optional(),
 })
 
+export const vesselCreateSchema = z.object({
+  carrierId: id,
+  name: z.string().min(1).max(160),
+  mode: z.enum(['SEA', 'AIR']),
+  // Aircraft do not have IMO numbers. The action strips this field for AIR.
+  imoNumber: z.string().min(1).max(30).toUpperCase().optional(),
+})
+
+export const journeyCreateSchema = z.object({
+  originPortId: id,
+  destinationPortId: id,
+}).refine(
+  ({ originPortId, destinationPortId }) => originPortId !== destinationPortId,
+  { message: 'Origin and destination ports must be different', path: ['destinationPortId'] },
+)
+
 export const voyageCreateSchema = z.object({
   vesselId: id,
   journeyId: id.optional(),
