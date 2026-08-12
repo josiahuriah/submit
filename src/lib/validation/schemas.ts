@@ -109,6 +109,21 @@ export const manifestUpdateSchema = manifestCreateSchema.partial().extend({
   status: z.enum(['OPEN', 'CLOSED']).optional(),
 })
 
+export const shippingAgentCreateSchema = z.object({
+  name: z.string().min(1).max(160),
+  code: z.string().min(1).max(30).toUpperCase().optional(),
+  email: z.string().email().optional(),
+  phone: z.string().max(30).optional(),
+})
+
+export const voyageCreateSchema = z.object({
+  vesselId: id,
+  journeyId: id.optional(),
+  voyageNumber: z.string().min(1).max(60),
+  departureDate: z.coerce.date().optional(),
+  arrivalDate: z.coerce.date().optional(),
+})
+
 // --- shipments -------------------------------------------------------------------------
 
 export const shipmentCreateSchema = z.object({
@@ -121,13 +136,13 @@ export const shipmentCreateSchema = z.object({
     .enum(['CONTAINER', 'PALLET', 'CARTON', 'CRATE', 'DRUM', 'BUNDLE', 'LOOSE', 'VEHICLE', 'OTHER'])
     .default('CARTON'),
   packageCount: z.coerce.number().int().positive().default(1),
-  transportMode: z.enum(['SEA', 'AIR', 'LAND']).default('SEA'),
+  transportMode: z.enum(['SEA', 'AIR']).default('SEA'),
   blNumber: z.string().max(60).optional(),
   containerNumber: z.string().max(20).optional(),
   containerSealNumber: z.string().max(35).optional(),
   containerFullnessCode: z.string().max(10).optional(),
   declarationDate: z.coerce.date().optional(),
-  declarationFunctionCode: z.enum(['9', '5', '1']).default('9'),
+  declarationFunctionCode: z.literal('9').default('9'),
   regimeCode: z.string().min(1).max(17).default('4'),
   goodsLocationCode: z.string().max(35).optional(),
   warehouseCode: z.string().max(35).optional(),
@@ -214,27 +229,7 @@ export const calculateOptionsSchema = z.object({
 
 export const declarationArtifactSchema = z.object({
   declarationType: z.enum(['C13', 'C14', 'C17', 'C18', 'OTHER']).default('C13'),
-  functionCode: z.enum(['9', '5', '1']).optional(),
-})
-
-const optionalQuantityField = z.union([quantity, z.literal('')])
-export const declarationProfileUpdateSchema = z.object({
-  companyRegistrationNumber: z.string().max(60),
-  declarationDate: z.coerce.date(),
-  declarationFunctionCode: z.enum(['9', '5', '1']),
-  regimeCode: z.string().min(1).max(17),
-  goodsLocationCode: z.string().max(35),
-  warehouseCode: z.string().max(35),
-  transportNationalityCode: z.union([z.string().length(2).toUpperCase(), z.literal('')]),
-  blNumber: z.string().max(60),
-  containerNumber: z.string().max(20),
-  containerSealNumber: z.string().max(35),
-  containerFullnessCode: z.string().max(10),
-  packageCount: z.coerce.number().int().positive(),
-  packageType: z.enum(['CONTAINER', 'PALLET', 'CARTON', 'CRATE', 'DRUM', 'BUNDLE', 'LOOSE', 'VEHICLE', 'OTHER']),
-  grossWeightKg: optionalQuantityField,
-  netWeightKg: optionalQuantityField,
-})
+}).strict()
 
 // --- billing --------------------------------------------------------------------------------
 

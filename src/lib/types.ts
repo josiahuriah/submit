@@ -125,8 +125,8 @@ export interface LineDraft {
   cpcCode: string;
   unitPrice: string;
   countryOfOrigin: string;
-  weightKg: string;
-  netWeightKg: string;
+  weightLb: string;
+  netWeightLb: string;
   packageCount: string;
   packageTypeCode: string;
   unitsPerPackage: string;
@@ -138,21 +138,21 @@ export interface LineDraft {
 
 export interface DeclarationProfile {
   companyRegistrationNumber: string;
-  canManageOrganization: boolean;
   declarationDate: string;
-  declarationFunctionCode: "9" | "5" | "1";
+  declarationFunctionCode: "9";
   regimeCode: string;
   goodsLocationCode: string;
   warehouseCode: string;
   transportNationalityCode: string;
+  transportMode: "SEA" | "AIR";
   blNumber: string;
   containerNumber: string;
   containerSealNumber: string;
   containerFullnessCode: string;
   packageCount: string;
   packageType: "CONTAINER" | "PALLET" | "CARTON" | "CRATE" | "DRUM" | "BUNDLE" | "LOOSE" | "VEHICLE" | "OTHER";
-  grossWeightKg: string;
-  netWeightKg: string;
+  grossWeightLb: string;
+  netWeightLb: string;
 }
 
 /** An HS code with the rates the preview calculator needs. */

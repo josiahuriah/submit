@@ -24,6 +24,7 @@ import { AppError } from '@/lib/errors'
 import { toShipmentTotals } from '@/lib/data/shipments'
 import { d } from '@/lib/calculations/money'
 import type { HsRate, LineItem, ServerLineCharges, ShipmentTotals } from '@/lib/types'
+import { poundsToKilograms } from '@/lib/units/weight'
 
 /** Every line on a shipment, priced by the server where a calculation exists. */
 export async function getLineItems(shipmentId: string): Promise<LineItem[]> {
@@ -150,8 +151,8 @@ export async function commitLineItem(
     cpcCode: string
     unitPrice: string
     countryOfOrigin: string
-    weightKg: string
-    netWeightKg: string
+    weightLb: string
+    netWeightLb: string
     packageCount: string
     packageTypeCode: string
     unitsPerPackage: string
@@ -185,14 +186,14 @@ export async function commitLineItem(
     hsCodeId: matched?.id,
     hsCode: draft.hsCode,
     cpcCode: draft.cpcCode.trim().toUpperCase() || '4000',
-    description: draft.description || matched?.description || draft.hsCode,
+    description: draft.description.trim() || 'Other',
     quantity: quantity.toString(),
     unit: draft.unit || 'PCS',
     unitPrice: unitPrice.toFixed(4),
     totalValue: quantity.times(unitPrice).toDecimalPlaces(2).toFixed(2),
     countryOfOrigin: draft.countryOfOrigin.trim() || undefined,
-    weightKg: draft.weightKg.trim() || undefined,
-    netWeightKg: draft.netWeightKg.trim() || undefined,
+    weightKg: poundsToKilograms(draft.weightLb) || undefined,
+    netWeightKg: poundsToKilograms(draft.netWeightLb) || undefined,
     packageCount: draft.packageCount.trim() || undefined,
     packageTypeCode: draft.packageTypeCode.trim() || undefined,
     unitsPerPackage: draft.unitsPerPackage.trim() || undefined,

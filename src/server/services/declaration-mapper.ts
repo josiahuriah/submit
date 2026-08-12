@@ -5,13 +5,14 @@
  *
  * Placeholders pending government worksheets (labeled here, nowhere else):
  *   - regimeCode "4" remains the schema default pending TTFB_SYS_REGIME.
- *   - submitterId is ONLY Organization.companyRegistrationNumber. The XML
- *     preflight blocks an empty value; TIN and broker licence are not aliases.
+ *   - Submitter ID and declaration function are fixed by the current filing
+ *     workflow and cannot be overridden per entry.
  */
 import type { TenantClient } from '@/lib/db/tenant-client'
 import type { BeaipDeclaration, BeaipInvoice, BeaipParty } from '@/lib/beaip'
 import { moneyString, sum } from '@/lib/calculations/money'
 import type { DeclarationType } from '@/generated/prisma/enums'
+import { ORIGINAL_DECLARATION_FUNCTION_CODE, TFP_COMPANY_REGISTRATION_NUMBER } from '@/lib/beaip/constants'
 
 /** PLACEHOLDER: Regime code (wire TypeCode) until TTFB_SYS_REGIME arrives. */
 export const DECLARATION_SOURCE_SELECT = {
@@ -28,6 +29,7 @@ export const DECLARATION_SOURCE_SELECT = {
   grossWeightKg: true,
   netWeightKg: true,
   declarationDate: true,
+  submittedAt: true,
   declarationFunctionCode: true,
   regimeCode: true,
   goodsLocationCode: true,
@@ -230,12 +232,12 @@ export function toBeaipDeclaration(
   return {
     declarationType,
     regimeCode: shipment.regimeCode,
-    functionCode: shipment.declarationFunctionCode as '9' | '5' | '1',
-    declarationDate: shipment.declarationDate.toISOString(),
+    functionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
+    declarationDate: (shipment.submittedAt ?? shipment.declarationDate).toISOString(),
     functionalReferenceId: shipment.shipmentNumber,
     brokerReference: shipment.shipmentNumber,
     customsOfficeCode: shipment.declarationOffice.code,
-    submitterId: org.companyRegistrationNumber ?? '',
+    submitterId: TFP_COMPANY_REGISTRATION_NUMBER,
     declarant,
     importer,
     consignee: importer,

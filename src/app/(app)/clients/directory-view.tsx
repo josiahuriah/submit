@@ -43,13 +43,11 @@ const emptyClient: {
   phone: string
   address: string
   city: string
-  countryCode: string
-  postcode: string
   contactPerson: string
   notes: string
 } = {
   name: '', clientType: 'BUSINESS' as const, tinNumber: '', email: '', phone: '',
-  address: '', city: '', countryCode: 'BS', postcode: '', contactPerson: '', notes: '',
+  address: '', city: '', contactPerson: '', notes: '',
 }
 const emptySupplier = {
   name: '', country: 'US', email: '', phone: '', address: '', city: '', postcode: '',
@@ -127,8 +125,6 @@ export function DirectoryView() {
       phone: row.phone ?? '',
       address: row.address ?? '',
       city: row.city ?? '',
-      countryCode: row.countryCode ?? '',
-      postcode: row.postcode ?? '',
       contactPerson: row.contactPerson ?? '',
       notes: row.notes ?? '',
     })
@@ -162,8 +158,6 @@ export function DirectoryView() {
         phone: optional(clientDraft.phone) ?? (patching ? null : undefined),
         address: optional(clientDraft.address) ?? (patching ? null : undefined),
         city: optional(clientDraft.city) ?? (patching ? null : undefined),
-        countryCode: optional(clientDraft.countryCode)?.toUpperCase() ?? (patching ? null : undefined),
-        postcode: optional(clientDraft.postcode) ?? (patching ? null : undefined),
         contactPerson: optional(clientDraft.contactPerson) ?? (patching ? null : undefined),
         notes: optional(clientDraft.notes) ?? (patching ? null : undefined),
       }
@@ -263,10 +257,8 @@ export function DirectoryView() {
               <label style={field}><span className="sb-eyebrow">Email</span><input className="sb-inp" type="email" value={clientDraft.email} onChange={(e) => setClientDraft((d) => ({ ...d, email: e.target.value }))} /></label>
               <label style={field}><span className="sb-eyebrow">Phone</span><input className="sb-inp" value={clientDraft.phone} onChange={(e) => setClientDraft((d) => ({ ...d, phone: e.target.value }))} /></label>
               <label style={field}><span className="sb-eyebrow">Contact</span><input className="sb-inp" value={clientDraft.contactPerson} onChange={(e) => setClientDraft((d) => ({ ...d, contactPerson: e.target.value }))} /></label>
-              <label style={field}><span className="sb-eyebrow">Country</span><input className="sb-inp sb-mono" maxLength={2} value={clientDraft.countryCode} onChange={(e) => setClientDraft((d) => ({ ...d, countryCode: e.target.value.toUpperCase() }))} /></label>
               <label style={{ ...field, gridColumn: 'span 2' }}><span className="sb-eyebrow">Address</span><input className="sb-inp" value={clientDraft.address} onChange={(e) => setClientDraft((d) => ({ ...d, address: e.target.value }))} /></label>
               <label style={field}><span className="sb-eyebrow">City</span><input className="sb-inp" value={clientDraft.city} onChange={(e) => setClientDraft((d) => ({ ...d, city: e.target.value }))} /></label>
-              <label style={field}><span className="sb-eyebrow">Postcode</span><input className="sb-inp" value={clientDraft.postcode} onChange={(e) => setClientDraft((d) => ({ ...d, postcode: e.target.value }))} /></label>
               <label style={{ ...field, gridColumn: 'span 4' }}><span className="sb-eyebrow">Notes</span><textarea className="sb-inp" rows={2} value={clientDraft.notes} onChange={(e) => setClientDraft((d) => ({ ...d, notes: e.target.value }))} /></label>
             </div>
           ) : (
@@ -290,7 +282,7 @@ export function DirectoryView() {
       <div className="sb-card" style={{ overflowX: 'auto', marginTop: 14 }}>
         {loading ? <div className="sb-pad sb-meta">Loading directory…</div> : tab === 'clients' ? (
           <table className="sb-tbl"><thead><tr><th>Name</th><th>Type / TIN</th><th>Contact</th><th>Location</th><th>Status</th><th /></tr></thead><tbody>
-            {visibleClients.map((row) => <tr key={row.id}><td className="sb-strong">{row.name}</td><td><div>{row.clientType}</div><div className="sb-meta sb-mono">{row.tinNumber ?? 'No TIN'}</div></td><td><div>{row.contactPerson ?? '—'}</div><div className="sb-meta">{row.email ?? row.phone ?? 'No contact details'}</div></td><td>{[row.city, row.countryCode].filter(Boolean).join(', ') || '—'}</td><td><Chip kind={row.isActive ? 'pos' : 'draft'}>{row.isActive ? 'Active' : 'Inactive'}</Chip></td><td><div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}><button className="sb-btn is-sm" onClick={() => editClient(row)}><Icons.edit /> Edit</button><button className="sb-btn is-sm" disabled={saving} onClick={() => void setActive('clients', row.id, !row.isActive)}>{row.isActive ? 'Deactivate' : 'Reactivate'}</button></div></td></tr>)}
+            {visibleClients.map((row) => <tr key={row.id}><td className="sb-strong">{row.name}</td><td><div>{row.clientType}</div><div className="sb-meta sb-mono">{row.tinNumber ?? 'No TIN'}</div></td><td><div>{row.contactPerson ?? '—'}</div><div className="sb-meta">{row.email ?? row.phone ?? 'No contact details'}</div></td><td>{row.city || '—'}</td><td><Chip kind={row.isActive ? 'pos' : 'draft'}>{row.isActive ? 'Active' : 'Inactive'}</Chip></td><td><div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}><button className="sb-btn is-sm" onClick={() => editClient(row)}><Icons.edit /> Edit</button><button className="sb-btn is-sm" disabled={saving} onClick={() => void setActive('clients', row.id, !row.isActive)}>{row.isActive ? 'Deactivate' : 'Reactivate'}</button></div></td></tr>)}
             {visibleClients.length === 0 && <tr><td colSpan={6} className="sb-meta" style={{ textAlign: 'center', padding: 28 }}>No clients found. Create one to begin a shipment.</td></tr>}
           </tbody></table>
         ) : (

@@ -33,12 +33,12 @@ const EMPTY_DRAFT: LineDraft = {
   hsCode: "",
   quantity: "1",
   unit: "PCS",
-  description: "",
+  description: "Other",
   cpcCode: "4000",
   unitPrice: "",
   countryOfOrigin: "",
-  weightKg: "",
-  netWeightKg: "",
+  weightLb: "",
+  netWeightLb: "",
   packageCount: "",
   packageTypeCode: "CT",
   unitsPerPackage: "",
@@ -210,8 +210,8 @@ export function LineEntry({
           <label><span className="sb-eyebrow">Commercial invoice</span><select className="sb-inp" value={draft.invoiceId} onChange={(e) => set("invoiceId", e.target.value)}>{invoices.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.invoiceNumber} · {invoice.supplierName}</option>)}</select></label>
           <label><span className="sb-eyebrow">Commercial unit</span><input className="sb-inp sb-mono" value={draft.unit} onChange={(e) => set("unit", e.target.value.toUpperCase())} /></label>
           <label><span className="sb-eyebrow">Origin</span><input className="sb-inp sb-mono" maxLength={2} value={draft.countryOfOrigin} onChange={(e) => set("countryOfOrigin", e.target.value.toUpperCase())} placeholder="US" /></label>
-          <label><span className="sb-eyebrow">Gross kg</span><input className="sb-inp sb-mono" value={draft.weightKg} onChange={(e) => set("weightKg", e.target.value)} /></label>
-          <label><span className="sb-eyebrow">Net kg</span><input className="sb-inp sb-mono" value={draft.netWeightKg} onChange={(e) => set("netWeightKg", e.target.value)} /></label>
+          <label><span className="sb-eyebrow">Gross lb</span><input className="sb-inp sb-mono" value={draft.weightLb} onChange={(e) => set("weightLb", e.target.value)} /></label>
+          <label><span className="sb-eyebrow">Net lb</span><input className="sb-inp sb-mono" value={draft.netWeightLb} onChange={(e) => set("netWeightLb", e.target.value)} /></label>
           <label><span className="sb-eyebrow">Packages / type</span><span style={{ display: "flex", gap: 4 }}><input className="sb-inp sb-mono" value={draft.packageCount} onChange={(e) => set("packageCount", e.target.value)} /><input className="sb-inp sb-mono" style={{ width: 48 }} value={draft.packageTypeCode} onChange={(e) => set("packageTypeCode", e.target.value.toUpperCase())} /></span></label>
         </div>
         {needsAlcoholMeasure && (

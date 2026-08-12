@@ -26,12 +26,12 @@ This matrix governs the stakeholder-created incoming declaration XML. It does no
 | TFP element path | Req. | Submit source | Transform / rule | Status |
 |---|---:|---|---|---|
 | `Declaration/AcceptanceDateTime` | C | Artifact generation timestamp | TFP `DateTimeString`, local time | `DERIVED` |
-| `Declaration/FunctionCode` | M | `Shipment.declarationFunctionCode` | `9` original, `5` amendment, `1` cancellation | `MAPPED` |
+| `Declaration/FunctionCode` | M | Constant `9` | Original declaration; cannot be overridden per entry | `DERIVED` |
 | `Declaration/FunctionalReferenceID` | M | `Shipment.shipmentNumber` | Verbatim | `MAPPED` |
 | `Declaration/TypeCode` | M | `Shipment.regimeCode` | Code value; default `4` is provisional | `WITHHELD_CODE_LIST` |
 | `Declaration/TotalGrossMassMeasure` | C | `Shipment.grossWeightKg` | `unitCode=KGM` | `MAPPED` |
 | `Declaration/TotalPackageQuantity` | C | `Shipment.packageCount`, `packageType` | Provisional UN package-code map | `WITHHELD_CODE_LIST` |
-| `Declaration/Submitter/ID` | M | `Organization.companyRegistrationNumber` | Verbatim; never substituted with TIN or broker licence | `MAPPED` |
+| `Declaration/Submitter/ID` | M | Constant `131249792` | Configured Company Registration Number; never substituted with TIN or broker licence | `DERIVED` |
 | `Declaration/DeclarationOffice/ID` | M | `CustomsOffice.code` | Verbatim | `WITHHELD_CODE_LIST` |
 | `Declaration/Declarant/Name` | C | `Organization.name` | Verbatim | `MAPPED` |
 | `Declaration/Declarant/ID` | C | `Organization.tinNumber` | Verbatim | `MAPPED` |
@@ -51,7 +51,7 @@ This matrix governs the stakeholder-created incoming declaration XML. It does no
 | TFP element path | Req. | Submit source | Transform / rule | Status |
 |---|---:|---|---|---|
 | `BorderTransportMeans/Name` | C | `Manifest.voyage.vessel.name` | Verbatim | `MAPPED` |
-| `BorderTransportMeans/TypeCode` | C | `Shipment.transportMode` | Provisional `SEA=1`, `AIR=4`, `LAND=3` | `WITHHELD_CODE_LIST` |
+| `BorderTransportMeans/TypeCode` | C | `Shipment.transportMode` | Provisional `SEA=1`, `AIR=4`; shipment entry does not accept land transport | `WITHHELD_CODE_LIST` |
 | `BorderTransportMeans/RegistrationNationalityCode` | C | `Shipment.transportNationalityCode` | ISO alpha-2 | `MAPPED` |
 | `BorderTransportMeans/ArrivalDateTime` | C | `Voyage.arrivalDate` | TFP `DateTimeString` | `MAPPED` |
 | `TransportEquipment/FullnessCode` | C | `Shipment.containerFullnessCode` | Verbatim | `WITHHELD_CODE_LIST` |
@@ -109,7 +109,7 @@ Invoice linkage is positional in TFP v1.4.4: shipment `CustomsValuation` nodes a
 
 ## Generation gates and unresolved government dependencies
 
-Artifact generation blocks on a current calculation, company registration number, declaration reference/function/regime/office, positive package count, importer, invoice, goods item, full HS code, valid CPC, item description, and invoice linkage. It records the schema version, mapping version, generation time, validation report, and exact XML in a `DRAFT` `CustomsEntry` without submitting it. `VALIDATED` is deliberately reserved for a future pass against the official common-types schema, not the permissive structural-validation stub.
+Artifact generation blocks on a current calculation, declaration reference/function/regime/office, positive package count, importer, invoice, goods item, full HS code, valid CPC, item description, and invoice linkage. It records the schema version, mapping version, generation time, validation report, and exact XML in a `DRAFT` `CustomsEntry` without submitting it. `VALIDATED` is deliberately reserved for a future pass against the official common-types schema, not the permissive structural-validation stub.
 
 The following remain provisional until Customs releases the associated worksheets or confirms them during UAT:
 
@@ -119,4 +119,4 @@ The following remain provisional until Customs releases the associated worksheet
 - dynamic additional-information qualifiers, documents, exemptions and vehicle characteristics;
 - endpoint envelope, authentication, acknowledgement and business-rejection semantics.
 
-The Company Registration Number field exists because the TFP specification makes `Declaration/Submitter/ID` mandatory. Submit keeps it distinct from the organization's tax identification number and an individual broker's licence number. Customs must confirm which registry-issued identifier it expects before UAT certification.
+The TFP specification makes `Declaration/Submitter/ID` mandatory. The stakeholder has configured Company Registration Number `131249792` for every current entry; Submit keeps that fixed filing identity distinct from an organization's tax identification number and an individual broker's licence number. Customs must confirm the identifier before UAT certification.

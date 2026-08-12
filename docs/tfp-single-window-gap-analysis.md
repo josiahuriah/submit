@@ -97,9 +97,10 @@ and the campaign skill:
      `TypeCode` (Regime, code table `TTFB_SYS_REGIME`, sample value `4`) +
      declaration-level CPC group (`400`) + item-level CPC (`4000`). Our
      `DeclarationType` enum is a UI/domain label, not a wire field.
-4. **`FunctionCode` gives us amendment/cancellation semantics for free**:
-   9 = original, 5 = replace/amendment, 1 = cancellation — relevant to the
-   duplicate-submission question (Gate 3) and not modeled today.
+4. **`FunctionCode` supports amendment/cancellation semantics, but the current
+   workflow intentionally emits originals only**: 9 = original. Values 5
+   (replace/amendment) and 1 (cancellation) require a separately designed and
+   certified workflow before they may be exposed.
 
 ## 4. Field-by-field mapping (WCO element ↔ our field ↔ gap)
 
@@ -111,10 +112,10 @@ existing data with only formatting.
 | Element | M/C | Our source | Gap |
 |---|---|---|---|
 | `FunctionalReferenceID` | M | `Shipment.shipmentNumber` (spec allows sender's unique ref) | OK |
-| `FunctionCode` | M | `Shipment.declarationFunctionCode` | MAPPED (`9`/`5`/`1`) |
+| `FunctionCode` | M | constant `9` | MAPPED as original; no per-entry override |
 | `TypeCode` (Regime) | M | `Shipment.regimeCode` | **PARTIAL**: stored/editable; needs `TTFB_SYS_REGIME` worksheet; sample uses `4` |
 | `DeclarationOffice/ID` | M | `CustomsOffice.code` (NAS/FPO/…) | **PARTIAL**: official codes look numeric (`01`); mapping needs the Port worksheet |
-| `Submitter/ID` | M | `Organization.companyRegistrationNumber` | MAPPED and preflight-required; government must confirm identifier semantics |
+| `Submitter/ID` | M | constant `131249792` | MAPPED from stakeholder configuration; government must confirm identifier semantics |
 | `AcceptanceDateTime` | C | submission timestamp | OK (`yyyy-MM-dd HH:mm:ss`) |
 | `TotalGrossMassMeasure` | C | `Shipment.grossWeightKg`, unitCode `KGM` | OK |
 | `TotalPackageQuantity` | C | `Shipment.packageCount` | PARTIAL: `PackageType` enum → `TTFB_SYS_PACKAGE_UOM` mapping needed |
@@ -184,7 +185,7 @@ Until then, hardcode sample-consistent placeholders and label them.
    transport, per-line values/apportioned costs/CPC); mapping extracted to
    `src/server/services/declaration-mapper.ts`, shared by the submit path and
    the generator so the wire payload cannot drift. Labeled placeholders:
-   Regime=`4`; Submitter uses only `Organization.companyRegistrationNumber`,
+   Regime=`4`; Submitter uses configured Company Registration Number `131249792`,
    transport-mode + package-UOM code maps (UN/EDIFACT guesses) in `wco-xml.ts`.
 2. ✅ `npm run wco:generate` (`scripts/generate-wco-declaration.ts`) generates
    from a calculated shipment and validates via `xmllint` against
@@ -195,7 +196,7 @@ Until then, hardcode sample-consistent placeholders and label them.
 3. ✅ Deliverable generated and validated from the seeded demo shipment:
    `docs/tfp/generated/declaration-SHP-2026-00001.xml`. Item CIF values sum
    exactly to the shipment total (apportionment intact). **Before sending to
-   the integration team**: set the real Company Registration Number and sanity-check the office code
+   the integration team**: confirm Company Registration Number `131249792` and sanity-check the office code
    (`NAS` vs the numeric codes the sample hints at).
 
 **Phase 2 — after the worksheets arrive:** code-mapping tables (regime, office,

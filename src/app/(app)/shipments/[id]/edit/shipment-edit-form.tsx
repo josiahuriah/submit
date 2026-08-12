@@ -6,7 +6,12 @@ import { updateShipment, type NewShipmentOptions, type ShipmentEditDraft } from 
 
 const GOODS_TYPES = ['GENERAL', 'PERSONAL_EFFECTS', 'COMMERCIAL', 'VEHICLE', 'HAZARDOUS', 'PERISHABLE']
 const PACKAGE_TYPES = ['CARTON', 'CONTAINER', 'PALLET', 'CRATE', 'DRUM', 'BUNDLE', 'LOOSE', 'VEHICLE', 'OTHER']
-const TRANSPORT_MODES = ['SEA', 'AIR', 'LAND']
+const TRANSPORT_MODES = ['SEA', 'AIR']
+
+function enumLabel(value: string) {
+  if (value === 'CARTON') return 'Box'
+  return value.replaceAll('_', ' ').toLowerCase()
+}
 
 export function ShipmentEditForm({ shipmentId, initial, options }: { shipmentId: string; initial: ShipmentEditDraft; options: NewShipmentOptions }) {
   const router = useRouter()
@@ -17,7 +22,7 @@ export function ShipmentEditForm({ shipmentId, initial, options }: { shipmentId:
   const field = { display: 'flex', flexDirection: 'column' as const, gap: 4 }
   const text = (label: string, key: keyof ShipmentEditDraft, mono = false, type = 'text') => <label style={field}><span className="sb-eyebrow">{label}</span><input className={`sb-inp ${mono ? 'sb-mono' : ''}`} type={type} value={draft[key]} onChange={set(key)} /></label>
   const select = (label: string, key: keyof ShipmentEditDraft, values: { id: string; label: string }[], empty?: string) => <label style={field}><span className="sb-eyebrow">{label}</span><select className="sb-inp" value={draft[key]} onChange={set(key)}>{empty !== undefined && <option value="">{empty}</option>}{values.map((value) => <option key={value.id} value={value.id}>{value.label}</option>)}</select></label>
-  const enumSelect = (label: string, key: keyof ShipmentEditDraft, values: string[]) => select(label, key, values.map((value) => ({ id: value, label: value.replaceAll('_', ' ').toLowerCase() })))
+  const enumSelect = (label: string, key: keyof ShipmentEditDraft, values: string[]) => select(label, key, values.map((value) => ({ id: value, label: enumLabel(value) })))
 
   function save() {
     if (pending) return
@@ -52,10 +57,8 @@ export function ShipmentEditForm({ shipmentId, initial, options }: { shipmentId:
       </div>
 
       <div className="sb-card sb-pad" style={{ marginTop: 14 }}>
-        <div className="sb-h2" style={{ marginBottom: 12 }}>Declaration profile</div>
+        <div className="sb-h2" style={{ marginBottom: 12 }}>Shipment and declaration data</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 14 }}>
-          {text('Declaration date', 'declarationDate', true, 'date')}
-          {select('Function code', 'declarationFunctionCode', [{ id: '9', label: '9 — Original' }, { id: '5', label: '5 — Amendment' }, { id: '1', label: '1 — Cancellation' }])}
           {text('Regime code', 'regimeCode', true)}
           {text('Transport nationality', 'transportNationalityCode', true)}
           {text('Goods location', 'goodsLocationCode', true)}
@@ -63,8 +66,8 @@ export function ShipmentEditForm({ shipmentId, initial, options }: { shipmentId:
           {enumSelect('Goods type', 'goodsType', GOODS_TYPES)}
           {enumSelect('Package type', 'packageType', PACKAGE_TYPES)}
           {text('Package count', 'packageCount', true)}
-          {text('Gross weight (kg)', 'grossWeightKg', true)}
-          {text('Net weight (kg)', 'netWeightKg', true)}
+          {text('Gross weight (lb)', 'grossWeightLb', true)}
+          {text('Net weight (lb)', 'netWeightLb', true)}
           <label style={{ ...field, gridColumn: 'span 4' }}><span className="sb-eyebrow">Description</span><textarea className="sb-inp" rows={2} value={draft.description} onChange={set('description')} /></label>
         </div>
       </div>

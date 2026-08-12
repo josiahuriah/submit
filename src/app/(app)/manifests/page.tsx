@@ -1,4 +1,4 @@
-import { listAgentOptions, listManifests, listVoyageOptions } from "@/lib/data/manifests";
+import { listAgentOptions, listManifestReferenceOptions, listManifests, listVoyageOptions } from "@/lib/data/manifests";
 import { ManifestsView } from "./manifests-view";
 
 /**
@@ -6,10 +6,11 @@ import { ManifestsView } from "./manifests-view";
  * /shipments) and hands rows plus the picker options to the client view.
  */
 export default async function ManifestsPage() {
-  const [rows, voyages, agents] = await Promise.all([
+  const [rows, voyages, agents, references] = await Promise.all([
     listManifests(),
     listVoyageOptions(),
     listAgentOptions(),
+    listManifestReferenceOptions(),
   ]);
-  return <ManifestsView initialRows={rows} voyages={voyages} agents={agents} />;
+  return <ManifestsView initialRows={rows} voyages={voyages} agents={agents} references={references} />;
 }

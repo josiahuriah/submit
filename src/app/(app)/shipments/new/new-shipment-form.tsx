@@ -6,7 +6,12 @@ import { createShipment, type NewShipmentOptions } from "@/lib/data/shipment-act
 
 const GOODS_TYPES = ["GENERAL", "PERSONAL_EFFECTS", "COMMERCIAL", "VEHICLE", "HAZARDOUS", "PERISHABLE"];
 const PACKAGE_TYPES = ["CARTON", "CONTAINER", "PALLET", "CRATE", "DRUM", "BUNDLE", "LOOSE", "VEHICLE", "OTHER"];
-const TRANSPORT_MODES = ["SEA", "AIR", "LAND"];
+const TRANSPORT_MODES = ["SEA", "AIR"];
+
+function enumLabel(value: string) {
+  if (value === "CARTON") return "Box";
+  return value.replace(/_/g, " ").toLowerCase();
+}
 
 /**
  * New shipment — collects the header fields; the shipment number is allocated
@@ -21,15 +26,16 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
     manifestId: "",
     blNumber: "",
     containerNumber: "",
+    containerSealNumber: "",
+    regimeCode: "4",
     goodsType: "GENERAL",
     packageType: "CARTON",
     packageCount: "1",
     transportMode: "SEA",
     description: "",
-    grossWeightKg: "",
+    grossWeightLb: "",
+    netWeightLb: "",
     freightCharge: "",
-    insuranceCharge: "",
-    otherCharges: "",
   });
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -69,7 +75,7 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
     </label>
   );
   const enumSelect = (label: string, key: keyof typeof draft, values: string[]) =>
-    select(label, key, values.map((v) => ({ id: v, label: v.replace(/_/g, " ").toLowerCase() })));
+    select(label, key, values.map((v) => ({ id: v, label: enumLabel(v) })));
 
   return (
     <div className="sb-page" style={{ maxWidth: 860 }}>
@@ -91,18 +97,19 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
 
         {text("BL / airway bill #", "blNumber", "TROP26070001", true)}
         {text("Container #", "containerNumber", "TCLU1234567", true)}
-        {enumSelect("Transport mode", "transportMode", TRANSPORT_MODES)}
+        {text("Container seal #", "containerSealNumber", "SEAL-100", true)}
 
+        {enumSelect("Transport mode", "transportMode", TRANSPORT_MODES)}
+        {text("Regime code", "regimeCode", "4", true)}
         {enumSelect("Goods type", "goodsType", GOODS_TYPES)}
+
         {enumSelect("Package type", "packageType", PACKAGE_TYPES)}
         {text("Package count", "packageCount", "1", true)}
+        {text("Gross weight (lb)", "grossWeightLb", "0.000", true)}
 
-        {text("Gross weight (kg)", "grossWeightKg", "0.000", true)}
+        {text("Net weight (lb)", "netWeightLb", "0.000", true)}
         {text("Freight charge (BSD)", "freightCharge", "0.00", true)}
-        {text("Insurance charge (BSD)", "insuranceCharge", "0.00", true)}
-
-        {text("Other charges (BSD)", "otherCharges", "0.00", true)}
-        <label style={{ ...field, gridColumn: "span 2" }}>
+        <label style={field}>
           <span className="sb-eyebrow">Description</span>
           <input className="sb-inp" value={draft.description} onChange={set("description")} placeholder="Mixed consignment: …" />
         </label>

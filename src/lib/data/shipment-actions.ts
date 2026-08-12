@@ -22,6 +22,8 @@ import { catalogService } from '@/server/services/catalog.service'
 import { shipmentCreateSchema, shipmentUpdateSchema } from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
 import { revalidatePath } from 'next/cache'
+import { kilogramsToPounds, poundsToKilograms } from '@/lib/units/weight'
+import { ORIGINAL_DECLARATION_FUNCTION_CODE } from '@/lib/beaip/constants'
 
 async function actionContext(permission: Permission) {
   const claims = await requireSession()
@@ -71,8 +73,8 @@ export interface ShipmentEditDraft {
   packageCount: string
   transportMode: string
   description: string
-  grossWeightKg: string
-  netWeightKg: string
+  grossWeightLb: string
+  netWeightLb: string
   freightCharge: string
   insuranceCharge: string
   otherCharges: string
@@ -132,8 +134,8 @@ export async function getShipmentEditData(shipmentId: string): Promise<{
       packageCount: String(shipment.packageCount),
       transportMode: shipment.transportMode,
       description: shipment.description ?? '',
-      grossWeightKg: shipment.grossWeightKg === null ? '' : String(shipment.grossWeightKg),
-      netWeightKg: shipment.netWeightKg === null ? '' : String(shipment.netWeightKg),
+      grossWeightLb: kilogramsToPounds(shipment.grossWeightKg === null ? null : String(shipment.grossWeightKg)),
+      netWeightLb: kilogramsToPounds(shipment.netWeightKg === null ? null : String(shipment.netWeightKg)),
       freightCharge: String(shipment.freightCharge),
       insuranceCharge: String(shipment.insuranceCharge),
       otherCharges: String(shipment.otherCharges),
@@ -164,7 +166,7 @@ export async function updateShipment(
       containerSealNumber: draft.containerSealNumber.trim(),
       containerFullnessCode: draft.containerFullnessCode.trim(),
       declarationDate: draft.declarationDate,
-      declarationFunctionCode: draft.declarationFunctionCode,
+      declarationFunctionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
       regimeCode: draft.regimeCode.trim(),
       goodsLocationCode: draft.goodsLocationCode.trim(),
       warehouseCode: draft.warehouseCode.trim(),
@@ -174,8 +176,8 @@ export async function updateShipment(
       packageCount: draft.packageCount,
       transportMode: draft.transportMode,
       description: draft.description.trim(),
-      grossWeightKg: draft.grossWeightKg.trim() || null,
-      netWeightKg: draft.netWeightKg.trim() || null,
+      grossWeightKg: poundsToKilograms(draft.grossWeightLb) || null,
+      netWeightKg: poundsToKilograms(draft.netWeightLb) || null,
       freightCharge: draft.freightCharge.trim() || '0',
       insuranceCharge: draft.insuranceCharge.trim() || '0',
       otherCharges: draft.otherCharges.trim() || '0',
@@ -223,15 +225,16 @@ export async function createShipment(draft: {
   manifestId: string
   blNumber: string
   containerNumber: string
+  containerSealNumber: string
+  regimeCode: string
   goodsType: string
   packageType: string
   packageCount: string
   transportMode: string
   description: string
-  grossWeightKg: string
+  grossWeightLb: string
+  netWeightLb: string
   freightCharge: string
-  insuranceCharge: string
-  otherCharges: string
 }): Promise<CreateShipmentResult> {
   const { claims, db, audit } = await actionContext('shipments:write')
 
@@ -248,15 +251,17 @@ export async function createShipment(draft: {
       manifestId: draft.manifestId || undefined,
       blNumber: draft.blNumber.trim() || undefined,
       containerNumber: draft.containerNumber.trim() || undefined,
+      containerSealNumber: draft.containerSealNumber.trim() || undefined,
+      regimeCode: draft.regimeCode.trim() || '4',
+      declarationFunctionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
       goodsType: draft.goodsType,
       packageType: draft.packageType,
       packageCount: draft.packageCount || '1',
       transportMode: draft.transportMode,
       description: draft.description.trim() || undefined,
-      grossWeightKg: draft.grossWeightKg.trim() || undefined,
+      grossWeightKg: poundsToKilograms(draft.grossWeightLb) || undefined,
+      netWeightKg: poundsToKilograms(draft.netWeightLb) || undefined,
       freightCharge: money(draft.freightCharge),
-      insuranceCharge: money(draft.insuranceCharge),
-      otherCharges: money(draft.otherCharges),
     })
   } catch {
     return { shipmentId: null, error: 'Check the form: client and declaration office are required.' }

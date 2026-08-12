@@ -45,7 +45,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         </span>
       </div>
 
-      <DeclarationProfileCard shipmentId={id} initial={declarationProfile} />
+      <DeclarationProfileCard initial={declarationProfile} />
 
       {/* Invoice summary — one shipment can carry multiple commercial invoices. */}
       <div

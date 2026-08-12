@@ -39,7 +39,7 @@ export const declarationArtifactsService = {
     db: TenantClient,
     audit: AuditContext,
     shipmentId: string,
-    input: { declarationType: DeclarationType; functionCode?: '9' | '5' | '1' },
+    input: { declarationType: DeclarationType },
   ) {
     const shipment = await loadDeclarationSource(db, shipmentId)
     if (!shipment) throw new NotFoundError('Shipment')
@@ -50,10 +50,7 @@ export const declarationArtifactsService = {
     }
     assertCalculationCurrent(shipment)
 
-    const mapped = toBeaipDeclaration(shipment, input.declarationType)
-    const declaration = input.functionCode
-      ? { ...mapped, functionCode: input.functionCode }
-      : mapped
+    const declaration = toBeaipDeclaration(shipment, input.declarationType)
     const preflight = preflightTfpDeclaration(declaration)
     if (!preflight.ready) {
       throw new BusinessRuleError('Declaration is not ready for Customs review', {

@@ -32,12 +32,12 @@ export interface TfpFieldMapping {
 
 export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'Declaration', element: 'AcceptanceDateTime', requirement: 'C', source: 'artifact generation time', transform: 'yyyy-MM-dd HH:mm:ss', status: 'DERIVED' },
-  { section: 'Declaration', element: 'FunctionCode', requirement: 'M', source: 'Shipment.declarationFunctionCode', transform: '9 original / 5 amendment / 1 cancellation', status: 'MAPPED' },
+  { section: 'Declaration', element: 'FunctionCode', requirement: 'M', source: 'constant 9', transform: 'original declaration', status: 'DERIVED' },
   { section: 'Declaration', element: 'FunctionalReferenceID', requirement: 'M', source: 'Shipment.shipmentNumber', transform: 'verbatim', status: 'MAPPED' },
   { section: 'Declaration', element: 'TypeCode', requirement: 'M', source: 'Shipment.regimeCode', transform: 'verbatim', status: 'WITHHELD_CODE_LIST', note: 'TTFB_SYS_REGIME not released; sample uses 4' },
   { section: 'Declaration', element: 'TotalGrossMassMeasure', requirement: 'C', source: 'Shipment.grossWeightKg', transform: 'unitCode=KGM', status: 'MAPPED' },
   { section: 'Declaration', element: 'TotalPackageQuantity', requirement: 'C', source: 'Shipment.packageCount/packageType', transform: 'package UOM map', status: 'WITHHELD_CODE_LIST' },
-  { section: 'Declaration', element: 'Submitter/ID', requirement: 'M', source: 'Organization.companyRegistrationNumber', transform: 'verbatim', status: 'MAPPED' },
+  { section: 'Declaration', element: 'Submitter/ID', requirement: 'M', source: 'constant 131249792', transform: 'configured company registration number', status: 'DERIVED' },
   { section: 'Declaration', element: 'DeclarationOffice/ID', requirement: 'M', source: 'CustomsOffice.code', transform: 'verbatim', status: 'WITHHELD_CODE_LIST' },
   { section: 'Declaration', element: 'Declarant/Name', requirement: 'C', source: 'Organization.name', transform: 'verbatim', status: 'MAPPED' },
   { section: 'Declaration', element: 'Declarant/ID', requirement: 'C', source: 'Organization.tinNumber', transform: 'verbatim', status: 'MAPPED' },
