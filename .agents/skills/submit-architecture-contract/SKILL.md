@@ -17,7 +17,7 @@ Submit (v0.3.0, canonical repo root `/Users/joshduncanson/Documents/Documents/De
 multi-tenant SaaS for Bahamian customs brokerages: prepare shipments,
 calculate duty/VAT/levy/excise to the cent, generate TFP v1.4.4 XML review
 artifacts, and bill clients. Direct Customs submission is intentionally absent
-until the government releases endpoint documentation. Stack: Next.js 15 App Router, React 19,
+until the government releases endpoint documentation. Stack: Next.js 16.3 App Router, React 19.2,
 TypeScript, Prisma 7 (driver adapter), PostgreSQL (Neon), Zod v3,
 decimal.js, Vitest, tsx. README.md is the document of record; formal TFP docs
 live under `docs/tfp/`.
@@ -67,7 +67,7 @@ Run these from the repo root. Every check has an expected result; a
 deviation means either a regression or a deliberate decision that must be
 recorded here.
 
-| Invariant | Check (copy-paste) | Expected (as of 2026-07-08) |
+| Invariant | Check (copy-paste) | Expected (as of 2026-08-08) |
 |---|---|---|
 | `basePrisma` never leaks into request code | `grep -rln "basePrisma" src --include='*.ts'` | Exactly: `src/lib/db/prisma.ts`, `src/lib/db/tenant-client.ts`, `src/server/services/hs-codes.service.ts` (global HS-code reads only). Any file under `src/app/` appearing here is a tenant-isolation bug |
 | `systemQuery` used only pre-auth | `grep -rln "systemQuery" src --include='*.ts'` | Exactly: `src/lib/db/prisma.ts`, `src/server/services/auth.service.ts` |
@@ -131,15 +131,12 @@ auth plumbing, and the tenant client factory itself.
 5. `GET /api/customs-entries/:id/xml` returns the tenant-scoped XML as a
    no-store attachment. No Single Window endpoint exists in the app yet.
 
-## Weak points — verified 2026-07-08
+## Weak points — verified 2026-08-08
 
 Stated plainly. Re-verify status before acting on any of these.
 
-1. **NOT under version control.** There is no `.git` directory in
-   `/Users/joshduncanson/Downloads/submit` (a `.gitignore` exists, ready
-   for init). This is the single biggest operational risk: no history, no
-   rollback, no diff review. Check: `ls -a | grep '^\.git$'` (empty as of
-   2026-07-08).
+1. **Version control is active.** The canonical repo is on `main` with a GitHub
+   remote. Commits and pushes remain owner-directed under `submit-change-control`.
 2. **Leaked database credential.** README states the Neon connection string
    was shared in a chat session during development and the password must be
    rotated in the Neon console before real client data touches the
@@ -149,17 +146,18 @@ Stated plainly. Re-verify status before acting on any of these.
 3. **Direct endpoint integration is intentionally absent.** Customs has not
    released transport/auth/response documentation. Do not reintroduce guessed
    SOAP/ASYCUDA scaffolding or describe XML review as live filing.
-4. **Declaration UI is functional but not full-product complete.** Entry,
-   tariff search, invoice/currency, calculation, profile and XML artifact paths
-   are wired; broader dashboard modules remain uneven.
+4. **Core operational UI is functional but not full-product complete.** Home,
+   directory CRUD, manifests, shipment editing, declarations, billing and
+   accounting are wired. Attachments, team administration, reporting and
+   production Customs transport remain later phases.
 5. **The full 1,544-code tariff extraction is bundled, but it is duty-only.**
    Excisable chapters require separately verified curated rate rows; unverified
    excisable lines fail calculation safely.
 6. **No rate limiting anywhere** (grep for rate-limit terms in `src/`
    returns nothing), including on `/api/auth/login` — brute-force exposure
    once deployed.
-7. **Single migration, empty docs.** `prisma/migrations/` contains only
-   `20260707000000_init`; `docs/` is empty; README is the only doc.
+7. **Database setup remains multi-step.** Five migrations are checked in, but
+   RLS and pg_trgm setup still run out-of-band through `npm run db:rls`.
 8. **RLS is inert on local superuser Postgres** (owners/superusers bypass
    it) — locally only layers 1–2 protect you, which is exactly what
    `tests/tenant-isolation.test.ts` proves. On Neon, RLS is real because
@@ -168,9 +166,8 @@ Stated plainly. Re-verify status before acting on any of these.
 
 ## Provenance and maintenance
 
-Everything above was read from the repo at
-`/Users/joshduncanson/Downloads/submit` on 2026-07-08 (package.json version
-0.3.0). One-liners to re-verify the volatile facts:
+Everything above was re-verified from the canonical repo on 2026-08-08
+(package.json version 0.3.0). One-liners to re-verify the volatile facts:
 
 - Version/stack: `grep '"version"' package.json && grep -E '"(next|zod|@prisma/client)"' package.json`
 - Route count (expect 29): `find src/app/api -name route.ts | wc -l`

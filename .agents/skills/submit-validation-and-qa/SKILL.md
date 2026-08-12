@@ -34,7 +34,7 @@ smoke script**. Match that bar.
 |---|---|---|
 | "The math is right" | A failing-then-passing vitest case with **hand-computed** expected values, or machine-checked numbers (smoke script / verify-example script) | Eyeballing UI output; "the engine returned X so I'll assert X" |
 | "Tenancy is intact" | `tests/tenant-isolation.test.ts` green against a live seeded DB | Code review of the Prisma extension alone |
-| "The whole flow works" | `npx tsx scripts/smoke.ts` exits 0 | Clicking through the UI once |
+| "The whole flow works" | `tests/fresh-account-workflow.test.ts` and `npx tsx scripts/smoke.ts` both exit 0 | Clicking through the UI once |
 | "The code is valid" | `npm run typecheck` + `npm run lint` clean | "It compiles" is *necessary*, never *sufficient* |
 
 Hard rules:
@@ -51,12 +51,13 @@ Hard rules:
 
 | Command | What it proves | Expected outcome | Environment needs |
 |---|---|---|---|
-| `npm test` | Full pure + live-DB suite | All pass | Tenant isolation needs a live seeded `DATABASE_URL`; pure tariff/calculation/TFP/XML tests do not. |
+| `npm test` | Full pure + live-DB suite | 45 tests across 7 files pass | Tenant isolation and fresh-account workflow need a live seeded `DATABASE_URL`; pure tariff/calculation/TFP/XML tests do not. |
 | `npx vitest run tests/calculations.test.ts` | Calculation and alcohol measurement engine | 16 passed | **No DB needed.** Safe anywhere. |
 | `npx vitest run tests/tenant-isolation.test.ts` | Layer-1 tenant scoping (Prisma extension) against real Postgres | 5 passed | Live seeded DB. Creates then deletes a `ISOLATION-TEST-CLIENT` client row (cleanup in `afterAll`). |
+| `npx vitest run tests/fresh-account-workflow.test.ts` | Route-handler workflow: register → client → supplier → manifest → shipment → invoice → line → calculation → review XML, then billing send/payment | 1 passed | Live DB with global reference seed. Creates and deletes a uniquely named tenant. |
 | `npx tsx scripts/smoke.ts` | E2E: calculate → math checks → versioned review XML; shipment stays DRAFT | Exits 0, prints "Smoke passed" | Live seeded local DB. **MUTATES demo data** — see warning below. |
 | `npm run typecheck` (`tsc --noEmit`) | Types are sound across the whole repo | No output, exit 0 | None |
-| `npm run lint` (`next lint`) | Lint rules | No errors | None |
+| `npm run lint` (`eslint .`) | ESLint 9 + Next core-web-vitals and TypeScript rules | No errors | None |
 | `npx tsx .Codex/skills/submit-calculations-and-money/scripts/verify-example.ts` | The sibling skill's worked example matches the real engine (18 asserted values) | Exit 0 | No DB. Run from repo root. |
 | `npm run test:watch` | Same as `npm test`, watch mode for TDD loops | interactive | Same as `npm test` |
 
@@ -124,10 +125,10 @@ at production data; the delete in step 1 is unconditional.
 1. `npm run typecheck` — the primary machine check here.
 2. Run whichever service-level tests exist for the logic behind the route
    (calculations → engine tests; anything touching tenant data → isolation tests).
-3. **Gap:** there are NO route-level/HTTP tests in this repo. Anything that
-   only lives in a route handler (status codes, zod error shapes, auth
-   middleware wiring) has zero automated coverage — manual probing with
-   `curl` against `npm run dev` is currently the only check.
+3. Run `tests/fresh-account-workflow.test.ts` when the supported declaration
+   path is affected. It invokes real route handlers and asserts their success
+   statuses/envelopes. Error branches, malformed requests, and most individual
+   CRUD endpoints still require targeted tests or manual probing.
 
 ## 4. Test-writing conventions (mined from the existing suite)
 
@@ -154,11 +155,11 @@ at production data; the delete in step 1 is unconditional.
 | Gap | Consequence |
 |---|---|
 | **No CI of any kind** (no `.github/`, no CI config anywhere) | Nothing forces the suite to run. Every "tests pass" claim is only as good as the human who ran them. Run the inventory yourself; never assume. |
-| **No HTTP/route-layer tests** | Status codes, zod validation errors, auth middleware, and route wiring are untested. |
+| **Limited route-layer coverage** | One authenticated happy path covers registration through XML download; error statuses, Zod failures, and most endpoint branches remain untested. |
 | **No Customs endpoint contract** | Direct submission is intentionally absent. XSD structure and preflight do not prove the withheld common types, code-list rules, or Click2Clear business validation. |
 | **RLS (Layer 3) untestable locally** | Local Postgres role is superuser → RLS bypassed. Tests stay green because Layer 1 (Prisma extension) does the enforcing. Layer 3 is only meaningful on Neon (`neondb_owner` is not superuser). |
 | **Services with limited direct test coverage** | Pure calculation, tariff import, TFP preflight and XML are covered; most CRUD/service orchestration still relies on typecheck, tenancy tests, smoke and manual UI checks. |
-| **Smoke covers one happy path** | One org, one shipment, review-artifact generation, no concurrency or government business-validation cases. |
+| **Workflow tests cover happy paths** | Fresh-account and seeded-smoke paths exist, but there are no concurrency or government business-validation cases. |
 
 ## 6. Golden inventory (certified numbers and fixtures)
 

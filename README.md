@@ -10,12 +10,14 @@ authentication, envelope, and response semantics have not been released.
 
 ## Stack
 
-Next.js 15 (App Router) · React 19 · TypeScript · Prisma 7 (driver adapter) ·
+Next.js 16.3 (App Router) · React 19.2 · TypeScript · Prisma 7 (driver adapter) ·
 PostgreSQL (Neon) · Tailwind CSS v4 · Zod · decimal.js · Vitest
 
 ---
 
 ## Quick start (local)
+
+Node.js 20.9 or newer is required; Node.js 22 LTS is recommended.
 
 ```bash
 npm install
@@ -34,7 +36,9 @@ Log in with `broker@bahamabrokerage.test` / `Password123!`, calculate shipment
 ### Verifying everything
 
 ```bash
-npm test                      # calculations, tenancy, tariff import, TFP mapping, WCO XML
+npm run lint                  # ESLint 9 + Next.js core-web-vitals rules
+npm run typecheck             # strict TypeScript check
+npm test                      # 45 tests, including fresh-account route-handler E2E
 npx tsx scripts/smoke.ts      # calculate → verify math → generate XML; no endpoint call
 npm run wco:generate          # TFP declaration XML from a calculated shipment + XSD validation
 ```
@@ -181,10 +185,10 @@ only; it is never treated as an authoritative excise source.
 ```
 prisma/           schema, migrations, sql/ (indexes + RLS), seed.ts, seed.dev.ts*
 src/app/api/      29 thin route handlers
-src/app/          auth + dashboard + declaration preparation UI
+src/app/          auth + operational home, directory, manifest, declaration, billing and accounting UI
 src/lib/          env, errors, api-response, auth/, db/, calculations/, beaip/, validation/
 src/server/       services/ (business rules) + repositories/
-tests/            calculation, tenancy, tariff, TFP mapping, XML contract tests
+tests/            calculation, tenancy, tariff, TFP/XML, staleness and fresh-account workflow tests
 scripts/smoke.ts  calculation → review-XML workflow verification
 * gitignored
 ```

@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
     "test": "vitest run",
@@ -21,6 +21,9 @@
     "db:setup": "npm run db:push && npm run db:rls && npm run db:seed && npm run db:seed:dev",
     "wco:generate": "tsx scripts/generate-wco-declaration.ts"
   },
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
@@ -30,10 +33,10 @@
     "dotenv": "^17.4.2",
     "fast-xml-parser": "^4.5.0",
     "jsonwebtoken": "^9.0.2",
-    "next": "^15.5.4",
+    "next": "^16.3.0",
     "pg": "^8.22.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -42,8 +45,10 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.0",
     "prisma": "^7.8.0",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.19.2",

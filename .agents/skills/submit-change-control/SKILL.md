@@ -69,16 +69,16 @@ When in doubt between classes, treat it as the higher class.
 
 | # | Debt | Detail / pointer |
 |---|---|---|
-| 1 | No version control | Section above; blocks safe production-integration work |
-| 2 | `.env` is a placeholder copy of `.env.example` | `JWT_SECRET="change-me"` fails env.ts's 16-char minimum → app cannot boot until real values are set (verified without printing secrets) |
+| 1 | Version control | Resolved 2026-07-29; commits and pushes remain owner-directed |
+| 2 | Fresh environment configuration | `.env.example` contains placeholders; every new environment needs a real database URL and a JWT secret of at least 16 characters |
 | 3 | Neon credential rotation pending | README security note: the dev connection string was shared in a chat session; rotate before real client data (the current `.env` holds placeholders, so the live credential is not in this repo copy) |
 | 4 | Withheld TFP code masters | Regime/office/CPC/UOM/HS wire-format and common-type enumerations remain provisional; formal register in `docs/tfp/field-mapping-matrix.md` |
 | 5 | No verified endpoint contract | Hypothetical SOAP/mock infrastructure was removed; do not add transport or credentials before government step-4 docs |
 | 6 | Duty-only tariff extraction | Full 1,544 codes exist, but excisable lines require separate verified legal-source rows; calculation now fails safe |
 | 7 | Vehicle product characteristics not modeled | TFP supports chassis/engine/make qualifiers; declaration UI does not yet capture them |
-| 8 | No CI | Nothing forces the 16-test suite to run |
+| 8 | No CI | Nothing forces the 45-test suite to run |
 | 9 | `HSCodeRate.processingFeeExempt` unwired | Schema field consumed nowhere; see `submit-calculations-and-money` |
-| 10 | No HTTP-layer tests | Route handlers untested end-to-end; see `submit-validation-and-qa` gaps |
+| 10 | Limited HTTP-layer tests | Fresh-account happy path is covered through XML download; error and branch coverage remains incomplete |
 | 11 | Official common types/business rules unavailable | Builder tests use the supplied XSD plus permissive common-types stub; per-artifact validation must not be described as Customs acceptance |
 
 Do not "fix" debt items unilaterally — each carries an owner decision.
@@ -119,13 +119,13 @@ before trusting them; skill edits are Class C.
 
 ## Provenance and maintenance
 
-Verified 2026-07-09 against: absence of `.git` (ls -a), `.gitignore` contents,
+Verified 2026-08-08 against: git status/remote, `.gitignore` contents,
 README (deploy warnings, security note, architecture), `src/lib/env.ts`,
 `.env`/`.env.example` (keys only, values not printed), `docs/` emptiness,
 `prisma/apply-rls.ts`, sibling-skill findings for debts 4/5/9/10/11.
 
 Re-verify:
-- Still no git? `ls -a /path/to/repo | grep -c "^\.git$"` → 0
+- Git/branch status: `git status --short --branch`
 - `.env` still placeholder? compare keys/shape to `.env.example` (never print values)
 - Debt register: each row lists its source file — grep before trusting
 - README route count: `find src/app/api -name route.ts | wc -l` -> 26 files (the handler-export grep returns 35 - several files export multiple methods)

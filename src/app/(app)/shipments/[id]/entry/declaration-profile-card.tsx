@@ -16,7 +16,8 @@ export function DeclarationProfileCard({ shipmentId, initial }: { shipmentId: st
   function save() {
     setNotice(null);
     startTransition(async () => {
-      const { canManageOrganization: _permission, ...input } = draft;
+      const { canManageOrganization, ...input } = draft;
+      void canManageOrganization;
       const result = await updateDeclarationProfile(shipmentId, input);
       setNotice(result.error ?? result.calculationNotice ?? "Declaration profile saved.");
       if (!result.error) router.refresh();

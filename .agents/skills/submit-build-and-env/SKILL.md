@@ -12,7 +12,7 @@ description: >
 
 # Submit — Build & Environment Setup
 
-Verified against the repo on 2026-07-08. The code is the contract: when this
+Verified against the repo on 2026-08-08. The code is the contract: when this
 document, the README, and the source disagree, `src/lib/env.ts` and
 `package.json` win.
 
@@ -28,8 +28,8 @@ document, the README, and the source disagree, `src/lib/env.ts` and
 
 ## Prerequisites
 
-- **Node.js 22.x** (repo pins `@types/node ^22.10.0`; no `engines` field in
-  package.json). Next.js 15 needs ≥18.18, but match types: use 22.
+- **Node.js ≥20.9** (enforced by `package.json` for Next.js 16); Node.js 22 LTS
+  is recommended and matches the repo's Node type definitions.
 - **PostgreSQL**: Neon (recommended — RLS actually enforces there) or local
   Postgres. Caveat: on local Postgres your role is usually a **superuser and
   silently bypasses RLS** (layer 3 absent; layers 1–2 still isolate). See traps.
@@ -42,7 +42,7 @@ document, the README, and the source disagree, `src/lib/env.ts` and
 npm install                   # postinstall runs `prisma generate` automatically
 cp .env.example .env          # EDIT IT — placeholders fail validation (see below)
 npx prisma generate           # only needed if postinstall was skipped
-npx prisma migrate deploy     # or: npx prisma db push (one migration exists: 20260707000000_init)
+npx prisma migrate deploy     # preferred; applies every checked-in migration
 npm run db:rls                # tsx prisma/apply-rls.ts → applies sql/rls.sql then sql/rls.sql
 npm run db:seed               # GLOBAL reference data — must run FIRST
 npm run db:seed:dev           # dev tenants + demo shipment — depends on db:seed
@@ -120,10 +120,10 @@ the shipment remains DRAFT.
 ## Verification runbook
 
 ```bash
-npm test                  # vitest run — 16 tests: 11 calculation + 5 tenant isolation
+npm test                  # vitest run — 45 tests across 7 files
 npx tsx scripts/smoke.ts  # end-to-end against the live DB
 npm run typecheck         # tsc --noEmit (needs generated Prisma client — trap 2)
-npm run lint              # next lint
+npm run lint              # eslint . (Next core-web-vitals + TypeScript)
 ```
 
 - **npm test** — the 5 isolation tests hit the live `DATABASE_URL` database
@@ -138,10 +138,8 @@ npm run lint              # next lint
 
 ## Known traps (symptom → cause → fix)
 
-1. **File loss is unrecoverable.** There is **no `.git` directory** — this
-   repo is not under version control. Symptom: none until it is too late.
-   Fix: do not mass-edit or delete anything casually; flag `git init` to the
-   owner as a Class A decision (see `submit-change-control`).
+1. **Unsupported Node version after dependency install.** Next.js 16 requires
+   Node.js 20.9 or newer. Use Node.js 22 LTS locally and in deployment.
 
 2. **`Cannot find module '@/generated/prisma/client'`** on typecheck/tests/
    seeds. Cause: the Prisma client is generated to `src/generated/prisma`
@@ -170,12 +168,9 @@ npm run lint              # next lint
    prove. Verify true RLS on Neon, where `neondb_owner` is not a superuser and
    FORCE RLS applies.
 
-6. **`prisma/seed.dev.ts` is gitignored** (listed in `.gitignore`) yet
-   **present in this copy** — because the repo has no git, ignore rules have
-   never actually excluded it. Implication: the moment this becomes a git repo
-   or is copied via git, `db:seed:dev` and `db:setup` break and the tests fail
-   with "Dev seed missing". Keep a copy of the file, or revisit the ignore
-   entry when git init happens.
+6. **`prisma/seed.dev.ts` is gitignored.** It exists in this working copy but
+   is absent from a fresh clone, so `db:seed:dev`, the tenant-isolation suite,
+   and the seeded smoke script require the owner-supplied development fixture.
 
 7. **There is no Customs endpoint environment contract yet.** Do not add
    endpoint credentials or a transport-mode switch until Customs releases the
@@ -197,4 +192,4 @@ Updated 2026-08-08. Re-verify each section by reading, not trusting:
 - Seed dependencies/credentials: `prisma/seed.ts`, `prisma/seed.dev.ts`.
 - Test requirements: `vitest.config.ts`, `tests/setup.ts`, `tests/tenant-isolation.test.ts`.
 - Smoke expectations: `scripts/smoke.ts`.
-- Git status: `ls -a` at repo root (no `.git` as of stamp date).
+- Git status: the canonical repo is version-controlled on `main`.

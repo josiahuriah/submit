@@ -79,10 +79,7 @@ export function LineEntry({
   // burst of keystrokes costs one query, not one per character.
   useEffect(() => {
     const query = hsQuery.trim();
-    if (!query) {
-      setHits([]);
-      return;
-    }
+    if (!query) return;
     let cancelled = false;
     const timer = setTimeout(() => {
       searchHsCodes(query)
@@ -101,10 +98,7 @@ export function LineEntry({
 
   // Rates for the chosen code drive the entry row's live preview only.
   useEffect(() => {
-    if (!draft.hsCode) {
-      setDraftRate(null);
-      return;
-    }
+    if (!draft.hsCode) return;
     let cancelled = false;
     findHsRate(draft.hsCode)
       .then((rate) => {
@@ -136,6 +130,8 @@ export function LineEntry({
         if (!result.error) {
           setDraft({ ...EMPTY_DRAFT, invoiceId: submitted.invoiceId });
           setHsQuery("");
+          setHits([]);
+          setDraftRate(null);
         }
       } catch (error) {
         setNotice(error instanceof Error ? error.message : "Could not save the line");
@@ -252,7 +248,11 @@ export function LineEntry({
                     className="sb-inp sb-mono"
                     style={{ padding: "5px 8px" }}
                     value={hsQuery || draft.hsCode}
-                    onChange={(e) => setHsQuery(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setHsQuery(value);
+                      if (!value.trim()) setHits([]);
+                    }}
                     placeholder="search HS…"
                   />
                   {hsQuery && hits.length > 0 && (
@@ -263,6 +263,8 @@ export function LineEntry({
                           onClick={() => {
                             setDraft((current) => ({ ...current, hsCode: h.code, unit: h.unit ?? current.unit }));
                             setHsQuery("");
+                            setHits([]);
+                            setDraftRate(h);
                           }}
                           style={{ padding: "7px 10px", cursor: "pointer", display: "flex", gap: 8, alignItems: "baseline",
                             borderBottom: i < hits.length - 1 ? "1px solid var(--sb-line-2)" : "none",
