@@ -38,7 +38,7 @@ Log in with `broker@bahamabrokerage.test` / `Password123!`, calculate shipment
 ```bash
 npm run lint                  # ESLint 9 + Next.js core-web-vitals rules
 npm run typecheck             # strict TypeScript check
-npm test                      # 56 tests, including fresh-account route-handler E2E
+npm test                      # 60 tests, including fresh-account route-handler E2E
 npx tsx scripts/smoke.ts      # calculate → verify math → generate XML; no endpoint call
 npm run wco:generate          # TFP declaration XML from a calculated shipment + XSD validation
 ```

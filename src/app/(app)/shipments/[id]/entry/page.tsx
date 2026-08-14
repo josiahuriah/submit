@@ -4,8 +4,7 @@ import { getLineItems } from "@/lib/data/line-items";
 import { listSupplierOptions } from "@/lib/data/invoices";
 import { Chip } from "@/components/ui/primitives";
 import { money } from "@/lib/format";
-import { LineEntry } from "./line-entry";
-import { AddInvoiceCard } from "./add-invoice-card";
+import { InvoiceLineWorkspace } from "./invoice-line-workspace";
 import { ReviewXmlButton } from "./review-xml-button";
 import { getDeclarationProfile } from "@/lib/data/declaration-profile";
 import { DeclarationProfileCard } from "./declaration-profile-card";
@@ -74,13 +73,11 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      <AddInvoiceCard shipmentId={id} suppliers={suppliers} />
-
-      <LineEntry
+      <InvoiceLineWorkspace
         shipmentId={id}
         status={shipment.status}
-        hasInvoice={shipment.invoice !== null}
-        invoices={shipment.invoices}
+        suppliers={suppliers}
+        initialInvoices={shipment.invoices}
         initialLines={lines}
         initialTotals={shipment.totals}
       />

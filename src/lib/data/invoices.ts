@@ -15,6 +15,8 @@ import { catalogService } from '@/server/services/catalog.service'
 import { invoicesService } from '@/server/services/invoices.service'
 import { invoiceCreateSchema } from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
+import { revalidatePath } from 'next/cache'
+import type { InvoiceSummary } from '@/lib/types'
 
 export interface SupplierOption {
   id: string
@@ -33,6 +35,8 @@ export async function listSupplierOptions(): Promise<SupplierOption[]> {
 
 export interface AddInvoiceResult {
   invoiceId: string | null
+  /** Persisted invoice DTO for immediate client-side selection. */
+  invoice: InvoiceSummary | null
   /** Expected failures travel as data — Server Actions redact thrown errors. */
   error: string | null
 }
@@ -74,14 +78,26 @@ export async function addInvoice(
       subTotal: draft.subTotal.trim() || undefined,
     })
   } catch {
-    return { invoiceId: null, error: 'Check the form: supplier, invoice number and date are required.' }
+    return { invoiceId: null, invoice: null, error: 'Check the form: supplier, invoice number and date are required.' }
   }
 
   try {
     const invoice = await invoicesService.createInvoice(db, audit, input)
-    return { invoiceId: invoice.id, error: null }
+    const result: InvoiceSummary = {
+      id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      invoiceDate: invoice.invoiceDate.toISOString().slice(0, 10),
+      supplierName: invoice.supplier.name,
+      subTotal: String(invoice.subTotal),
+      currency: invoice.currency,
+      exchangeRate: String(invoice.exchangeRate),
+      incotermCode: invoice.incotermCode,
+      incotermLocation: invoice.incotermLocation,
+    }
+    revalidatePath(`/shipments/${shipmentId}/entry`)
+    return { invoiceId: invoice.id, invoice: result, error: null }
   } catch (error) {
-    if (error instanceof AppError) return { invoiceId: null, error: error.message }
+    if (error instanceof AppError) return { invoiceId: null, invoice: null, error: error.message }
     throw error
   }
 }

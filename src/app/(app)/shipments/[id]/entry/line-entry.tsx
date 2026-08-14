@@ -51,29 +51,37 @@ const EMPTY_DRAFT: LineDraft = {
 export function LineEntry({
   shipmentId,
   status,
-  hasInvoice,
   invoices,
+  selectedInvoiceId,
+  onInvoiceIdChange,
+  invoiceVersion,
   initialLines,
   initialTotals,
 }: {
   shipmentId: string;
   status: ShipmentStatus;
-  hasInvoice: boolean;
   invoices: InvoiceSummary[];
+  selectedInvoiceId: string;
+  onInvoiceIdChange: (invoiceId: string) => void;
+  invoiceVersion: number;
   initialLines: LineItem[];
   initialTotals: ShipmentTotals | null;
 }) {
   // Entry is only meaningful on a DRAFT shipment with a supplier invoice; the
   // server refuses both cases anyway, so this just keeps the UI honest.
-  const entryLocked = status !== "DRAFT" || !hasInvoice;
+  const entryLocked = status !== "DRAFT" || invoices.length === 0;
   const [lines, setLines] = useState<LineItem[]>(initialLines);
-  const [totals, setTotals] = useState<ShipmentTotals | null>(initialTotals);
-  const [draft, setDraft] = useState<LineDraft>({ ...EMPTY_DRAFT, invoiceId: invoices[0]?.id ?? "" });
+  const [calculation, setCalculation] = useState({ version: invoiceVersion, totals: initialTotals });
+  const [draft, setDraft] = useState<LineDraft>({ ...EMPTY_DRAFT, invoiceId: selectedInvoiceId });
   const [hsQuery, setHsQuery] = useState("");
   const [hits, setHits] = useState<HsRate[]>([]);
   const [draftRate, setDraftRate] = useState<HsRate | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  // A new invoice invalidates calculation server-side. Versioning lets the
+  // retained Client Component hide the old ledger immediately without an
+  // effect-driven state copy or sacrificing the broker's in-progress draft.
+  const totals = calculation.version === invoiceVersion ? calculation.totals : null;
 
   // HS search runs on the server (1,544 codes, pg_trgm index). Debounced so a
   // burst of keystrokes costs one query, not one per character.
@@ -115,8 +123,8 @@ export function LineEntry({
   const dc = previewLine(draft, draftRate);
 
   function commit() {
-    if (!draft.invoiceId || !draft.hsCode || !draft.unitPrice || pending || entryLocked) return;
-    const submitted = draft;
+    if (!selectedInvoiceId || !draft.hsCode || !draft.unitPrice || pending || entryLocked) return;
+    const submitted = { ...draft, invoiceId: selectedInvoiceId };
     setNotice(null);
     startTransition(async () => {
       try {
@@ -124,7 +132,7 @@ export function LineEntry({
         // numbers, which replace anything shown optimistically here.
         const result = await commitLineItem(shipmentId, submitted);
         setLines(result.lines);
-        setTotals(result.totals);
+        setCalculation({ version: invoiceVersion, totals: result.totals });
         setNotice(result.error ?? result.calculationError);
         // Keep the draft on refusal so the broker's typing isn't thrown away.
         if (!result.error) {
@@ -146,7 +154,7 @@ export function LineEntry({
       try {
         const result = await deleteLineItem(shipmentId, id); // SERVER
         setLines(result.lines);
-        setTotals(result.totals);
+        setCalculation({ version: invoiceVersion, totals: result.totals });
         setNotice(result.error ?? result.calculationError);
       } catch (error) {
         setNotice(error instanceof Error ? error.message : "Could not delete the line");
@@ -207,7 +215,7 @@ export function LineEntry({
           </div>
         )}
         <div style={{ padding: "10px 12px", display: "grid", gridTemplateColumns: "1.4fr .7fr .7fr .7fr .7fr .7fr", gap: 8, borderBottom: "1px solid var(--sb-line)", background: "var(--sb-surface-2)" }}>
-          <label><span className="sb-eyebrow">Commercial invoice</span><select className="sb-inp" value={draft.invoiceId} onChange={(e) => set("invoiceId", e.target.value)}>{invoices.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.invoiceNumber} · {invoice.supplierName}</option>)}</select></label>
+          <label><span className="sb-eyebrow">Commercial invoice</span><select className="sb-inp" value={selectedInvoiceId} onChange={(e) => onInvoiceIdChange(e.target.value)}>{invoices.length === 0 && <option value="">Add an invoice above</option>}{invoices.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.invoiceNumber} · {invoice.supplierName}</option>)}</select></label>
           <label><span className="sb-eyebrow">Commercial unit</span><input className="sb-inp sb-mono" value={draft.unit} onChange={(e) => set("unit", e.target.value.toUpperCase())} /></label>
           <label><span className="sb-eyebrow">Origin</span><input className="sb-inp sb-mono" maxLength={2} value={draft.countryOfOrigin} onChange={(e) => set("countryOfOrigin", e.target.value.toUpperCase())} placeholder="US" /></label>
           <label><span className="sb-eyebrow">Gross lb</span><input className="sb-inp sb-mono" value={draft.weightLb} onChange={(e) => set("weightLb", e.target.value)} /></label>

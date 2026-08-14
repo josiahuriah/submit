@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { addInvoice, type SupplierOption } from "@/lib/data/invoices";
 import { ApiClientError, apiRequest } from "@/lib/client-api";
+import type { InvoiceSummary } from "@/lib/types";
 
 interface CreatedSupplier {
   id: string;
@@ -12,18 +12,20 @@ interface CreatedSupplier {
 }
 
 /**
- * Shown when the shipment has no supplier invoice yet — line entry cannot
- * begin until one exists (commitLineItem refuses). On success we refresh the
- * route so the Server Component re-reads the shipment with its new invoice.
+ * Adds a commercial invoice without making line entry wait for a separate
+ * route refresh. The persisted DTO is handed to the shared client workspace,
+ * which inserts and selects it immediately; the action also revalidates the
+ * Server Component summary from the database.
  */
 export function AddInvoiceCard({
   shipmentId,
   suppliers,
+  onInvoiceCreated,
 }: {
   shipmentId: string;
   suppliers: SupplierOption[];
+  onInvoiceCreated: (invoice: InvoiceSummary) => void;
 }) {
-  const router = useRouter();
   const [supplierOptions, setSupplierOptions] = useState(suppliers);
   const [showSupplierForm, setShowSupplierForm] = useState(suppliers.length === 0);
   const [supplierPending, setSupplierPending] = useState(false);
@@ -77,7 +79,13 @@ export function AddInvoiceCard({
         setNotice(result.error);
         return;
       }
-      router.refresh();
+      if (!result.invoice) {
+        setNotice("The invoice was saved, but its details could not be loaded. Refresh the page and try again.");
+        return;
+      }
+      onInvoiceCreated(result.invoice);
+      setDraft((current) => ({ ...current, invoiceNumber: "", subTotal: "" }));
+      setNotice(`${result.invoice.invoiceNumber} was added and selected for line entry.`);
     });
   }
 

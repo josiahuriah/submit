@@ -12,7 +12,7 @@ description: >
 # Submit — Validation & QA runbook
 
 This skill defines what counts as **evidence** in this repo, the exact
-verification commands per change type, and the honest gaps (updated 2026-08-12).
+verification commands per change type, and the honest gaps (updated 2026-08-14).
 
 **When NOT to use this skill:**
 - Money/duty math recipes and worked examples → `submit-calculations-and-money`
@@ -51,7 +51,7 @@ Hard rules:
 
 | Command | What it proves | Expected outcome | Environment needs |
 |---|---|---|---|
-| `npm test` | Full pure + live-DB suite | 56 tests across 10 files pass | Tenant isolation and fresh-account workflow need a live seeded `DATABASE_URL`; pure tariff/calculation/TFP/XML tests do not. |
+| `npm test` | Full pure + live-DB suite | 60 tests across 11 files pass | Tenant isolation and fresh-account workflow need a live seeded `DATABASE_URL`; pure tariff/calculation/TFP/XML tests do not. |
 | `npx vitest run tests/calculations.test.ts` | Calculation and alcohol measurement engine | 16 passed | **No DB needed.** Safe anywhere. |
 | `npx vitest run tests/tenant-isolation.test.ts` | Layer-1 tenant scoping (Prisma extension) against real Postgres | 5 passed | Live seeded DB. Creates then deletes a `ISOLATION-TEST-CLIENT` client row (cleanup in `afterAll`). |
 | `npx vitest run tests/fresh-account-workflow.test.ts` | Route-handler workflow: register → client → supplier → manifest → shipment → invoice → line → calculation → review XML, then billing send/payment | 1 passed | Live DB with global reference seed. Creates and deletes a uniquely named tenant. |
@@ -150,7 +150,7 @@ at production data; the delete in step 1 is unconditional.
 - **Document scope honestly** in a header comment: the tenant test file opens
   with a block stating exactly what is and is not proven (Layer 1 yes, RLS no).
 
-## 5. Gaps — honest, as of 2026-08-12
+## 5. Gaps — honest, as of 2026-08-14
 
 | Gap | Consequence |
 |---|---|
@@ -195,6 +195,6 @@ colliding numbers); bundled **1,544-code** tariff plus curated rate histories.
 
 ## Provenance and maintenance
 
-- Re-verified 2026-08-12 from calculation/tariff/TFP/XML/transport-reference tests, smoke, package scripts, seeds, schema, and README.
+- Re-verified 2026-08-14 from calculation/tariff/TFP/XML/transport-reference/invoice-selection tests, smoke, package scripts, seeds, schema, and README.
 - If tests are added/removed, update the counts in §2 and the certified lists in §6; if CI or git appears, rewrite §5.
 - If `scripts/smoke.ts` changes what it mutates or asserts, update §2's warning block first — it is the safety-critical paragraph.

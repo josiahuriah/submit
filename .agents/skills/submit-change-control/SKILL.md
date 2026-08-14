@@ -76,7 +76,7 @@ When in doubt between classes, treat it as the higher class.
 | 5 | No verified endpoint contract | Hypothetical SOAP/mock infrastructure was removed; do not add transport or credentials before government step-4 docs |
 | 6 | Duty-only tariff extraction | Full 1,544 codes exist, but excisable lines require separate verified legal-source rows; calculation now fails safe |
 | 7 | Vehicle product characteristics not modeled | TFP supports chassis/engine/make qualifiers; declaration UI does not yet capture them |
-| 8 | No CI | Nothing forces the 56-test suite to run |
+| 8 | No CI | Nothing forces the 60-test suite to run |
 | 9 | `HSCodeRate.processingFeeExempt` unwired | Schema field consumed nowhere; see `submit-calculations-and-money` |
 | 10 | Limited HTTP-layer tests | Fresh-account happy path is covered through XML download; error and branch coverage remains incomplete |
 | 11 | Official common types/business rules unavailable | Builder tests use the supplied XSD plus permissive common-types stub; per-artifact validation must not be described as Customs acceptance |
@@ -119,7 +119,7 @@ before trusting them; skill edits are Class C.
 
 ## Provenance and maintenance
 
-Verified 2026-08-12 against: git status/remote, `.gitignore` contents,
+Verified 2026-08-14 against: git status/remote, `.gitignore` contents,
 README (deploy warnings, security note, architecture), `src/lib/env.ts`,
 `.env`/`.env.example` (keys only, values not printed), `docs/` emptiness,
 `prisma/apply-rls.ts`, sibling-skill findings for debts 4/5/9/10/11.
