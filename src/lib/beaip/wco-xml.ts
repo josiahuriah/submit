@@ -27,7 +27,8 @@ import type {
   BeaipInvoice,
   BeaipParty,
 } from './types'
-import { d } from '@/lib/calculations/money'
+import { d, moneyString, sum } from '@/lib/calculations/money'
+import { kilogramsToPounds } from '@/lib/units/weight'
 
 export const WCO_DECLARATION_NS = 'http://globaletrade.services/Declaration'
 
@@ -125,12 +126,15 @@ function isNonZero(money: string): boolean {
 }
 
 /** Shipment-level CustomsValuation for one invoice (order-linked to Invoice). */
-function invoiceValuation(inv: BeaipInvoice) {
+function invoiceValuation(inv: BeaipInvoice, freightAmount: string) {
   return {
+    ...(isNonZero(freightAmount)
+      ? { FreightChargeAmount: amt(freightAmount, 'BSD') }
+      : {}),
     ChargeDeduction: [
       chargeDeduction('77', inv.subTotal, inv.currency, inv.exchangeRate),
-      ...(isNonZero(inv.freightApportioned)
-        ? [chargeDeduction('64', inv.freightApportioned, 'BSD')]
+      ...(isNonZero(freightAmount)
+        ? [chargeDeduction('64', freightAmount, 'BSD')]
         : []),
       ...(isNonZero(inv.insuranceApportioned)
         ? [chargeDeduction('67', inv.insuranceApportioned, 'BSD')]
@@ -158,7 +162,7 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
         ? { CommercialDescription: line.commercialDescription }
         : {}),
       AdditionalDocument: { ID: line.invoiceNumber, TypeCode: '380' }, // 380 = commercial invoice
-      Classification: { ID: line.hsCode, IdentificationTypeCode: 'HS' },
+      Classification: { ID: line.hsCode.replace(/\./g, ''), IdentificationTypeCode: 'HS' },
       GoodsMeasure: {
         ...(line.weightKg
           ? { GrossMassMeasure: { '#text': line.weightKg, '@_unitCode': 'KGM' } }
@@ -216,6 +220,9 @@ export function buildWcoDeclarationXml(
   const d = declaration
   const t = d.transport
   const acceptance = options.acceptanceDateTime ?? new Date()
+  const totalInvoiceFreight = moneyString(
+    sum(declaration.invoices.map((invoice) => invoice.freightApportioned)),
+  )
 
   const transportContractDocuments = [
     ...(d.blNumber ? [{ ID: d.blNumber, TypeCode: '705' }] : []), // 705 = bill of lading
@@ -234,7 +241,12 @@ export function buildWcoDeclarationXml(
       FunctionalReferenceID: d.functionalReferenceId,
       TypeCode: d.regimeCode,
       ...(d.grossWeightKg
-        ? { TotalGrossMassMeasure: { '#text': d.grossWeightKg, '@_unitCode': 'KGM' } }
+        ? {
+            TotalGrossMassMeasure: {
+              '#text': kilogramsToPounds(d.grossWeightKg),
+              '@_unitCode': 'LB',
+            },
+          }
         : {}),
       TotalPackageQuantity: {
         '#text': d.packageCount,
@@ -242,33 +254,7 @@ export function buildWcoDeclarationXml(
       },
       Submitter: { ID: d.submitterId },
       DeclarationOffice: { ID: d.customsOfficeCode },
-      ...(t.vesselName || t.transportMode || t.arrivalDate || t.containerNumber
-        ? {
-            BorderTransportMeans: {
-              ...(t.vesselName ? { Name: t.vesselName } : {}),
-              ...(t.transportMode
-                ? { TypeCode: TRANSPORT_MODE_CODES[t.transportMode] ?? t.transportMode }
-                : {}),
-              ...(t.transportNationalityCode
-                ? { RegistrationNationalityCode: t.transportNationalityCode }
-                : {}),
-              ...(t.arrivalDate ? { ArrivalDateTime: dt(t.arrivalDate) } : {}),
-              ...(t.containerNumber
-                ? {
-                    TransportEquipment: {
-                      ...(t.containerFullnessCode
-                        ? { FullnessCode: t.containerFullnessCode }
-                        : {}),
-                      ID: t.containerNumber,
-                      ...(t.containerSealNumber
-                        ? { Seal: { ID: t.containerSealNumber } }
-                        : {}),
-                    },
-                  }
-                : {}),
-            },
-          }
-        : {}),
+      // BorderTransportMeans is optional and intentionally omitted until its values are confirmed.
       Declarant: { Name: d.declarant.name, ...(d.declarant.id ? { ID: d.declarant.id } : {}) },
       // DutyTaxFee deliberately omitted — blank for incoming messages.
       GoodsShipment: {
@@ -302,7 +288,11 @@ export function buildWcoDeclarationXml(
             : {}),
         },
         // One CustomsValuation per invoice, in Invoice element order (linkage).
-        CustomsValuation: d.invoices.map(invoiceValuation),
+        CustomsValuation: d.invoices.map((invoice, index) =>
+          // Landed-cost freight belongs to one invoice valuation. Invoice
+          // ordering is the XSD-defined linkage, so use the first invoice.
+          invoiceValuation(invoice, index === 0 ? totalInvoiceFreight : '0.00'),
+        ),
         Destination: { CountryCode: 'BS' },
         ...(t.entryPortCode ? { EntryOffice: { ID: t.entryPortCode } } : {}),
         ...(t.exitPortCode ? { ExitOffice: { ID: t.exitPortCode } } : {}),

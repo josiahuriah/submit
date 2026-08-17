@@ -3,8 +3,9 @@ import Decimal from 'decimal.js'
 const KILOGRAMS_PER_POUND = new Decimal('0.45359237')
 
 /**
- * Broker-facing forms use pounds. Customs and the persistence model use KGM,
- * so conversion happens once at the server-action boundary.
+ * Broker-facing forms use pounds while the persistence model uses KGM, so
+ * conversion happens once at the server-action boundary. XML serialization
+ * converts the declaration's total gross mass back to pounds for Click2Clear.
  */
 export function poundsToKilograms(value: string): string {
   const trimmed = value.trim()

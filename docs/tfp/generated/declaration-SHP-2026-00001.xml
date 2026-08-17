@@ -4,33 +4,18 @@
         <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-08-08 15:29:08</DateTimeString>
     </AcceptanceDateTime>
     <FunctionCode>9</FunctionCode>
-    <FunctionalReferenceID>SHP-2026-00001</FunctionalReferenceID>
+    <FunctionalReferenceID>2026DEC0000000001</FunctionalReferenceID>
     <TypeCode>4</TypeCode>
-    <TotalGrossMassMeasure unitCode="KGM">2450</TotalGrossMassMeasure>
+    <TotalGrossMassMeasure unitCode="LB">5401.325</TotalGrossMassMeasure>
     <TotalPackageQuantity unitCode="PX">6</TotalPackageQuantity>
     <Submitter>
-        <ID>CR-DEV-0001</ID>
+        <ID>131249792</ID>
     </Submitter>
     <DeclarationOffice>
-        <ID>NAS</ID>
+        <ID>NASACP</ID>
     </DeclarationOffice>
-    <BorderTransportMeans>
-        <Name>Tropic Freedom</Name>
-        <TypeCode>1</TypeCode>
-        <RegistrationNationalityCode>BS</RegistrationNationalityCode>
-        <ArrivalDateTime>
-            <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-03 05:00:00</DateTimeString>
-        </ArrivalDateTime>
-        <TransportEquipment>
-            <FullnessCode>FULL</FullnessCode>
-            <ID>TCLU7305421</ID>
-            <Seal>
-                <ID>SEAL-260701</ID>
-            </Seal>
-        </TransportEquipment>
-    </BorderTransportMeans>
     <Declarant>
-        <Name>Bahama Brokerage Co</Name>
+        <Name>Atlas Brokers</Name>
     </Declarant>
     <GoodsShipment>
         <Consignee>
@@ -65,6 +50,7 @@
             </UnloadingLocation>
         </Consignment>
         <CustomsValuation>
+            <FreightChargeAmount currencyID="BSD">1850.00</FreightChargeAmount>
             <ChargeDeduction>
                 <ChargesTypeCode>77</ChargesTypeCode>
                 <OtherChargeDeductionAmount>18965.00</OtherChargeDeductionAmount>
@@ -123,7 +109,7 @@
                     <TypeCode>380</TypeCode>
                 </AdditionalDocument>
                 <Classification>
-                    <ID>2208.40.10</ID>
+                    <ID>22084010</ID>
                     <IdentificationTypeCode>HS</IdentificationTypeCode>
                 </Classification>
                 <GoodsMeasure>
@@ -169,7 +155,7 @@
                     <TypeCode>380</TypeCode>
                 </AdditionalDocument>
                 <Classification>
-                    <ID>6109.10.00</ID>
+                    <ID>61091000</ID>
                     <IdentificationTypeCode>HS</IdentificationTypeCode>
                 </Classification>
                 <GoodsMeasure>
@@ -215,7 +201,7 @@
                     <TypeCode>380</TypeCode>
                 </AdditionalDocument>
                 <Classification>
-                    <ID>8418.10.00</ID>
+                    <ID>84181000</ID>
                     <IdentificationTypeCode>HS</IdentificationTypeCode>
                 </Classification>
                 <GoodsMeasure>
@@ -271,7 +257,7 @@
             <LocationID>Port Everglades</LocationID>
         </TradeTerms>
         <UCR>
-            <TraderAssignedReferenceID>SHP-2026-00001</TraderAssignedReferenceID>
+            <TraderAssignedReferenceID>202600OREF00000001</TraderAssignedReferenceID>
         </UCR>
     </GoodsShipment>
     <GovernmentProcedure>

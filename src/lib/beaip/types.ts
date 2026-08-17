@@ -102,10 +102,11 @@ export interface BeaipDeclaration {
   functionCode: '9' | '5' | '1'
   /** ISO date used for rate selection and artifact provenance. */
   declarationDate: string
-  /** FunctionalReferenceID — sender's unique reference (our shipment number). */
+  /** Click2Clear-shaped declaration reference, e.g. 2026DEC0001234567. */
   functionalReferenceId: string
-  brokerReference: string // our shipment number
-  customsOfficeCode: string // NAS, FPO, ...
+  /** Trader reference, e.g. 201800OREF02331212. */
+  brokerReference: string
+  customsOfficeCode: string
   /** Submitter company registration number (mandatory on the wire). */
   submitterId: string
   /** The brokerage filing the declaration. */

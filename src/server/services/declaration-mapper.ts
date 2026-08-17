@@ -12,7 +12,16 @@ import type { TenantClient } from '@/lib/db/tenant-client'
 import type { BeaipDeclaration, BeaipInvoice, BeaipParty } from '@/lib/beaip'
 import { moneyString, sum } from '@/lib/calculations/money'
 import type { DeclarationType } from '@/generated/prisma/enums'
-import { ORIGINAL_DECLARATION_FUNCTION_CODE, TFP_COMPANY_REGISTRATION_NUMBER } from '@/lib/beaip/constants'
+import {
+  ORIGINAL_DECLARATION_FUNCTION_CODE,
+  TFP_COMPANY_REGISTRATION_NUMBER,
+  TFP_DECLARANT_NAME,
+  TFP_DECLARATION_OFFICE_CODE,
+} from '@/lib/beaip/constants'
+import {
+  buildFunctionalReferenceId,
+  buildTraderAssignedReferenceId,
+} from '@/lib/beaip/references'
 
 /** PLACEHOLDER: Regime code (wire TypeCode) until TTFB_SYS_REGIME arrives. */
 export const DECLARATION_SOURCE_SELECT = {
@@ -136,13 +145,14 @@ export function toBeaipDeclaration(
   declarationType: DeclarationType,
 ): BeaipDeclaration {
   const org = shipment.organization
+  const declarationDate = (shipment.submittedAt ?? shipment.declarationDate).toISOString()
   const voyage = shipment.manifest?.voyage ?? null
   const journey = voyage?.journey ?? null
   const firstSupplierCountry =
     shipment.invoices.map((inv) => inv.supplier.country).find((c) => c != null) ?? null
 
   const declarant: BeaipParty = {
-    name: org.name,
+    name: TFP_DECLARANT_NAME,
     id: org.tinNumber,
     address: null,
   }
@@ -233,10 +243,10 @@ export function toBeaipDeclaration(
     declarationType,
     regimeCode: shipment.regimeCode,
     functionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
-    declarationDate: (shipment.submittedAt ?? shipment.declarationDate).toISOString(),
-    functionalReferenceId: shipment.shipmentNumber,
-    brokerReference: shipment.shipmentNumber,
-    customsOfficeCode: shipment.declarationOffice.code,
+    declarationDate,
+    functionalReferenceId: buildFunctionalReferenceId(declarationDate, shipment.shipmentNumber),
+    brokerReference: buildTraderAssignedReferenceId(declarationDate, shipment.shipmentNumber),
+    customsOfficeCode: TFP_DECLARATION_OFFICE_CODE,
     submitterId: TFP_COMPANY_REGISTRATION_NUMBER,
     declarant,
     importer,

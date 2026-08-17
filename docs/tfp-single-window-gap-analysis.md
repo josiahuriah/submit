@@ -12,6 +12,12 @@ before the WSDL.
 > [`docs/tfp/field-mapping-matrix.md`](tfp/field-mapping-matrix.md). Schema,
 > mapping, calculation and UI gaps marked below have since been closed where
 > the supplied documents permit; withheld government code masters remain open.
+>
+> Updated 2026-08-17: stakeholder decisions now supersede several historical
+> rows below. Review XML uses Click2Clear-shaped declaration and trader
+> references, `NASACP`, `Atlas Brokers`, gross pounds (`LB`), undotted HS IDs,
+> no optional `BorderTransportMeans`, and one invoice-level landed-cost freight
+> amount. See the formal matrix for the current rules.
 
 ---
 

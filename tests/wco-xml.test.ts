@@ -24,11 +24,11 @@ function fixture(): BeaipDeclaration {
     functionCode: '9',
     declarationDate: '2026-07-31T00:00:00.000Z',
     regimeCode: '4',
-    functionalReferenceId: 'SHP-2026-00042',
-    brokerReference: 'SHP-2026-00042',
-    customsOfficeCode: 'NAS',
+    functionalReferenceId: '2026DEC0001234567',
+    brokerReference: '201800OREF02331212',
+    customsOfficeCode: 'NASACP',
     submitterId: 'CRN-12345',
-    declarant: { name: 'Bahama Brokerage Ltd', id: 'TIN-ORG-1', address: null },
+    declarant: { name: 'Atlas Brokers', id: 'TIN-ORG-1', address: null },
     importer: {
       name: 'Island Imports Ltd',
       id: 'TIN-CLIENT-1',
@@ -204,7 +204,6 @@ describe('buildWcoDeclarationXml', () => {
       'TotalPackageQuantity',
       'Submitter',
       'DeclarationOffice',
-      'BorderTransportMeans',
       'Declarant',
       'GoodsShipment',
       'GovernmentProcedure',
@@ -245,6 +244,24 @@ describe('buildWcoDeclarationXml', () => {
     expect(build()).not.toContain('DutyTaxFee')
   })
 
+  it('uses the approved declaration header values and reference conventions', () => {
+    const xml = build()
+    expect(xml).toContain('<FunctionalReferenceID>2026DEC0001234567</FunctionalReferenceID>')
+    expect(xml).toContain('<TotalGrossMassMeasure unitCode="LB">1129.869</TotalGrossMassMeasure>')
+    expect(xml).toContain('<DeclarationOffice>\n        <ID>NASACP</ID>')
+    expect(xml).toContain('<Declarant>\n        <Name>Atlas Brokers</Name>')
+    expect(xml).toContain(
+      '<TraderAssignedReferenceID>201800OREF02331212</TraderAssignedReferenceID>',
+    )
+  })
+
+  it('omits optional BorderTransportMeans until its values are confirmed', () => {
+    const xml = build()
+    expect(xml).not.toContain('<BorderTransportMeans>')
+    // The separate consignment arrival means remains populated from manifest data.
+    expect(xml).toContain('<ArrivalTransportMeans>')
+  })
+
   it('carries currencyID on amounts and links lines to invoices', () => {
     const xml = build()
     expect(xml).toContain('<ValueAmount currencyID="USD">1500.00</ValueAmount>')
@@ -257,11 +274,38 @@ describe('buildWcoDeclarationXml', () => {
     expect(xml).toContain('<TypeCode>785</TypeCode>')
   })
 
-  it('maps placeholder code tables (transport mode, package UOM)', () => {
+  it('emits undotted Classification IDs', () => {
+    const xml = build()
+    expect(xml).toContain('<ID>22083000</ID>')
+    expect(xml).toContain('<ID>61091000</ID>')
+    expect(xml).not.toContain('<ID>2208.30.00</ID>')
+    expect(xml).not.toContain('<ID>6109.10.00</ID>')
+  })
+
+  it('places all landed-cost freight on the first invoice CustomsValuation', () => {
+    const shipmentSection = build().match(
+      /<GoodsShipment>([\s\S]*?)<Destination>/,
+    )?.[1]
+    expect(shipmentSection).toBeDefined()
+    const valuations = [...shipmentSection!.matchAll(
+      /<CustomsValuation>([\s\S]*?)<\/CustomsValuation>/g,
+    )].map((match) => match[1]!)
+
+    expect(valuations).toHaveLength(2)
+    expect(valuations[0]).toContain(
+      '<FreightChargeAmount currencyID="BSD">200.00</FreightChargeAmount>',
+    )
+    expect(valuations[0]).toContain('<ChargesTypeCode>64</ChargesTypeCode>')
+    expect(valuations[0]).toContain('<OtherChargeDeductionAmount>200.00</OtherChargeDeductionAmount>')
+    expect(valuations[1]).not.toContain('FreightChargeAmount')
+    expect(valuations[1]).not.toContain('<ChargesTypeCode>64</ChargesTypeCode>')
+  })
+
+  it('maps placeholder code tables (consignment transport mode, package UOM)', () => {
     const xml = build()
     expect(xml).toContain('<TotalPackageQuantity unitCode="CT">40</TotalPackageQuantity>')
-    const border = childOrder(xml, 'BorderTransportMeans')
-    expect(border).toEqual(['Name', 'TypeCode', 'RegistrationNationalityCode', 'ArrivalDateTime', 'TransportEquipment'])
+    const arrival = childOrder(xml, 'ArrivalTransportMeans')
+    expect(arrival).toEqual(['Name', 'TypeCode', 'RegistrationNationalityCode'])
     expect(xml).toContain('<TypeCode>1</TypeCode>') // SEA → 1
   })
 

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { preflightTfpDeclaration, TFP_FIELD_MAPPINGS } from '@/lib/beaip/tfp-field-mapping'
 import type { BeaipDeclaration } from '@/lib/beaip'
+import {
+  buildFunctionalReferenceId,
+  buildTraderAssignedReferenceId,
+} from '@/lib/beaip/references'
 
 function declaration(): BeaipDeclaration {
   return {
@@ -8,11 +12,11 @@ function declaration(): BeaipDeclaration {
     functionCode: '9',
     declarationDate: '2026-08-08T00:00:00.000Z',
     regimeCode: '4',
-    functionalReferenceId: 'SHP-2026-00001',
-    brokerReference: 'SHP-2026-00001',
-    customsOfficeCode: 'NAS',
+    functionalReferenceId: '2026DEC0001234567',
+    brokerReference: '201800OREF02331212',
+    customsOfficeCode: 'NASACP',
     submitterId: 'CR-12345',
-    declarant: { name: 'Broker Ltd', id: null, address: null },
+    declarant: { name: 'Atlas Brokers', id: null, address: null },
     importer: { name: 'Importer Ltd', id: null, address: null },
     consignee: { name: 'Importer Ltd', id: null, address: null },
     blNumber: 'BL-1',
@@ -57,6 +61,13 @@ function declaration(): BeaipDeclaration {
 }
 
 describe('TFP field mapping preflight', () => {
+  it('builds stable Click2Clear-shaped review references', () => {
+    expect(buildFunctionalReferenceId('2026-08-08T00:00:00.000Z', 'SHP-2026-1234567'))
+      .toBe('2026DEC0001234567')
+    expect(buildTraderAssignedReferenceId('2018-08-08T00:00:00.000Z', 'SHP-2331212'))
+      .toBe('201800OREF02331212')
+  })
+
   it('keeps the executable matrix free of duplicate element rows', () => {
     const keys = TFP_FIELD_MAPPINGS.map((row) => `${row.section}/${row.element}`)
     expect(new Set(keys).size).toBe(keys.length)
@@ -77,5 +88,19 @@ describe('TFP field mapping preflight', () => {
       severity: 'BLOCKER',
       field: 'Declaration/Submitter/ID',
     }))
+  })
+
+  it('blocks references that do not follow the Click2Clear review conventions', () => {
+    const input = declaration()
+    input.functionalReferenceId = 'SHP-2026-00001'
+    input.brokerReference = 'SHP-2026-00001'
+    const result = preflightTfpDeclaration(input)
+    expect(result.ready).toBe(false)
+    expect(result.issues).toEqual(expect.arrayContaining([
+      expect.objectContaining({ field: 'Declaration/FunctionalReferenceID' }),
+      expect.objectContaining({
+        field: 'Declaration/GoodsShipment/UCR/TraderAssignedReferenceID',
+      }),
+    ]))
   })
 })

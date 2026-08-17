@@ -27,13 +27,13 @@ This matrix governs the stakeholder-created incoming declaration XML. It does no
 |---|---:|---|---|---|
 | `Declaration/AcceptanceDateTime` | C | Artifact generation timestamp | TFP `DateTimeString`, local time | `DERIVED` |
 | `Declaration/FunctionCode` | M | Constant `9` | Original declaration; cannot be overridden per entry | `DERIVED` |
-| `Declaration/FunctionalReferenceID` | M | `Shipment.shipmentNumber` | Verbatim | `MAPPED` |
+| `Declaration/FunctionalReferenceID` | M | Declaration year + stable shipment sequence | `YYYYDEC##########` for review files; Click2Clear is expected to supply the live declaration number | `DERIVED` |
 | `Declaration/TypeCode` | M | `Shipment.regimeCode` | Code value; default `4` is provisional | `WITHHELD_CODE_LIST` |
-| `Declaration/TotalGrossMassMeasure` | C | `Shipment.grossWeightKg` | `unitCode=KGM` | `MAPPED` |
+| `Declaration/TotalGrossMassMeasure` | C | `Shipment.grossWeightKg` | Convert kilograms to pounds; `unitCode=LB` | `DERIVED` |
 | `Declaration/TotalPackageQuantity` | C | `Shipment.packageCount`, `packageType` | Provisional UN package-code map | `WITHHELD_CODE_LIST` |
 | `Declaration/Submitter/ID` | M | Constant `131249792` | Configured Company Registration Number; never substituted with TIN or broker licence | `DERIVED` |
-| `Declaration/DeclarationOffice/ID` | M | `CustomsOffice.code` | Verbatim | `WITHHELD_CODE_LIST` |
-| `Declaration/Declarant/Name` | C | `Organization.name` | Verbatim | `MAPPED` |
+| `Declaration/DeclarationOffice/ID` | M | Constant `NASACP` | Interim value for all entries until the office master sheet is available | `DERIVED` |
+| `Declaration/Declarant/Name` | C | Constant `Atlas Brokers` | Stakeholder-approved filing identity | `DERIVED` |
 | `Declaration/Declarant/ID` | C | `Organization.tinNumber` | Verbatim | `MAPPED` |
 | `Declaration/PreviousDocument/ID` | C | Not modeled | Required for applicable amendments | `NOT_MODELED` |
 | `Declaration/AdditionalDocument` | C | `ShipmentDocument` metadata exists | Bytes/code mapping still required | `NOT_MODELED` |
@@ -50,16 +50,19 @@ This matrix governs the stakeholder-created incoming declaration XML. It does no
 
 | TFP element path | Req. | Submit source | Transform / rule | Status |
 |---|---:|---|---|---|
-| `BorderTransportMeans/Name` | C | `Manifest.voyage.vessel.name` | Verbatim | `MAPPED` |
-| `BorderTransportMeans/TypeCode` | C | `Shipment.transportMode` | Provisional `SEA=1`, `AIR=4`; shipment entry does not accept land transport | `WITHHELD_CODE_LIST` |
-| `BorderTransportMeans/RegistrationNationalityCode` | C | `Shipment.transportNationalityCode` | ISO alpha-2 | `MAPPED` |
-| `BorderTransportMeans/ArrivalDateTime` | C | `Voyage.arrivalDate` | TFP `DateTimeString` | `MAPPED` |
-| `TransportEquipment/FullnessCode` | C | `Shipment.containerFullnessCode` | Verbatim | `WITHHELD_CODE_LIST` |
-| `TransportEquipment/ID` | C | `Shipment.containerNumber` | Verbatim | `MAPPED` |
-| `TransportEquipment/Seal/ID` | C | `Shipment.containerSealNumber` | Verbatim | `MAPPED` |
+| `BorderTransportMeans/Name` | C | Withheld | Omit the optional parent until the values are confirmed | `OMIT_INCOMING` |
+| `BorderTransportMeans/TypeCode` | C | Withheld | Omit the optional parent until the values are confirmed | `OMIT_INCOMING` |
+| `BorderTransportMeans/RegistrationNationalityCode` | C | Withheld | Omit the optional parent until the values are confirmed | `OMIT_INCOMING` |
+| `BorderTransportMeans/ArrivalDateTime` | C | Withheld | Omit the optional parent until the values are confirmed | `OMIT_INCOMING` |
+| `BorderTransportMeans/TransportEquipment/FullnessCode` | C | Withheld | Omit the optional parent until the values are confirmed | `OMIT_INCOMING` |
+| `BorderTransportMeans/TransportEquipment/ID` | C | Withheld | Omit the optional parent until the values are confirmed | `OMIT_INCOMING` |
+| `BorderTransportMeans/TransportEquipment/Seal/ID` | C | Withheld | Omit the optional parent until the values are confirmed | `OMIT_INCOMING` |
 | `GoodsShipment/EntryOffice/ID` | C | Destination `Port.unLocode` | Verbatim | `MAPPED` |
 | `GoodsShipment/ExitOffice/ID` | C | Origin `Port.unLocode` | Verbatim | `MAPPED` |
 | `GoodsShipment/ExportCountry/ID` | C | Origin port country, then supplier country | First available ISO alpha-2 | `DERIVED` |
+| `Consignment/ArrivalTransportMeans/Name` | C | `Manifest.voyage.vessel.name` | Verbatim | `MAPPED` |
+| `Consignment/ArrivalTransportMeans/TypeCode` | C | `Shipment.transportMode` | Provisional `SEA=1`, `AIR=4` | `WITHHELD_CODE_LIST` |
+| `Consignment/ArrivalTransportMeans/RegistrationNationalityCode` | C | `Shipment.transportNationalityCode` | ISO alpha-2 | `MAPPED` |
 | `Consignment/GoodsLocation/ID` | C | `Shipment.goodsLocationCode` | Verbatim | `WITHHELD_CODE_LIST` |
 | `Consignment/TransportContractDocument[705]/ID` | C | `Shipment.blNumber` | `TypeCode=705` | `MAPPED` |
 | `Consignment/TransportContractDocument[785]/ID` | C | `Manifest.manifestNumber` | `TypeCode=785` | `MAPPED` |
@@ -73,13 +76,15 @@ Invoice linkage is positional in TFP v1.4.4: shipment `CustomsValuation` nodes a
 | TFP element path | Req. | Submit source | Transform / rule | Status |
 |---|---:|---|---|---|
 | `CustomsValuation/ChargeDeduction[77]` | C | `Invoice.subTotal`, `currency`, `exchangeRate` | Invoice amount; non-BSD rate included | `MAPPED` |
-| `CustomsValuation/ChargeDeduction[64]` | C | Sum invoice lines' apportioned freight | BSD | `DERIVED` |
+| `CustomsValuation/FreightChargeAmount` | C | Sum all lines' apportioned freight | BSD; assign the full landed-cost freight to the first invoice valuation | `DERIVED` |
+| `CustomsValuation/ChargeDeduction[64]` | C | Sum all lines' apportioned freight | BSD; assign to the same first invoice valuation | `DERIVED` |
 | `CustomsValuation/ChargeDeduction[67]` | C | Sum invoice lines' apportioned insurance | BSD | `DERIVED` |
 | `CustomsValuation/ChargeDeduction[104]` | C | Sum invoice lines' apportioned other cost | BSD | `DERIVED` |
 | `Invoice/ID` | C | `Invoice.invoiceNumber` | Verbatim | `MAPPED` |
 | `Invoice/IssueDateTime` | C | `Invoice.invoiceDate` | TFP `DateTimeString` | `MAPPED` |
 | `Invoice/TypeCode` | C | `Invoice.incotermCode` | Incoterm code | `MAPPED` |
 | `TradeTerms/LocationID` | C | `Invoice.incotermLocation` | Verbatim | `MAPPED` |
+| `UCR/TraderAssignedReferenceID` | C | Declaration year + stable shipment sequence | `YYYY00OREF########` | `DERIVED` |
 
 ## Goods items
 
@@ -91,7 +96,7 @@ Invoice linkage is positional in TFP v1.4.4: shipment `CustomsValuation` nodes a
 | `Commodity/CommercialDescription` | C | `LineItem.commercialDescription` | Verbatim | `CONDITIONAL` |
 | `Commodity/AdditionalDocument` | C | `Invoice.invoiceNumber` | `TypeCode=380` | `DERIVED` |
 | `Commodity/AdditionalInformation` | C | Alcohol/dynamic fields | Qualifier mapping pending | `WITHHELD_CODE_LIST` |
-| `Commodity/Classification/ID` | C | `LineItem.hsCode` | Internal dotted format; wire format awaiting code master | `WITHHELD_CODE_LIST` |
+| `Commodity/Classification/ID` | C | `LineItem.hsCode` | Remove periods for the 8-digit wire value | `DERIVED` |
 | `Commodity/Classification/IdentificationTypeCode` | C | HS classification | Constant `HS` | `DERIVED` |
 | `Commodity/GoodsMeasure/GrossMassMeasure` | C | `LineItem.weightKg` | `unitCode=KGM` | `MAPPED` |
 | `Commodity/GoodsMeasure/NetNetWeightMeasure` | C | `LineItem.netWeightKg` | `unitCode=KGM` | `MAPPED` |
@@ -114,9 +119,8 @@ Artifact generation blocks on a current calculation, declaration reference/funct
 The following remain provisional until Customs releases the associated worksheets or confirms them during UAT:
 
 - regime codes (`TTFB_SYS_REGIME`);
-- declaration office, goods-location, warehouse, transport-mode, fullness, package-UOM and CPC code lists;
-- dotted versus undotted national HS representation;
+- goods-location, warehouse, transport-mode, fullness, package-UOM and CPC code lists;
 - dynamic additional-information qualifiers, documents, exemptions and vehicle characteristics;
 - endpoint envelope, authentication, acknowledgement and business-rejection semantics.
 
-The TFP specification makes `Declaration/Submitter/ID` mandatory. The stakeholder has configured Company Registration Number `131249792` for every current entry; Submit keeps that fixed filing identity distinct from an organization's tax identification number and an individual broker's licence number. Customs must confirm the identifier before UAT certification.
+The TFP specification makes `Declaration/Submitter/ID` mandatory. The stakeholder has configured Company Registration Number `131249792` for every current entry; Submit keeps that fixed filing identity distinct from an organization's tax identification number and an individual broker's licence number. Customs must confirm the identifier before UAT certification. The supplied `sample.xsd` is an XML instance despite its extension. It omits the root namespace, but the actual XSD declares a target namespace with `elementFormDefault="qualified"`; generated declarations therefore retain `xmlns="http://globaletrade.services/Declaration"` so they validate.
