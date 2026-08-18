@@ -274,6 +274,18 @@ describe('buildWcoDeclarationXml', () => {
     expect(xml).toContain('<TypeCode>785</TypeCode>')
   })
 
+  it('omits item InsuranceAmount when apportioned insurance is zero', () => {
+    const declaration = fixture()
+    declaration.lines[0]!.insuranceApportioned = '0.00'
+
+    const xml = buildWcoDeclarationXml(declaration, { acceptanceDateTime: ACCEPTANCE })
+    const insuranceAmounts = xml.match(/<InsuranceAmount\b/g) ?? []
+
+    expect(xml).not.toContain('<InsuranceAmount currencyID="BSD">0.00</InsuranceAmount>')
+    expect(insuranceAmounts).toHaveLength(1)
+    expect(xml).toContain('<InsuranceAmount currencyID="BSD">20.00</InsuranceAmount>')
+  })
+
   it('emits undotted Classification IDs', () => {
     const xml = build()
     expect(xml).toContain('<ID>22083000</ID>')

@@ -180,7 +180,9 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
     CustomsValuation: {
       ExitToEntryChargeAmount: amt(line.cifValue, 'BSD'), // item customs value
       FreightChargeAmount: amt(line.freightApportioned, 'BSD'),
-      InsuranceAmount: amt(line.insuranceApportioned, 'BSD'),
+      ...(isNonZero(line.insuranceApportioned)
+        ? { InsuranceAmount: amt(line.insuranceApportioned, 'BSD') }
+        : {}),
       ...(isNonZero(line.otherApportioned)
         ? { ChargeDeduction: chargeDeduction('104', line.otherApportioned, 'BSD') }
         : {}),
