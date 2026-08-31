@@ -117,6 +117,14 @@ function toShipmentHeader(row: DetailRow): ShipmentHeader {
     insuranceCharge: String(row.insuranceCharge),
     invoice: toInvoiceSummary(row.invoices[0]),
     invoices: row.invoices.map((invoice) => toInvoiceSummary(invoice)!),
+    customsArtifacts: row.customsEntries.map((entry) => ({
+      id: entry.id,
+      groupCode: entry.declarationGroupCode,
+      downloadUrl: `/api/customs-entries/${entry.id}/xml`,
+      fileName: `${row.shipmentNumber}-${entry.declarationType}-${entry.declarationGroupCode}-review.xml`,
+      attemptCount: entry._count.attempts,
+      latestOutcome: entry.attempts[0]?.outcome ?? null,
+    })),
   }
 }
 

@@ -28,7 +28,7 @@ import type {
   BeaipParty,
 } from './types'
 import { d, moneyString, sum } from '@/lib/calculations/money'
-import { kilogramsToPounds } from '@/lib/units/weight'
+import { normalizeHsCode, STANDARD_IMPORT_CPC } from '@/lib/customs/normalization'
 
 export const WCO_DECLARATION_NS = 'http://globaletrade.services/Declaration'
 
@@ -64,9 +64,12 @@ const builder = new XMLBuilder({
 })
 
 function formatDateTime(iso: string | Date): string {
-  const d = new Date(iso)
-  const p = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Nassau', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+  }).formatToParts(new Date(iso))
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value ?? ''
+  return `${part('year')}-${part('month')}-${part('day')} ${part('hour')}:${part('minute')}:${part('second')}`
 }
 
 /** DateTimeType — unqualified DateTimeString child, spec formatCode verbatim. */
@@ -106,9 +109,8 @@ function party(p: BeaipParty) {
 }
 
 /**
- * ChargeDeduction — EDIFACT 5025 codes: 77 invoice amount, 64 freight,
- * 67 insurance, 104 other transport charges. Exchange RateNumeric is
- * "not required for incoming", so only the currency is sent.
+ * ChargeDeduction — insurance is deliberately not represented. Click2Clear's
+ * operational rule requires insurance to be folded into freight.
  */
 function chargeDeduction(code: string, amount: string, currency: string, exchangeRate?: string) {
   return {
@@ -132,12 +134,9 @@ function invoiceValuation(inv: BeaipInvoice, freightAmount: string) {
       ? { FreightChargeAmount: amt(freightAmount, 'BSD') }
       : {}),
     ChargeDeduction: [
-      chargeDeduction('77', inv.subTotal, inv.currency, inv.exchangeRate),
+      chargeDeduction('77', inv.subTotal, 'BSD'),
       ...(isNonZero(freightAmount)
         ? [chargeDeduction('64', freightAmount, 'BSD')]
-        : []),
-      ...(isNonZero(inv.insuranceApportioned)
-        ? [chargeDeduction('67', inv.insuranceApportioned, 'BSD')]
         : []),
       ...(isNonZero(inv.otherApportioned)
         ? [chargeDeduction('104', inv.otherApportioned, 'BSD')]
@@ -157,18 +156,18 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
     Commodity: {
       SequenceNumeric: sequence,
       Description: line.description,
-      ValueAmount: amt(line.totalValue, line.currency),
+      ValueAmount: amt(line.totalValue, 'BSD'),
       ...(line.commercialDescription
         ? { CommercialDescription: line.commercialDescription }
         : {}),
       AdditionalDocument: { ID: line.invoiceNumber, TypeCode: '380' }, // 380 = commercial invoice
-      Classification: { ID: line.hsCode.replace(/\./g, ''), IdentificationTypeCode: 'HS' },
+      Classification: { ID: normalizeHsCode(line.hsCode), IdentificationTypeCode: 'HS' },
       GoodsMeasure: {
-        ...(line.weightKg
-          ? { GrossMassMeasure: { '#text': line.weightKg, '@_unitCode': 'KGM' } }
+        ...(line.weightLb
+          ? { GrossMassMeasure: { '#text': line.weightLb, '@_unitCode': 'LB' } }
           : {}),
-        ...(line.netWeightKg
-          ? { NetNetWeightMeasure: { '#text': line.netWeightKg, '@_unitCode': 'KGM' } }
+        ...(line.netWeightLb
+          ? { NetNetWeightMeasure: { '#text': line.netWeightLb, '@_unitCode': 'LB' } }
           : {}),
         TariffQuantity: {
           '#text': tariffQuantity.value,
@@ -179,9 +178,8 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
     },
     CustomsValuation: {
       ExitToEntryChargeAmount: amt(line.cifValue, 'BSD'), // item customs value
-      FreightChargeAmount: amt(line.freightApportioned, 'BSD'),
-      ...(isNonZero(line.insuranceApportioned)
-        ? { InsuranceAmount: amt(line.insuranceApportioned, 'BSD') }
+      ...(isNonZero(line.freightApportioned)
+        ? { FreightChargeAmount: amt(line.freightApportioned, 'BSD') }
         : {}),
       ...(isNonZero(line.otherApportioned)
         ? { ChargeDeduction: chargeDeduction('104', line.otherApportioned, 'BSD') }
@@ -231,8 +229,7 @@ export function buildWcoDeclarationXml(
     ...(t.manifestNumber ? [{ ID: t.manifestNumber, TypeCode: '785' }] : []), // 785 = manifest
   ]
 
-  // Declaration-level CPC group = the item CPC family (e.g. lines "4000" → "400").
-  const cpcGroup = d.lines[0]?.cpcCode.slice(0, 3) ?? null
+  const cpcGroup = d.lines.length > 0 ? STANDARD_IMPORT_CPC : null
 
   const doc = {
     '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' },
@@ -242,10 +239,10 @@ export function buildWcoDeclarationXml(
       FunctionCode: options.functionCode ?? d.functionCode,
       FunctionalReferenceID: d.functionalReferenceId,
       TypeCode: d.regimeCode,
-      ...(d.grossWeightKg
+      ...(d.grossWeightLb
         ? {
             TotalGrossMassMeasure: {
-              '#text': kilogramsToPounds(d.grossWeightKg),
+              '#text': d.grossWeightLb,
               '@_unitCode': 'LB',
             },
           }

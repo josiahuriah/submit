@@ -36,12 +36,12 @@ function raw(over: Partial<RawTariffRecord> = {}): RawTariffRecord {
 
 describe('normalizeCode', () => {
   it('reformats xxxx.dddd to the internal xxxx.dd.dd declaration form', () => {
-    expect(normalizeCode('0201.1000')).toBe('0201.10.00')
-    expect(normalizeCode('2208.3000')).toBe('2208.30.00')
+    expect(normalizeCode('0201.1000')).toBe('02011000')
+    expect(normalizeCode('2208.3000')).toBe('22083000')
   })
 
   it('produces codes that satisfy the declaration preflight format', () => {
-    const declarationCode = /^\d{4}\.\d{2}\.\d{2}$/
+    const declarationCode = /^\d{8}$/
     expect(declarationCode.test(normalizeCode('8703.2310'))).toBe(true)
     expect(declarationCode.test('8703.2310')).toBe(false)
   })
@@ -82,7 +82,7 @@ describe('normalizeTariffEntry', () => {
 
   it('carries duty, unit and section metadata through', () => {
     const entry = normalizeTariffEntry(raw({ dutyRate: '0.4500', generalRate: '45%' }))
-    expect(entry.code).toBe('0201.10.00')
+    expect(entry.code).toBe('02011000')
     expect(entry.rate.dutyRate).toBe('0.4500')
     expect(entry.unit).toBe('LB')
     expect(entry.sectionNumber).toBe('I')
@@ -95,10 +95,10 @@ describe('normalizeTariffFile', () => {
     // excise, but the
     // extraction claims duty 0. Importing it would zero the duty on spirits.
     const records = [raw({ code: '2208.6000', dutyRate: '0.0000', generalRate: 'Free' })]
-    const report = normalizeTariffFile(records, (code) => code === '2208.60.00')
+    const report = normalizeTariffFile(records, (code) => code === '22086000')
 
     expect(report.imported).toHaveLength(0)
-    expect(report.skippedCurated).toEqual(['2208.60.00'])
+    expect(report.skippedCurated).toEqual(['22086000'])
   })
 
   it('counts imported codes in chapters whose excise data is missing', () => {

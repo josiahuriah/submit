@@ -3,7 +3,7 @@ import { shipmentUpdateInvalidatesCalculation } from '@/server/services/shipment
 
 describe('shipment calculation staleness', () => {
   it('invalidates calculations when declaration date, value, or apportionment inputs change', () => {
-    for (const field of ['clientId', 'declarationDate', 'grossWeightKg', 'netWeightKg', 'freightCharge', 'insuranceCharge', 'otherCharges']) {
+    for (const field of ['clientId', 'declarationDate', 'grossWeightLb', 'netWeightLb', 'freightCharge', 'insuranceCharge', 'otherCharges']) {
       expect(shipmentUpdateInvalidatesCalculation({ [field]: 'changed' }), field).toBe(true)
     }
   })

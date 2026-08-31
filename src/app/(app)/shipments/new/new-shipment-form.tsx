@@ -28,6 +28,7 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
     containerNumber: "",
     containerSealNumber: "",
     regimeCode: "4",
+    isSplitDeclaration: false,
     goodsType: "GENERAL",
     packageType: "CARTON",
     packageCount: "1",
@@ -60,7 +61,7 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
   const select = (label: string, key: keyof typeof draft, items: { id: string; label: string }[], allowEmpty?: string) => (
     <label style={field}>
       <span className="sb-eyebrow">{label}</span>
-      <select className="sb-inp" value={draft[key]} onChange={set(key)}>
+      <select className="sb-inp" value={String(draft[key])} onChange={set(key)}>
         {allowEmpty !== undefined && <option value="">{allowEmpty}</option>}
         {items.map((o) => (
           <option key={o.id} value={o.id}>{o.label}</option>
@@ -71,7 +72,7 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
   const text = (label: string, key: keyof typeof draft, placeholder = "", mono = false) => (
     <label style={field}>
       <span className="sb-eyebrow">{label}</span>
-      <input className={mono ? "sb-inp sb-mono" : "sb-inp"} value={draft[key]} onChange={set(key)} placeholder={placeholder} />
+      <input className={mono ? "sb-inp sb-mono" : "sb-inp"} value={String(draft[key])} onChange={set(key)} placeholder={placeholder} />
     </label>
   );
   const enumSelect = (label: string, key: keyof typeof draft, values: string[]) =>
@@ -101,6 +102,10 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
 
         {enumSelect("Transport mode", "transportMode", TRANSPORT_MODES)}
         {text("Regime code", "regimeCode", "4", true)}
+        <label style={field}>
+          <span className="sb-eyebrow">Declaration grouping</span>
+          <span><input type="checkbox" checked={draft.isSplitDeclaration} onChange={(event) => setDraft((current) => ({ ...current, isSplitDeclaration: event.target.checked }))} /> Split by item CPC</span>
+        </label>
         {enumSelect("Goods type", "goodsType", GOODS_TYPES)}
 
         {enumSelect("Package type", "packageType", PACKAGE_TYPES)}

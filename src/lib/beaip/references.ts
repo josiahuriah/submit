@@ -31,6 +31,16 @@ function fixedWidthNumericReference(sourceReference: string, width: number): str
   return numericSeed(sourceReference).slice(-width).padStart(width, '0')
 }
 
+function hashedNumericReference(seed: string, width: number): string {
+  let first = 2166136261
+  let second = 0x9e3779b9
+  for (const character of seed) {
+    first = Math.imul(first ^ character.charCodeAt(0), 16777619) >>> 0
+    second = Math.imul(second ^ character.charCodeAt(0), 2246822519) >>> 0
+  }
+  return `${first}${second}`.slice(0, width).padEnd(width, '0')
+}
+
 /** Example shape: 2026DEC0001234567. */
 export function buildFunctionalReferenceId(
   declarationDate: string,
@@ -45,4 +55,12 @@ export function buildTraderAssignedReferenceId(
   sourceReference: string,
 ): string {
   return `${referenceYear(declarationDate)}00OREF${fixedWidthNumericReference(sourceReference, 8)}`
+}
+
+/** Batch-seeded references keep split declarations distinct and auditable. */
+export function buildSubmissionReferences(declarationDate: string, seed: string) {
+  return {
+    functionalReferenceId: `${referenceYear(declarationDate)}DEC${hashedNumericReference(seed, 10)}`,
+    brokerReference: `${referenceYear(declarationDate)}00OREF${hashedNumericReference(`${seed}:broker`, 8)}`,
+  }
 }

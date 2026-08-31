@@ -20,6 +20,9 @@ const hasXmllint = !spawnSync('xmllint', ['--version'], { encoding: 'utf8' }).er
 
 function fixture(): BeaipDeclaration {
   return {
+    isSplitDeclaration: false,
+    declarationGroupCode: '400',
+    declarationSequence: 1,
     declarationType: 'C13',
     functionCode: '9',
     declarationDate: '2026-07-31T00:00:00.000Z',
@@ -38,7 +41,7 @@ function fixture(): BeaipDeclaration {
     blNumber: 'BL-778899',
     packageCount: 40,
     packageUom: 'CARTON',
-    grossWeightKg: '512.500',
+    grossWeightLb: '512.500',
     transport: {
       vesselName: 'Tropic Freedom',
       transportMode: 'SEA',
@@ -59,7 +62,7 @@ function fixture(): BeaipDeclaration {
       {
         invoiceNumber: 'INV-1001',
         invoiceDate: '2026-07-01T00:00:00.000Z',
-        currency: 'USD',
+        currency: 'BSD',
         exchangeRate: '1.00000000',
         incotermCode: 'FOB',
         incotermLocation: 'Miami',
@@ -69,21 +72,21 @@ function fixture(): BeaipDeclaration {
           id: null,
           address: { cityName: null, countryCode: 'US', line: '400 NW 7th Ave', postcode: null },
         },
-        freightApportioned: '120.00',
-        insuranceApportioned: '30.00',
+        freightApportioned: '250.00',
+        insuranceApportioned: '0.00',
         otherApportioned: '0.00',
       },
       {
         invoiceNumber: 'INV-1002',
         invoiceDate: null,
-        currency: 'USD',
+        currency: 'BSD',
         exchangeRate: '1.00000000',
         incotermCode: null,
         incotermLocation: null,
         subTotal: '800.00',
         supplier: { name: 'Georgia Traders', id: null, address: null },
-        freightApportioned: '80.00',
-        insuranceApportioned: '20.00',
+        freightApportioned: '0.00',
+        insuranceApportioned: '0.00',
         otherApportioned: '10.00',
       },
     ],
@@ -98,21 +101,21 @@ function fixture(): BeaipDeclaration {
       {
         lineNumber: 1,
         invoiceNumber: 'INV-1001',
-        hsCode: '2208.30.00',
-        cpcCode: '4000',
+        hsCode: '22083000',
+        cpcCode: '400',
         description: 'Whisky 750ml',
         commercialDescription: 'Spirits',
         countryOfOrigin: 'GB',
         quantity: '120',
         unit: 'L',
-        weightKg: '150.000',
-        netWeightKg: '140.000',
+        weightLb: '150.000',
+        netWeightLb: '140.000',
         packageCount: 10,
         packageTypeCode: 'CT',
         totalValue: '1500.00',
-        currency: 'USD',
-        freightApportioned: '120.00',
-        insuranceApportioned: '30.00',
+        currency: 'BSD',
+        freightApportioned: '250.00',
+        insuranceApportioned: '0.00',
         otherApportioned: '0.00',
         cifValue: '1650.00',
         dutyAmount: '600.00',
@@ -127,21 +130,21 @@ function fixture(): BeaipDeclaration {
       {
         lineNumber: 1,
         invoiceNumber: 'INV-1002',
-        hsCode: '6109.10.00',
-        cpcCode: '4000',
+        hsCode: '61091000',
+        cpcCode: '400',
         description: 'Cotton t-shirts',
         commercialDescription: null,
         countryOfOrigin: null,
         quantity: '500',
         unit: 'PCS',
-        weightKg: null,
-        netWeightKg: null,
+        weightLb: null,
+        netWeightLb: null,
         packageCount: null,
         packageTypeCode: null,
         totalValue: '800.00',
-        currency: 'USD',
-        freightApportioned: '80.00',
-        insuranceApportioned: '20.00',
+        currency: 'BSD',
+        freightApportioned: '0.00',
+        insuranceApportioned: '0.00',
         otherApportioned: '10.00',
         cifValue: '910.00',
         dutyAmount: '40.00',
@@ -157,7 +160,7 @@ function fixture(): BeaipDeclaration {
   }
 }
 
-const ACCEPTANCE = new Date('2026-07-31T10:00:00')
+const ACCEPTANCE = new Date('2026-07-31T14:00:00.000Z')
 
 function build(): string {
   return buildWcoDeclarationXml(fixture(), { acceptanceDateTime: ACCEPTANCE })
@@ -247,7 +250,7 @@ describe('buildWcoDeclarationXml', () => {
   it('uses the approved declaration header values and reference conventions', () => {
     const xml = build()
     expect(xml).toContain('<FunctionalReferenceID>2026DEC0001234567</FunctionalReferenceID>')
-    expect(xml).toContain('<TotalGrossMassMeasure unitCode="LB">1129.869</TotalGrossMassMeasure>')
+    expect(xml).toContain('<TotalGrossMassMeasure unitCode="LB">512.500</TotalGrossMassMeasure>')
     expect(xml).toContain('<DeclarationOffice>\n        <ID>NASACP</ID>')
     expect(xml).toContain('<Declarant>\n        <Name>Atlas Brokers</Name>')
     expect(xml).toContain(
@@ -264,7 +267,7 @@ describe('buildWcoDeclarationXml', () => {
 
   it('carries currencyID on amounts and links lines to invoices', () => {
     const xml = build()
-    expect(xml).toContain('<ValueAmount currencyID="USD">1500.00</ValueAmount>')
+    expect(xml).toContain('<ValueAmount currencyID="BSD">1500.00</ValueAmount>')
     expect(xml).toContain('<ExitToEntryChargeAmount currencyID="BSD">1650.00</ExitToEntryChargeAmount>')
     // Item → invoice link: AdditionalDocument type 380 with the invoice number.
     expect(xml).toContain('<ID>INV-1002</ID>')
@@ -274,16 +277,10 @@ describe('buildWcoDeclarationXml', () => {
     expect(xml).toContain('<TypeCode>785</TypeCode>')
   })
 
-  it('omits item InsuranceAmount when apportioned insurance is zero', () => {
-    const declaration = fixture()
-    declaration.lines[0]!.insuranceApportioned = '0.00'
-
-    const xml = buildWcoDeclarationXml(declaration, { acceptanceDateTime: ACCEPTANCE })
-    const insuranceAmounts = xml.match(/<InsuranceAmount\b/g) ?? []
-
-    expect(xml).not.toContain('<InsuranceAmount currencyID="BSD">0.00</InsuranceAmount>')
-    expect(insuranceAmounts).toHaveLength(1)
-    expect(xml).toContain('<InsuranceAmount currencyID="BSD">20.00</InsuranceAmount>')
+  it('never emits insurance fields or charge code 67', () => {
+    const xml = build()
+    expect(xml).not.toContain('<InsuranceAmount')
+    expect(xml).not.toContain('<ChargesTypeCode>67</ChargesTypeCode>')
   })
 
   it('emits undotted Classification IDs', () => {
@@ -305,10 +302,10 @@ describe('buildWcoDeclarationXml', () => {
 
     expect(valuations).toHaveLength(2)
     expect(valuations[0]).toContain(
-      '<FreightChargeAmount currencyID="BSD">200.00</FreightChargeAmount>',
+      '<FreightChargeAmount currencyID="BSD">250.00</FreightChargeAmount>',
     )
     expect(valuations[0]).toContain('<ChargesTypeCode>64</ChargesTypeCode>')
-    expect(valuations[0]).toContain('<OtherChargeDeductionAmount>200.00</OtherChargeDeductionAmount>')
+    expect(valuations[0]).toContain('<OtherChargeDeductionAmount>250.00</OtherChargeDeductionAmount>')
     expect(valuations[1]).not.toContain('FreightChargeAmount')
     expect(valuations[1]).not.toContain('<ChargesTypeCode>64</ChargesTypeCode>')
   })

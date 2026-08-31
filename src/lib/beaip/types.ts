@@ -23,8 +23,9 @@ export interface BeaipInvoice {
   invoiceNumber: string
   /** ISO datetime string, or null when the date is unknown. */
   invoiceDate: string | null
+  /** Compatibility field validated as BSD at the submission boundary. */
   currency: string
-  /** BSD per one unit of invoice currency. */
+  /** Compatibility field fixed at 1; Submit does not perform FX conversion. */
   exchangeRate: string
   incotermCode: string | null
   incotermLocation: string | null
@@ -69,12 +70,13 @@ export interface BeaipDeclarationLine {
   countryOfOrigin: string | null
   quantity: string
   unit: string
-  weightKg: string | null
-  netWeightKg: string | null
+  weightLb: string | null
+  netWeightLb: string | null
   packageCount: number | null
   packageTypeCode: string | null
-  /** Line FOB in the invoice currency (Commodity/ValueAmount). */
+  /** Line FOB entered by the user in BSD (Commodity/ValueAmount). */
   totalValue: string
+  /** Compatibility field validated as BSD at the submission boundary. */
   currency: string
   /** Apportioned shipment costs (item-level CustomsValuation), BSD. */
   freightApportioned: string
@@ -92,6 +94,9 @@ export interface BeaipDeclarationLine {
 }
 
 export interface BeaipDeclaration {
+  isSplitDeclaration: boolean
+  declarationGroupCode: string
+  declarationSequence: number
   declarationType: string // C13, C14, C17, C18 — domain label, NOT a wire field
   /**
    * Wire TypeCode (Regime, code table TTFB_SYS_REGIME). PLACEHOLDER until the
@@ -117,7 +122,7 @@ export interface BeaipDeclaration {
   packageCount: number
   /** Our PackageType enum value; wire UOM codes map in wco-xml. */
   packageUom: string
-  grossWeightKg: string | null
+  grossWeightLb: string | null
   transport: BeaipTransport
   invoices: BeaipInvoice[]
   totalCifValue: string

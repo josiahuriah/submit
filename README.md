@@ -4,9 +4,10 @@ Multi-tenant SaaS for Bahamian customs brokerages: prepare shipments, calculate
 duty/VAT/levy/excise **to the cent**, generate TFP v1.4.4 XML for Customs review,
 and bill clients — with hard tenant isolation between brokerage firms.
 
-Direct Single Window submission is intentionally not implemented yet. The
-government's current onboarding gate is a schema-reviewable XML file; endpoint,
-authentication, envelope, and response semantics have not been released.
+Controlled Single Window QA submission is implemented and disabled by default.
+Broker-authorized SOAP attempts retain immutable XML and response history.
+Official code masters and live Customs business validation remain unverified;
+see [the QA runbook](docs/beaip-qa-runbook.md).
 
 ## Stack
 
@@ -23,8 +24,8 @@ Node.js 20.9 or newer is required; Node.js 22 LTS is recommended.
 npm install
 cp .env.example .env          # then edit values (see below)
 npx prisma generate
-npx prisma migrate deploy     # or: npx prisma db push
-npm run db:rls                # applies pg_trgm indexes + Row Level Security
+npx prisma migrate deploy     # migrations include required data conversions
+npm run db:rls                # applies Row Level Security
 npm run db:seed               # global reference data (offices, ports, HS codes)
 npm run db:seed:dev           # dev tenants + demo shipment (gitignored file)
 npm run dev                   # http://localhost:3000
@@ -38,7 +39,7 @@ Log in with `broker@bahamabrokerage.test` / `Password123!`, calculate shipment
 ```bash
 npm run lint                  # ESLint 9 + Next.js core-web-vitals rules
 npm run typecheck             # strict TypeScript check
-npm test                      # 60 tests, including fresh-account route-handler E2E
+npm test                      # includes database-backed workflow and isolation tests
 npx tsx scripts/smoke.ts      # calculate → verify math → generate XML; no endpoint call
 npm run wco:generate          # TFP declaration XML from a calculated shipment + XSD validation
 ```
@@ -50,9 +51,13 @@ npm run wco:generate          # TFP declaration XML from a calculated shipment +
 | Variable | Required | Notes |
 |---|---|---|
 | `DATABASE_URL` | yes | Neon **pooled** connection string in production |
+| `DIRECT_URL` | for deployment | Neon **unpooled** connection for Prisma migrations |
+| `SHADOW_DATABASE_URL` | local development only | Separate disposable database for `migrate dev`; unnecessary for `migrate deploy` |
 | `JWT_SECRET` | yes | ≥32 random chars: `openssl rand -hex 32` |
 | `SESSION_TTL_SECONDS` | no | default 43200 (12h) |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_REDIRECT_URI` | no | "Continue/Sign in with Google" on `/signup` and `/login`; unset = those buttons fail cleanly with an error message, password auth is unaffected |
+| `BEAIP_TRANSPORT_MODE` | no | `disabled` by default; `live` enables explicit broker requests |
+| Other `BEAIP_*` settings | for QA | See `.env.example` and [the QA runbook](docs/beaip-qa-runbook.md); never commit credentials |
 
 > **Note on the Neon connection string used during development:** it was shared
 > in a chat session while building this project. Rotate the password in the Neon
@@ -62,18 +67,32 @@ npm run wco:generate          # TFP declaration XML from a calculated shipment +
 
 1. Create the Neon project; copy the **pooled** connection string
    (`...-pooler...`) into `DATABASE_URL` on Vercel.
-2. From your machine (direct or pooled both work for these):
+2. Back up the database and rehearse migrations on a separate Neon branch.
+   Set `DIRECT_URL` to the unpooled database-owner connection. From your machine:
    ```bash
    npx prisma migrate deploy
    npm run db:rls
-   npm run db:seed
+   npx prisma migrate status
    ```
    Do **not** run `db:seed:dev` against production.
+   Run the global reference seed only when needed for a new database.
 3. Set `JWT_SECRET` (fresh value) on Vercel. Deploy.
 4. Optional — Google sign-in: create an OAuth client in Google Cloud Console,
    add `https://<your-domain>/api/auth/google/callback` as an authorized
    redirect URI, and set `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` /
    `GOOGLE_REDIRECT_URI` (same callback URL) on Vercel.
+
+The UAT migration renames weight columns, normalizes HS/CPC values, and requires
+BSD invoices. Use a maintenance window for this change: the old application
+cannot use the renamed columns. It also invalidates draft calculations; brokers
+must recalculate and generate new artifacts. Use the migration in this repository,
+not the earlier downloaded SQL.
+
+Vercel production builds run a read-only migration/RLS check before building.
+If the migration or the new tenant policies are missing, the build stops and the
+existing deployment is retained. After migrating and applying RLS, redeploy.
+Builds never apply migrations automatically. Keep Customs transport disabled
+until the controlled QA test.
 
 RLS on Neon is real: `neondb_owner` is not a superuser and every tenant table
 has `FORCE ROW LEVEL SECURITY`. (On a local superuser Postgres, RLS is bypassed
@@ -92,7 +111,7 @@ Route (validate: Zod)  →  Service (business rules, audit)  →  Repository / T
 
 | Layer | Mechanism | File |
 |---|---|---|
-| 1 (primary) | Prisma client extension injects `organizationId` into every query/write on the 12 tenant-scoped models, including `findUnique` | `src/lib/db/tenant-client.ts` |
+| 1 (primary) | Prisma client extension injects `organizationId` into every query/write on the 14 tenant-scoped models, including `findUnique` | `src/lib/db/tenant-client.ts` |
 | 2 (request) | `withAuth()` builds a per-request tenant client from verified JWT claims — handlers never see an unscoped client | `src/lib/auth/with-auth.ts` |
 | 3 (backstop) | Postgres RLS; every operation runs inside a transaction that does `set_config('app.current_org_id', $org, true)` — transaction-scoped, safe under PgBouncer transaction pooling | `prisma/sql/rls.sql` |
 
@@ -107,15 +126,15 @@ tenant-scoped and is read through `basePrisma`.
 
 Pure, deterministic, unit-tested. decimal.js throughout — floats never touch money.
 
-- **Apportionment** (`apportionment.ts`): largest-remainder method distributes
-  freight/insurance/other across line items by VALUE or WEIGHT; per-line cents
-  sum *exactly* to the shipment charge.
+- **Apportionment**: insurance is combined with freight, assigned to the first
+  item in each declaration. Split declarations divide freight by group weight;
+  other charges use largest-remainder apportionment. Cents reconcile exactly.
 - **Duty and excise** (`duty-calculator.ts`): independent `AD_VALOREM`,
   `SPECIFIC`, `COMPOUND` (greater), and `ADDITIVE` (sum) bases. Beer can use
   ad-valorem plus per-imperial-gallon duty; spirits can use a separate specific
   excise basis. Alcohol assessment quantities use the supplied Customs
   litre/imperial-gallon/proof-gallon worksheet factors.
-  Invoice FOB is converted to BSD before apportionment and taxation.
+  Brokers enter preconverted BSD values; Submit does not supply exchange rates.
   VAT on (CIF + duty + excise + levy). Processing fee 1% of shipment CIF,
   clamped $10–$750, plus VAT on the fee.
 - **Effective-dated rate freezing**: the declaration date selects the newest
@@ -136,19 +155,19 @@ on a `CustomsEntry`, then exposes an authenticated download. It does **not**
 advance shipment status or contact an endpoint.
 
 The formal mapping and unresolved code-master dependencies are recorded in
-`docs/tfp/field-mapping-matrix.md`. The previous hypothetical SOAP/ASYCUDA-style
-client and mock submission path were removed; integration begins only after
-Customs supplies step-4 endpoint documentation.
+`docs/tfp/field-mapping-matrix.md`. Separate broker-authorized QA submission
+uses SOAP 1.1/WS-Security, preserves every attempt and raw response, and warns
+before repeats. No automatic retry occurs; UAT acceptance must be verified.
 
 ### RBAC
 
 `VIEWER < CLERK < BROKER < ADMIN < OWNER`. The one domain-critical rule:
-**`shipments:submit` is reserved for BROKER+** when a verified endpoint workflow
-is introduced. Clerks can currently prepare declarations and generate review artifacts.
+**`shipments:submit` requires BROKER+**. Clerks can prepare declarations and
+generate review artifacts, but cannot send them to Customs.
 
 ---
 
-## API surface (29 routes)
+## API surface (30 routes)
 
 ```
 POST   /api/auth/register|login|logout        GET /api/auth/me
@@ -166,6 +185,7 @@ GET    /api/hs-codes/search?q=rum             GET /api/hs-codes/:code/rates
 GET|POST /api/billing/invoices                GET /api/billing/invoices/:id
 POST   /api/billing/invoices/:id/send|payments
 GET    /api/customs-entries/:id/xml
+POST   /api/customs-entries/:id/submit        # Broker+; transport disabled by default
 ```
 
 Responses: `{ data, meta? }` on success, `{ error: { code, message, details? } }`
@@ -184,7 +204,7 @@ only; it is never treated as an authoritative excise source.
 
 ```
 prisma/           schema, migrations, sql/ (indexes + RLS), seed.ts, seed.dev.ts*
-src/app/api/      29 thin route handlers
+src/app/api/      30 thin route handlers
 src/app/          auth + operational home, directory, manifest, declaration, billing and accounting UI
 src/lib/          env, errors, api-response, auth/, db/, calculations/, beaip/, validation/
 src/server/       services/ (business rules) + repositories/

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
   declarationArtifactSchema,
+  invoiceCreateSchema,
   journeyCreateSchema,
+  lineItemCreateSchema,
   shipmentCreateSchema,
   vesselCreateSchema,
 } from '@/lib/validation/schemas'
@@ -19,6 +21,25 @@ describe('declaration workflow constraints', () => {
     expect(parsed.transportMode).toBe('SEA')
     expect(parsed.packageType).toBe('CARTON')
     expect(parsed.declarationFunctionCode).toBe('9')
+    expect(parsed.isSplitDeclaration).toBe(false)
+  })
+
+  it('accepts punctuated HS input but produces exactly eight stored digits', () => {
+    const parsed = lineItemCreateSchema.parse({
+      invoiceId: 'invoice-1', hsCode: '9403.50.90', cpcCode: '400',
+      description: 'Furniture', quantity: '1', unitPrice: '10', totalValue: '10.00',
+    })
+    expect(parsed.hsCode).toBe('94035090')
+    expect(lineItemCreateSchema.safeParse({ ...parsed, cpcCode: '4000' }).success).toBe(false)
+  })
+
+  it('accepts only broker-converted BSD invoice values', () => {
+    const invoice = {
+      shipmentId: 'shipment-1', supplierId: 'supplier-1', invoiceNumber: 'INV-1',
+      invoiceDate: new Date(), subTotal: '10.00',
+    }
+    expect(invoiceCreateSchema.safeParse({ ...invoice, currency: 'BSD', exchangeRate: '1' }).success).toBe(true)
+    expect(invoiceCreateSchema.safeParse({ ...invoice, currency: 'USD', exchangeRate: '1' }).success).toBe(false)
   })
 
   it('allows only sea and air transport for shipment entry', () => {

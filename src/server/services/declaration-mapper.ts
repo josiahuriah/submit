@@ -10,8 +10,10 @@
  */
 import type { TenantClient } from '@/lib/db/tenant-client'
 import type { BeaipDeclaration, BeaipInvoice, BeaipParty } from '@/lib/beaip'
-import { moneyString, sum } from '@/lib/calculations/money'
+import { apportion } from '@/lib/calculations/apportionment'
+import { d, moneyString, sum } from '@/lib/calculations/money'
 import type { DeclarationType } from '@/generated/prisma/enums'
+import type { Prisma } from '@/generated/prisma/client'
 import {
   ORIGINAL_DECLARATION_FUNCTION_CODE,
   TFP_COMPANY_REGISTRATION_NUMBER,
@@ -21,6 +23,7 @@ import {
 import {
   buildFunctionalReferenceId,
   buildTraderAssignedReferenceId,
+  buildSubmissionReferences,
 } from '@/lib/beaip/references'
 
 /** PLACEHOLDER: Regime code (wire TypeCode) until TTFB_SYS_REGIME arrives. */
@@ -35,12 +38,13 @@ export const DECLARATION_SOURCE_SELECT = {
   packageCount: true,
   packageType: true,
   transportMode: true,
-  grossWeightKg: true,
-  netWeightKg: true,
+  grossWeightLb: true,
+  netWeightLb: true,
   declarationDate: true,
   submittedAt: true,
   declarationFunctionCode: true,
   regimeCode: true,
+  isSplitDeclaration: true,
   goodsLocationCode: true,
   warehouseCode: true,
   transportNationalityCode: true,
@@ -54,7 +58,7 @@ export const DECLARATION_SOURCE_SELECT = {
   processingFee: true,
   totalPayable: true,
   organization: {
-    select: { name: true, tinNumber: true, companyRegistrationNumber: true },
+    select: { id: true, name: true, tinNumber: true, companyRegistrationNumber: true },
   },
   client: {
     select: {
@@ -106,8 +110,8 @@ export const DECLARATION_SOURCE_SELECT = {
           countryOfOrigin: true,
           quantity: true,
           unit: true,
-          weightKg: true,
-          netWeightKg: true,
+          weightLb: true,
+          netWeightLb: true,
           packageCount: true,
           packageTypeCode: true,
           totalValue: true,
@@ -127,9 +131,9 @@ export const DECLARATION_SOURCE_SELECT = {
         orderBy: { lineNumber: 'asc' },
       },
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
   },
-} as const
+} satisfies Prisma.ShipmentSelect
 
 export async function loadDeclarationSource(db: TenantClient, shipmentId: string) {
   return db.shipment.findUnique({
@@ -216,8 +220,8 @@ export function toBeaipDeclaration(
       countryOfOrigin: l.countryOfOrigin,
       quantity: String(l.quantity),
       unit: l.unit,
-      weightKg: l.weightKg === null ? null : String(l.weightKg),
-      netWeightKg: l.netWeightKg === null ? null : String(l.netWeightKg),
+      weightLb: l.weightLb === null ? null : String(l.weightLb),
+      netWeightLb: l.netWeightLb === null ? null : String(l.netWeightLb),
       packageCount: l.packageCount,
       packageTypeCode: l.packageTypeCode,
       totalValue: moneyString(String(l.totalValue)),
@@ -240,6 +244,9 @@ export function toBeaipDeclaration(
   )
 
   return {
+    isSplitDeclaration: shipment.isSplitDeclaration,
+    declarationGroupCode: '400',
+    declarationSequence: 1,
     declarationType,
     regimeCode: shipment.regimeCode,
     functionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
@@ -254,7 +261,7 @@ export function toBeaipDeclaration(
     blNumber: shipment.blNumber,
     packageCount: shipment.packageCount,
     packageUom: shipment.packageType,
-    grossWeightKg: shipment.grossWeightKg === null ? null : String(shipment.grossWeightKg),
+    grossWeightLb: shipment.grossWeightLb === null ? null : String(shipment.grossWeightLb),
     transport: {
       vesselName: voyage?.vessel.name ?? null,
       transportMode: shipment.transportMode,
@@ -281,4 +288,101 @@ export function toBeaipDeclaration(
     totalPayable: moneyString(String(shipment.totalPayable)),
     lines,
   }
+}
+
+/** Build one wire declaration per CPC when the broker selected split filing. */
+export function partitionBeaipDeclaration(
+  declaration: BeaipDeclaration,
+  referenceSeed: string,
+): BeaipDeclaration[] {
+  const cpcs = [...new Set(declaration.lines.map((line) => line.cpcCode))].sort()
+  if (!declaration.isSplitDeclaration && cpcs.length > 1) {
+    throw new Error('Mixed CPC lines require the split declaration option')
+  }
+  const groups = declaration.isSplitDeclaration ? cpcs : [cpcs[0] ?? '400']
+  const groupedLines = groups.map((cpc) => (
+    declaration.isSplitDeclaration
+      ? declaration.lines.filter((line) => line.cpcCode === cpc)
+      : declaration.lines
+  ))
+  const processingFees = new Map(apportion(
+    declaration.processingFee,
+    groupedLines.map((lines, index) => ({
+      id: String(index),
+      totalValue: sum(lines.map((line) => line.cifValue)),
+    })),
+  ).map((share) => [Number(share.id), share.amount]))
+
+  // Fee VAT is stored only on the shipment. Preserve that frozen residual
+  // instead of dropping it when rebuilding totals from individual lines.
+  const vatOnFee = d(declaration.totalVat).minus(sum(declaration.lines.map((line) => line.vatAmount)))
+  if (vatOnFee.isNegative()) throw new Error('Shipment VAT is lower than its line VAT total; recalculate before generating XML')
+  const feeVatShares = new Map(apportion(
+    vatOnFee,
+    groupedLines.map((_lines, index) => ({
+      id: String(index),
+      totalValue: processingFees.get(index) ?? d(0),
+    })),
+  ).map((share) => [Number(share.id), share.amount]))
+
+  return groups.map((cpc, index) => {
+    const sourceLines = groupedLines[index] ?? []
+    const invoiceNumbers = new Set(sourceLines.map((line) => line.invoiceNumber))
+    const invoices = declaration.invoices
+      .filter((invoice) => invoiceNumbers.has(invoice.invoiceNumber))
+      .map((invoice) => {
+        const invoiceLines = sourceLines.filter((line) => line.invoiceNumber === invoice.invoiceNumber)
+        return {
+          ...invoice,
+          currency: 'BSD',
+          exchangeRate: '1',
+          subTotal: moneyString(sum(invoiceLines.map((line) => line.totalValue))),
+          freightApportioned: moneyString(sum(invoiceLines.map((line) => line.freightApportioned))),
+          insuranceApportioned: '0.00',
+          otherApportioned: moneyString(sum(invoiceLines.map((line) => line.otherApportioned))),
+        }
+      })
+    const references = buildSubmissionReferences(
+      declaration.declarationDate,
+      `${referenceSeed}:${index + 1}:${cpc}`,
+    )
+    const totalDuty = sum(sourceLines.map((line) => line.dutyAmount))
+    const totalVat = sum(sourceLines.map((line) => line.vatAmount)).plus(feeVatShares.get(index) ?? d(0))
+    const totalLevy = sum(sourceLines.map((line) => line.levyAmount))
+    const totalExcise = sum(sourceLines.map((line) => line.exciseAmount))
+    const processingFee = processingFees.get(index) ?? d(0)
+
+    return {
+      ...declaration,
+      ...references,
+      declarationGroupCode: cpc,
+      declarationSequence: index + 1,
+      packageCount: declaration.isSplitDeclaration
+        ? sourceLines.reduce((total, line) => total + (line.packageCount ?? 0), 0)
+        : declaration.packageCount,
+      grossWeightLb: declaration.isSplitDeclaration
+        ? sum(sourceLines.map((line) => d(line.weightLb))).toDecimalPlaces(3).toFixed(3)
+        : declaration.grossWeightLb,
+      invoices,
+      lines: sourceLines.map((line, lineIndex) => ({
+        ...line,
+        lineNumber: lineIndex + 1,
+        currency: 'BSD',
+        insuranceApportioned: '0.00',
+      })),
+      totalCifValue: moneyString(sum(sourceLines.map((line) => line.cifValue))),
+      totalDuty: moneyString(totalDuty),
+      totalVat: moneyString(totalVat),
+      totalLevy: moneyString(totalLevy),
+      totalExcise: moneyString(totalExcise),
+      processingFee: moneyString(processingFee),
+      totalPayable: moneyString(sum([
+        totalDuty,
+        totalVat,
+        totalLevy,
+        totalExcise,
+        processingFee,
+      ])),
+    }
+  })
 }

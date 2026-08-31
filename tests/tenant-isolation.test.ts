@@ -16,6 +16,7 @@
  * Layer 1 (the Prisma extension), which is the primary enforcement.
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { randomUUID } from 'node:crypto'
 import { basePrisma } from '@/lib/db/prisma'
 import { createTenantClient } from '@/lib/db/tenant-client'
 
@@ -90,5 +91,38 @@ describe('tenant client isolation (Layer 1: Prisma extension)', () => {
     const total = await basePrisma.shipment.count()
     const scoped = await db2.shipment.count()
     expect(scoped).toBeLessThan(total)
+  })
+
+  it('isolates submission batches and attempts, including creates and updates', async () => {
+    const db1 = createTenantClient(org1Id)
+    const db2 = createTenantClient(org2Id)
+    const shipment = await db1.shipment.findFirstOrThrow({ select: { id: true } })
+    const user = await db1.user.findFirstOrThrow({ select: { id: true } })
+    const marker = randomUUID()
+    const batch = await db1.customsSubmissionBatch.create({
+      data: { organizationId: org2Id, shipmentId: shipment.id, createdById: user.id, declarationCount: 1 },
+    })
+    try {
+      expect(batch.organizationId).toBe(org1Id)
+      const entry = await db1.customsEntry.create({
+        data: {
+          organizationId: org1Id, shipmentId: shipment.id, submissionBatchId: batch.id,
+          declarationType: 'C13', declarationGroupCode: '400', declarationSequence: 1,
+          functionalReferenceId: marker, brokerReference: marker, declarationHash: 'isolation-test-only',
+        },
+      })
+      const attempt = await db1.customsSubmissionAttempt.create({
+        data: { organizationId: org2Id, customsEntryId: entry.id, attemptNumber: 1, messageId: marker, declarationHash: 'isolation-test-only' },
+      })
+      expect(attempt.organizationId).toBe(org1Id)
+      expect(await db2.customsSubmissionBatch.findUnique({ where: { id: batch.id } })).toBeNull()
+      expect(await db2.customsSubmissionAttempt.findUnique({ where: { id: attempt.id } })).toBeNull()
+      await expect(db2.customsSubmissionBatch.update({ where: { id: batch.id }, data: { declarationCount: 2 } })).rejects.toThrow()
+      await expect(db2.customsSubmissionAttempt.update({ where: { id: attempt.id }, data: { outcome: 'UNKNOWN' } })).rejects.toThrow()
+    } finally {
+      await db1.customsSubmissionAttempt.deleteMany({ where: { customsEntry: { submissionBatchId: batch.id } } })
+      await db1.customsEntry.deleteMany({ where: { submissionBatchId: batch.id } })
+      await db1.customsSubmissionBatch.delete({ where: { id: batch.id } })
+    }
   })
 })

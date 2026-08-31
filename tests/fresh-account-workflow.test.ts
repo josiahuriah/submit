@@ -73,7 +73,7 @@ beforeAll(async () => {
   // fixture probes sequential to avoid overlapping client.query() calls.
   const voyage = await basePrisma.voyage.findFirst({ select: { id: true } })
   const office = await basePrisma.customsOffice.findFirst({ where: { isActive: true }, select: { id: true } })
-  const hsCode = await basePrisma.hSCode.findUnique({ where: { code: '6109.10.00' }, select: { id: true } })
+  const hsCode = await basePrisma.hSCode.findUnique({ where: { code: '61091000' }, select: { id: true } })
   if (!voyage || !office || !hsCode) {
     throw new Error('Global seed missing — run `npm run db:seed` before the fresh-account workflow test')
   }
@@ -83,7 +83,9 @@ beforeAll(async () => {
 afterAll(async () => {
   if (organizationId) {
     // Reverse dependency order; this test owns the uniquely-created tenant.
+    await basePrisma.customsSubmissionAttempt.deleteMany({ where: { organizationId } })
     await basePrisma.customsEntry.deleteMany({ where: { organizationId } })
+    await basePrisma.customsSubmissionBatch.deleteMany({ where: { organizationId } })
     await basePrisma.lineItem.deleteMany({ where: { organizationId } })
     await basePrisma.invoice.deleteMany({ where: { organizationId } })
     await basePrisma.shipment.deleteMany({ where: { organizationId } })
@@ -153,7 +155,7 @@ describe('fresh account to Customs-review XML', () => {
       packageType: 'CARTON',
       packageCount: 1,
       transportMode: 'SEA',
-      grossWeightKg: '2.000',
+      grossWeightLb: '2.000',
       freightCharge: '10.00',
       insuranceCharge: '2.00',
       otherCharges: '0.00',
@@ -175,14 +177,14 @@ describe('fresh account to Customs-review XML', () => {
     await data(await createLineItem(request(`/api/invoices/${invoice.id}/line-items`, 'POST', {
       hsCodeId: references.hsCodeId,
       hsCode: '6109.10.00',
-      cpcCode: '4000',
+      cpcCode: '400',
       description: 'Cotton t-shirts',
       quantity: '2',
       unit: 'PCS',
       unitPrice: '25.0000',
       totalValue: '50.00',
-      weightKg: '2.000',
-      netWeightKg: '1.800',
+      weightLb: '2.000',
+      netWeightLb: '1.800',
       countryOfOrigin: 'US',
       packageCount: 1,
       packageTypeCode: 'CT',
@@ -196,10 +198,11 @@ describe('fresh account to Customs-review XML', () => {
     expect(calculation.totals.totalCifValue).toBe('62.00')
     expect(d(calculation.totals.totalPayable).greaterThan(0)).toBe(true)
 
-    const artifact = await data<{ artifact: { id: string }; downloadUrl: string; validation: { ready: boolean } }>(await generateArtifact(
+    const artifactBatch = await data<{ artifacts: { artifact: { id: string }; downloadUrl: string; validation: { ready: boolean } }[] }>(await generateArtifact(
       request(`/api/shipments/${shipment.id}/artifacts`, 'POST', { declarationType: 'C13' }),
       context(shipment.id),
     ), 201)
+    const artifact = artifactBatch.artifacts[0]!
     expect(artifact.validation.ready).toBe(true)
 
     const xmlResponse = await downloadXml(
@@ -209,8 +212,13 @@ describe('fresh account to Customs-review XML', () => {
     expect(xmlResponse.status).toBe(200)
     expect(xmlResponse.headers.get('content-type')).toContain('application/xml')
     const xml = await xmlResponse.text()
-    expect(xml).toContain(`SHP-${marker}`)
-    expect(xml).toContain('6109.10.00')
+    const persistedArtifact = await db.customsEntry.findUniqueOrThrow({
+      where: { id: artifact.artifact.id },
+      select: { functionalReferenceId: true, totalPayable: true },
+    })
+    expect(xml).toContain(`<FunctionalReferenceID>${persistedArtifact.functionalReferenceId}</FunctionalReferenceID>`)
+    expect(String(persistedArtifact.totalPayable)).toBe(d(calculation.totals.totalPayable).toString())
+    expect(xml).toContain('61091000')
     expect(xml).toContain('Cotton t-shirts')
 
     const persistedShipment = await db.shipment.findUnique({ where: { id: shipment.id }, select: { status: true } })

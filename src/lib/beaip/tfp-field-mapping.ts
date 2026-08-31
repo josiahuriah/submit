@@ -36,7 +36,7 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'Declaration', element: 'FunctionCode', requirement: 'M', source: 'constant 9', transform: 'original declaration', status: 'DERIVED' },
   { section: 'Declaration', element: 'FunctionalReferenceID', requirement: 'M', source: 'Shipment.shipmentNumber + declaration year', transform: 'YYYYDEC + 10-digit stable sequence', status: 'DERIVED', note: 'Temporary review-file value; live Click2Clear integration is expected to supply the declaration number' },
   { section: 'Declaration', element: 'TypeCode', requirement: 'M', source: 'Shipment.regimeCode', transform: 'verbatim', status: 'WITHHELD_CODE_LIST', note: 'TTFB_SYS_REGIME not released; sample uses 4' },
-  { section: 'Declaration', element: 'TotalGrossMassMeasure', requirement: 'C', source: 'Shipment.grossWeightKg', transform: 'convert KGM to LB; unitCode=LB', status: 'DERIVED' },
+  { section: 'Declaration', element: 'TotalGrossMassMeasure', requirement: 'C', source: 'Shipment.grossWeightLb', transform: 'unitCode=LB', status: 'MAPPED' },
   { section: 'Declaration', element: 'TotalPackageQuantity', requirement: 'C', source: 'Shipment.packageCount/packageType', transform: 'package UOM map', status: 'WITHHELD_CODE_LIST' },
   { section: 'Declaration', element: 'Submitter/ID', requirement: 'M', source: 'constant 131249792', transform: 'configured company registration number', status: 'DERIVED' },
   { section: 'Declaration', element: 'DeclarationOffice/ID', requirement: 'M', source: 'constant NASACP', transform: 'stakeholder-approved interim office', status: 'DERIVED' },
@@ -67,10 +67,9 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'Consignment', element: 'TransportContractDocument[785]/ID', requirement: 'C', source: 'Manifest.manifestNumber', transform: 'TypeCode=785', status: 'MAPPED' },
   { section: 'Consignment', element: 'UnloadingLocation/ID', requirement: 'C', source: 'Journey.destinationPort.unLocode', transform: 'verbatim', status: 'MAPPED' },
   { section: 'Consignment', element: 'UnloadingLocation/Warehouse/ID', requirement: 'C', source: 'Shipment.warehouseCode', transform: 'verbatim', status: 'WITHHELD_CODE_LIST' },
-  { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[77]', requirement: 'C', source: 'Invoice.subTotal/currency/exchangeRate', transform: 'invoice order is linkage', status: 'MAPPED' },
+  { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[77]', requirement: 'C', source: 'Invoice.subTotal', transform: 'BSD; invoice order is linkage', status: 'MAPPED' },
   { section: 'GoodsShipment.CustomsValuation', element: 'FreightChargeAmount', requirement: 'C', source: 'sum all LineItem.freightApportioned', transform: 'BSD; assign to first invoice valuation', status: 'DERIVED' },
   { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[64]', requirement: 'C', source: 'sum all LineItem.freightApportioned', transform: 'BSD; assign to first invoice valuation', status: 'DERIVED' },
-  { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[67]', requirement: 'C', source: 'sum LineItem.insuranceApportioned by invoice', transform: 'BSD', status: 'DERIVED' },
   { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[104]', requirement: 'C', source: 'sum LineItem.otherCostApportioned by invoice', transform: 'BSD', status: 'DERIVED' },
   { section: 'Invoice', element: 'ID', requirement: 'C', source: 'Invoice.invoiceNumber', transform: 'verbatim', status: 'MAPPED' },
   { section: 'Invoice', element: 'IssueDateTime', requirement: 'C', source: 'Invoice.invoiceDate', transform: 'TFP DateTimeType', status: 'MAPPED' },
@@ -79,25 +78,24 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'UCR', element: 'TraderAssignedReferenceID', requirement: 'C', source: 'Shipment.shipmentNumber + declaration year', transform: 'YYYY00OREF + 8-digit stable sequence', status: 'DERIVED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/SequenceNumeric', requirement: 'C', source: 'generated item sequence', transform: '1-based across declaration', status: 'DERIVED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/Description', requirement: 'C', source: 'LineItem.description', transform: 'verbatim', status: 'MAPPED' },
-  { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/ValueAmount', requirement: 'C', source: 'LineItem.totalValue + Invoice.currency', transform: 'currencyID attribute', status: 'MAPPED' },
+  { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/ValueAmount', requirement: 'C', source: 'LineItem.totalValue', transform: 'currencyID=BSD', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/CommercialDescription', requirement: 'C', source: 'LineItem.commercialDescription', transform: 'verbatim', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/AdditionalDocument', requirement: 'C', source: 'Invoice.invoiceNumber', transform: 'TypeCode=380', status: 'DERIVED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/AdditionalInformation', requirement: 'C', source: 'alcohol/dynamic fields', transform: 'worksheet driven', status: 'WITHHELD_CODE_LIST' },
-  { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/Classification/ID', requirement: 'C', source: 'LineItem.hsCode', transform: 'remove periods for 8-digit wire value', status: 'DERIVED' },
+  { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/Classification/ID', requirement: 'C', source: 'LineItem.hsCode', transform: 'remove all non-digits; require 8-digit wire value', status: 'DERIVED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/Classification/IdentificationTypeCode', requirement: 'C', source: 'constant HS', transform: 'verbatim', status: 'DERIVED' },
-  { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/GoodsMeasure/GrossMassMeasure', requirement: 'C', source: 'LineItem.weightKg', transform: 'unitCode=KGM', status: 'MAPPED' },
-  { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/GoodsMeasure/NetNetWeightMeasure', requirement: 'C', source: 'LineItem.netWeightKg', transform: 'unitCode=KGM', status: 'MAPPED' },
+  { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/GoodsMeasure/GrossMassMeasure', requirement: 'C', source: 'LineItem.weightLb', transform: 'unitCode=LB', status: 'MAPPED' },
+  { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/GoodsMeasure/NetNetWeightMeasure', requirement: 'C', source: 'LineItem.netWeightLb', transform: 'unitCode=LB', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/GoodsMeasure/TariffQuantity', requirement: 'C', source: 'frozen duty/excise assessment quantity', transform: 'specific-rate unit; commercial quantity fallback', status: 'DERIVED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/ProductCharacteristics', requirement: 'C', source: 'vehicle-specific data', transform: 'qualifier code pairs', status: 'NOT_MODELED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/TransportEquipment/ID', requirement: 'C', source: 'Shipment.containerNumber', transform: 'verbatim', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'CustomsValuation/ExitToEntryChargeAmount', requirement: 'C', source: 'LineItem.cifValue', transform: 'BSD', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'CustomsValuation/FreightChargeAmount', requirement: 'C', source: 'LineItem.freightApportioned', transform: 'BSD', status: 'MAPPED' },
-  { section: 'GovernmentAgencyGoodsItem', element: 'CustomsValuation/InsuranceAmount', requirement: 'C', source: 'LineItem.insuranceApportioned', transform: 'BSD', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'CustomsValuation/ChargeDeduction[104]', requirement: 'C', source: 'LineItem.otherCostApportioned', transform: 'BSD', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'LineItem.cpcCode', transform: 'verbatim', status: 'WITHHELD_CODE_LIST' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Origin/CountryCode', requirement: 'C', source: 'LineItem.countryOfOrigin', transform: 'ISO alpha-2', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Packaging/QuantityQuantity', requirement: 'C', source: 'LineItem.packageCount/packageTypeCode', transform: 'package UOM', status: 'WITHHELD_CODE_LIST' },
-  { section: 'Declaration', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'first item CPC', transform: 'first three characters', status: 'DERIVED' },
+  { section: 'Declaration', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'import procedure', transform: 'constant 400', status: 'DERIVED' },
 ] as const
 
 export interface TfpReviewIssue {
@@ -126,8 +124,8 @@ export function preflightTfpDeclaration(declaration: BeaipDeclaration): TfpPrefl
       'Use the YYYYDEC########## declaration-reference convention',
     )
   }
-  if (!['9', '5', '1'].includes(declaration.functionCode)) {
-    blocker('Declaration/FunctionCode', 'Use 9 (original), 5 (amendment), or 1 (cancellation)')
+  if (declaration.functionCode !== '9') {
+    blocker('Declaration/FunctionCode', 'Submit currently sends original declarations only (function 9)')
   }
   if (!declaration.regimeCode.trim()) blocker('Declaration/TypeCode', 'Regime code is required')
   if (!declaration.submitterId.trim()) {
@@ -169,17 +167,26 @@ export function preflightTfpDeclaration(declaration: BeaipDeclaration): TfpPrefl
 
   declaration.lines.forEach((line, index) => {
     const prefix = `GoodsItem[${index + 1}]`
-    if (!/^\d{4}\.\d{2}\.\d{2}$/.test(line.hsCode)) {
-      blocker(`${prefix}/Commodity/Classification/ID`, 'Use the internal 0000.00.00 HS format')
+    if (!/^\d{8}$/.test(line.hsCode)) {
+      blocker(`${prefix}/Commodity/Classification/ID`, 'Use an 8-digit, punctuation-free HS code')
     }
-    if (!/^[0-9A-Z-]{3,10}$/.test(line.cpcCode)) {
-      blocker(`${prefix}/GovernmentProcedure/CurrentCode`, 'CPC format is invalid')
+    if (!['400', '4098'].includes(line.cpcCode)) {
+      blocker(`${prefix}/GovernmentProcedure/CurrentCode`, 'Use import CPC 400 or concession CPC 4098')
     }
     if (!line.description.trim()) blocker(`${prefix}/Commodity/Description`, 'Description is required')
     if (!line.invoiceNumber.trim()) {
       blocker(`${prefix}/Commodity/AdditionalDocument`, 'Invoice linkage is required')
     }
+    if (line.currency !== 'BSD') blocker(`${prefix}/Commodity/ValueAmount`, 'All values must be entered in BSD')
+    if (line.insuranceApportioned !== '0.00') blocker(`${prefix}/CustomsValuation`, 'Insurance must be folded into freight')
+    if (index > 0 && Number(line.freightApportioned) !== 0) {
+      blocker(`${prefix}/CustomsValuation/FreightChargeAmount`, 'Freight belongs only to the first item of a declaration')
+    }
   })
+
+  if (Number(declaration.lines[0]?.freightApportioned ?? 0) <= 0) {
+    blocker('GoodsItem[1]/CustomsValuation/FreightChargeAmount', 'Every declaration requires freight on its first item')
+  }
 
   warning(
     'Declaration/TypeCode',

@@ -51,11 +51,12 @@ const DETAIL_SELECT = {
   declarationDate: true,
   declarationFunctionCode: true,
   regimeCode: true,
+  isSplitDeclaration: true,
   goodsLocationCode: true,
   warehouseCode: true,
   transportNationalityCode: true,
-  grossWeightKg: true,
-  netWeightKg: true,
+  grossWeightLb: true,
+  netWeightLb: true,
   freightCharge: true,
   insuranceCharge: true,
   otherCharges: true,
@@ -93,6 +94,14 @@ const DETAIL_SELECT = {
       beaipReference: true,
       submittedAt: true,
       totalPayable: true,
+      declarationGroupCode: true,
+      generatedAt: true,
+      _count: { select: { attempts: true } },
+      attempts: {
+        select: { outcome: true, startedAt: true },
+        orderBy: { attemptNumber: 'desc' as const },
+        take: 1,
+      },
     },
     orderBy: { createdAt: 'desc' as const },
   },
@@ -153,7 +162,7 @@ export const shipmentsRepository = {
       blNumber?: string
       containerNumber?: string
       description?: string
-      grossWeightKg?: string
+      grossWeightLb?: string
       freightCharge?: string
       insuranceCharge?: string
       otherCharges?: string
@@ -182,22 +191,28 @@ export const shipmentsRepository = {
         id: true,
         status: true,
         declarationDate: true,
+        isSplitDeclaration: true,
         freightCharge: true,
         insuranceCharge: true,
         otherCharges: true,
         invoices: {
+          // Match declaration order so first-item freight stays on item 1.
+          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
           select: {
             id: true,
+            currency: true,
             exchangeRate: true,
             lineItems: {
               select: {
                 id: true,
                 hsCodeId: true,
                 hsCode: true,
+                cpcCode: true,
                 quantity: true,
                 unit: true,
                 totalValue: true,
-                weightKg: true,
+                weightLb: true,
+                packageCount: true,
                 unitsPerPackage: true,
                 unitVolume: true,
                 volumeUnit: true,

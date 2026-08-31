@@ -34,7 +34,7 @@ const EMPTY_DRAFT: LineDraft = {
   quantity: "1",
   unit: "PCS",
   description: "Other",
-  cpcCode: "4000",
+  cpcCode: "400",
   unitPrice: "",
   countryOfOrigin: "",
   weightLb: "",

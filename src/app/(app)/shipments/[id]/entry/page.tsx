@@ -8,6 +8,8 @@ import { InvoiceLineWorkspace } from "./invoice-line-workspace";
 import { ReviewXmlButton } from "./review-xml-button";
 import { getDeclarationProfile } from "@/lib/data/declaration-profile";
 import { DeclarationProfileCard } from "./declaration-profile-card";
+import { requireSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 /**
  * LINE ITEM ENTRY — the crown jewel.
@@ -20,7 +22,7 @@ import { DeclarationProfileCard } from "./declaration-profile-card";
  */
 export default async function EntryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [shipment, lines, declarationProfile] = await Promise.all([getShipment(id), getLineItems(id), getDeclarationProfile(id)]);
+  const [shipment, lines, declarationProfile, claims] = await Promise.all([getShipment(id), getLineItems(id), getDeclarationProfile(id), requireSession()]);
   const suppliers = await listSupplierOptions();
 
   return (
@@ -34,7 +36,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         <Chip kind={shipment.status === "DRAFT" ? "draft" : "acc"}>{shipment.status}</Chip>
         <div style={{ flex: 1 }} />
         {shipment.status === "DRAFT" && <Link href={`/shipments/${id}/edit`} className="sb-btn"><span aria-hidden>✎</span> Edit shipment</Link>}
-        <ReviewXmlButton shipmentId={id} status={shipment.status} disabled={shipment.totals === null} />
+        <ReviewXmlButton shipmentId={id} status={shipment.status} disabled={shipment.totals === null} canSubmit={hasPermission(claims.role, 'shipments:submit')} initialArtifacts={shipment.customsArtifacts} />
       </div>
 
       <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 4 }}>
@@ -52,7 +54,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         style={{ overflow: "hidden", margin: "14px 0" }}
       >
         <table className="sb-tbl">
-          <thead><tr><th>Supplier</th><th>Invoice</th><th>Currency / BSD rate</th><th>Incoterm</th><th className="sb-num">Invoice total</th></tr></thead>
+          <thead><tr><th>Supplier</th><th>Invoice</th><th>Currency</th><th>Incoterm</th><th className="sb-num">Invoice total</th></tr></thead>
           <tbody>
             {shipment.invoices.length === 0 ? (
               <tr><td colSpan={5} className="sb-meta">No commercial invoices attached.</td></tr>
@@ -60,7 +62,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
               <tr key={invoice.id}>
                 <td className="sb-strong">{invoice.supplierName}</td>
                 <td className="sb-mono">{invoice.invoiceNumber} · {invoice.invoiceDate}</td>
-                <td className="sb-mono">{invoice.currency} · {invoice.exchangeRate}</td>
+                <td className="sb-mono">BSD</td>
                 <td>{invoice.incotermCode ?? "—"}{invoice.incotermLocation ? ` ${invoice.incotermLocation}` : ""}</td>
                 <td className="sb-num sb-mono">{money(invoice.subTotal)}</td>
               </tr>

@@ -12,6 +12,7 @@
  */
 import { basePrisma } from '@/lib/db/prisma'
 import type { Prisma } from '@/generated/prisma/client'
+import { normalizeHsCode } from '@/lib/customs/normalization'
 
 interface CacheEntry<T> { at: number; value: T }
 const CACHE_MAX = 500
@@ -89,17 +90,19 @@ function resultSelect(now: Date) {
 
 export const hsCodesService = {
   async search(query: string, limit = 20): Promise<HsSearchResult[]> {
-    const key = `${query.toLowerCase()}|${limit}`
+    const codeQuery = normalizeHsCode(query)
+    const looksLikeCode = /^[\d\s./-]+$/.test(query.trim()) && codeQuery.length > 0
+    const normalizedQuery = looksLikeCode ? codeQuery : query.trim()
+    const key = `${normalizedQuery.toLowerCase()}|${limit}`
     const cached = cacheGet(key)
     if (cached) return cached
 
-    const looksLikeCode = /^[\d.]+$/.test(query.trim())
     const results = await basePrisma.hSCode.findMany({
       where: {
         isActive: true,
         ...(looksLikeCode
-          ? { code: { startsWith: query.trim() } }
-          : { description: { contains: query, mode: 'insensitive' } }),
+          ? { code: { startsWith: normalizedQuery } }
+          : { description: { contains: normalizedQuery, mode: 'insensitive' } }),
       },
       select: resultSelect(new Date()),
       orderBy: { code: 'asc' },

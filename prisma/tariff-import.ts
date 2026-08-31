@@ -20,11 +20,8 @@
  *
  * THE FOUR TRANSFORM DECISIONS (owner-approved 2026-07-28)
  *
- * 1. CODE FORMAT — the extraction writes `2208.3000`; this system (and the
- *    internal declaration and XML preflight contract, which enforces the full
- *    dotted national code) requires `2208.30.00`. Every raw code is
- *    xxxx.dddd, so the split is mechanical. WITHOUT this, all 1,544 codes would
- *    be rejected at filing time rather than at entry.
+ * 1. CODE FORMAT — the extraction writes `2208.3000`; Submit stores and sends
+ *    the canonical eight numeric digits (`22083000`).
  *
  * 2. specificRate IS DISCARDED — the raw column holds only the literal '300%'
  *    (169 records) or 'None'. A percentage cannot be a specific rate, which is
@@ -111,7 +108,7 @@ const UNIT_MAP: Record<string, string> = {
   ton: 'TON',
 }
 
-/** `0201.1000` -> `0201.10.00`. Throws on anything not xxxx.dddd. */
+/** `0201.1000` -> `02011000`. Throws on anything not xxxx.dddd. */
 export function normalizeCode(raw: string): string {
   const match = /^(\d{4})\.(\d{2})(\d{2})$/.exec(raw.trim())
   if (!match) {
@@ -120,7 +117,7 @@ export function normalizeCode(raw: string): string {
         `A new extraction format needs an explicit rule here — do not guess.`,
     )
   }
-  return `${match[1]}.${match[2]}.${match[3]}`
+  return `${match[1]}${match[2]}${match[3]}`
 }
 
 /**

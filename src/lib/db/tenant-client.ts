@@ -30,6 +30,8 @@ const TENANT_MODELS = new Set<string>([
   'Invoice',
   'LineItem',
   'CustomsEntry',
+  'CustomsSubmissionBatch',
+  'CustomsSubmissionAttempt',
   'BrokerageInvoice',
   'Payment',
   'AuditLog',

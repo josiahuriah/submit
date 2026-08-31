@@ -19,6 +19,6 @@ export default defineConfig({
      * It is created, used and dropped by Prisma — never point it at a database
      * holding real data.
      */
-    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL ?? '',
+    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL?.trim() || undefined,
   },
 })

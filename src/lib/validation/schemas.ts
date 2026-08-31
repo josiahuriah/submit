@@ -9,6 +9,7 @@
  *  - Field names mirror prisma/schema.prisma exactly.
  */
 import { z } from 'zod'
+import { normalizeHsCode } from '@/lib/customs/normalization'
 
 // --- shared primitives -------------------------------------------------------
 
@@ -160,20 +161,21 @@ export const shipmentCreateSchema = z.object({
   declarationDate: z.coerce.date().optional(),
   declarationFunctionCode: z.literal('9').default('9'),
   regimeCode: z.string().min(1).max(17).default('4'),
+  isSplitDeclaration: z.boolean().default(false),
   goodsLocationCode: z.string().max(35).optional(),
   warehouseCode: z.string().max(35).optional(),
   transportNationalityCode: z.string().length(2).toUpperCase().optional(),
   description: z.string().max(1000).optional(),
-  grossWeightKg: quantity.optional(),
-  netWeightKg: quantity.optional(),
+  grossWeightLb: quantity.optional(),
+  netWeightLb: quantity.optional(),
   freightCharge: moneyOptional,
   insuranceCharge: moneyOptional,
   otherCharges: moneyOptional,
 })
 export const shipmentUpdateSchema = shipmentCreateSchema.partial().extend({
   manifestId: id.nullable().optional(),
-  grossWeightKg: quantity.nullable().optional(),
-  netWeightKg: quantity.nullable().optional(),
+  grossWeightLb: quantity.nullable().optional(),
+  netWeightLb: quantity.nullable().optional(),
 })
 
 export const shipmentStatusSchema = z.enum(['DRAFT', 'SUBMITTED', 'CLEARED', 'CANCELLED'])
@@ -191,11 +193,8 @@ export const invoiceCreateSchema = z.object({
   supplierId: id,
   invoiceNumber: z.string().min(1).max(60),
   invoiceDate: z.coerce.date(),
-  currency: z.string().regex(/^[A-Z]{3}$/, 'ISO 4217 currency code').default('BSD'),
-  exchangeRate: z
-    .string()
-    .regex(/^\d{1,10}(\.\d{1,8})?$/, 'Invalid BSD exchange rate')
-    .default('1'),
+  currency: z.literal('BSD').default('BSD'),
+  exchangeRate: z.literal('1').default('1'),
   incotermCode: z.string().max(10).toUpperCase().optional(),
   incotermLocation: z.string().max(100).optional(),
   subTotal: moneyOptional,
@@ -205,13 +204,14 @@ export const invoiceUpdateSchema = invoiceCreateSchema.partial().omit({ shipment
 export const lineItemCreateSchema = z.object({
   invoiceId: id,
   hsCodeId: id.optional(),
-  hsCode: z
-    .string()
-    .regex(/^\d{4}\.\d{2}\.\d{2}$/, 'Use the full tariff format 0000.00.00'),
-  // Customs Procedure Code, e.g. "4000". Shape-checked only: no authoritative
+  hsCode: z.preprocess(
+    (value) => typeof value === 'string' ? normalizeHsCode(value) : value,
+    z.string().regex(/^\d{8}$/, 'Use the full 8-digit tariff code'),
+  ),
+  // Customs Procedure Code, e.g. "400". Shape-checked only: no authoritative
   // CPC list is encoded, so an unknown-but-well-formed code is accepted and
   // surfaces during Customs review rather than being rejected at entry.
-  cpcCode: z.string().regex(/^[0-9A-Z-]{3,10}$/, 'Invalid CPC code').default('4000'),
+  cpcCode: z.enum(['400', '4098']).default('400'),
   description: z.string().min(1).max(500),
   commercialDescription: z.string().max(200).optional(),
   pageNumber: z.coerce.number().int().positive().optional(),
@@ -219,8 +219,8 @@ export const lineItemCreateSchema = z.object({
   unit: z.string().max(20).default('PCS'),
   unitPrice: z.string().regex(/^\d{1,13}(\.\d{1,4})?$/, 'Invalid unit price'),
   totalValue: money,
-  weightKg: quantity.optional(),
-  netWeightKg: quantity.optional(),
+  weightLb: quantity.optional(),
+  netWeightLb: quantity.optional(),
   countryOfOrigin: z.string().length(2).toUpperCase().optional(),
   packageCount: z.coerce.number().int().positive().optional(),
   packageTypeCode: z.string().max(10).optional(),
@@ -245,6 +245,11 @@ export const calculateOptionsSchema = z.object({
 
 export const declarationArtifactSchema = z.object({
   declarationType: z.enum(['C13', 'C14', 'C17', 'C18', 'OTHER']).default('C13'),
+}).strict()
+
+export const customsSubmissionSchema = z.object({
+  confirmResubmission: z.boolean().default(false),
+  resubmissionReason: z.string().trim().min(3).max(500).optional(),
 }).strict()
 
 // --- billing --------------------------------------------------------------------------------

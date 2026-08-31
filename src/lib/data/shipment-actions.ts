@@ -22,7 +22,6 @@ import { catalogService } from '@/server/services/catalog.service'
 import { shipmentCreateSchema, shipmentUpdateSchema } from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
 import { revalidatePath } from 'next/cache'
-import { kilogramsToPounds, poundsToKilograms } from '@/lib/units/weight'
 import { ORIGINAL_DECLARATION_FUNCTION_CODE } from '@/lib/beaip/constants'
 
 async function actionContext(permission: Permission) {
@@ -65,6 +64,7 @@ export interface ShipmentEditDraft {
   declarationDate: string
   declarationFunctionCode: string
   regimeCode: string
+  isSplitDeclaration: boolean
   goodsLocationCode: string
   warehouseCode: string
   transportNationalityCode: string
@@ -126,6 +126,7 @@ export async function getShipmentEditData(shipmentId: string): Promise<{
       declarationDate: shipment.declarationDate.toISOString().slice(0, 10),
       declarationFunctionCode: shipment.declarationFunctionCode,
       regimeCode: shipment.regimeCode,
+      isSplitDeclaration: shipment.isSplitDeclaration,
       goodsLocationCode: shipment.goodsLocationCode ?? '',
       warehouseCode: shipment.warehouseCode ?? '',
       transportNationalityCode: shipment.transportNationalityCode ?? '',
@@ -134,8 +135,8 @@ export async function getShipmentEditData(shipmentId: string): Promise<{
       packageCount: String(shipment.packageCount),
       transportMode: shipment.transportMode,
       description: shipment.description ?? '',
-      grossWeightLb: kilogramsToPounds(shipment.grossWeightKg === null ? null : String(shipment.grossWeightKg)),
-      netWeightLb: kilogramsToPounds(shipment.netWeightKg === null ? null : String(shipment.netWeightKg)),
+      grossWeightLb: shipment.grossWeightLb === null ? '' : String(shipment.grossWeightLb),
+      netWeightLb: shipment.netWeightLb === null ? '' : String(shipment.netWeightLb),
       freightCharge: String(shipment.freightCharge),
       insuranceCharge: String(shipment.insuranceCharge),
       otherCharges: String(shipment.otherCharges),
@@ -168,6 +169,7 @@ export async function updateShipment(
       declarationDate: draft.declarationDate,
       declarationFunctionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
       regimeCode: draft.regimeCode.trim(),
+      isSplitDeclaration: draft.isSplitDeclaration,
       goodsLocationCode: draft.goodsLocationCode.trim(),
       warehouseCode: draft.warehouseCode.trim(),
       transportNationalityCode: draft.transportNationalityCode.trim().toUpperCase() || undefined,
@@ -176,8 +178,8 @@ export async function updateShipment(
       packageCount: draft.packageCount,
       transportMode: draft.transportMode,
       description: draft.description.trim(),
-      grossWeightKg: poundsToKilograms(draft.grossWeightLb) || null,
-      netWeightKg: poundsToKilograms(draft.netWeightLb) || null,
+      grossWeightLb: draft.grossWeightLb || null,
+      netWeightLb: draft.netWeightLb || null,
       freightCharge: draft.freightCharge.trim() || '0',
       insuranceCharge: draft.insuranceCharge.trim() || '0',
       otherCharges: draft.otherCharges.trim() || '0',
@@ -227,6 +229,7 @@ export async function createShipment(draft: {
   containerNumber: string
   containerSealNumber: string
   regimeCode: string
+  isSplitDeclaration: boolean
   goodsType: string
   packageType: string
   packageCount: string
@@ -253,14 +256,15 @@ export async function createShipment(draft: {
       containerNumber: draft.containerNumber.trim() || undefined,
       containerSealNumber: draft.containerSealNumber.trim() || undefined,
       regimeCode: draft.regimeCode.trim() || '4',
+      isSplitDeclaration: draft.isSplitDeclaration,
       declarationFunctionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
       goodsType: draft.goodsType,
       packageType: draft.packageType,
       packageCount: draft.packageCount || '1',
       transportMode: draft.transportMode,
       description: draft.description.trim() || undefined,
-      grossWeightKg: poundsToKilograms(draft.grossWeightLb) || undefined,
-      netWeightKg: poundsToKilograms(draft.netWeightLb) || undefined,
+      grossWeightLb: draft.grossWeightLb || undefined,
+      netWeightLb: draft.netWeightLb || undefined,
       freightCharge: money(draft.freightCharge),
     })
   } catch {
@@ -276,7 +280,7 @@ export async function createShipment(draft: {
         ...parsed,
         shipmentNumber,
         createdById: claims.sub,
-        grossWeightKg: parsed.grossWeightKg === undefined ? undefined : String(parsed.grossWeightKg),
+        grossWeightLb: parsed.grossWeightLb === undefined ? undefined : String(parsed.grossWeightLb),
       })
       return { shipmentId: shipment.id, error: null }
     } catch (error) {

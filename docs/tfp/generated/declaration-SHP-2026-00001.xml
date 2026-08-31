@@ -50,7 +50,7 @@
             </UnloadingLocation>
         </Consignment>
         <CustomsValuation>
-            <FreightChargeAmount currencyID="BSD">1850.00</FreightChargeAmount>
+            <FreightChargeAmount currencyID="BSD">2170.00</FreightChargeAmount>
             <ChargeDeduction>
                 <ChargesTypeCode>77</ChargesTypeCode>
                 <OtherChargeDeductionAmount>18965.00</OtherChargeDeductionAmount>
@@ -60,14 +60,7 @@
             </ChargeDeduction>
             <ChargeDeduction>
                 <ChargesTypeCode>64</ChargesTypeCode>
-                <OtherChargeDeductionAmount>1850.00</OtherChargeDeductionAmount>
-                <CurrencyExchange>
-                    <CurrencyTypeCode>BSD</CurrencyTypeCode>
-                </CurrencyExchange>
-            </ChargeDeduction>
-            <ChargeDeduction>
-                <ChargesTypeCode>67</ChargesTypeCode>
-                <OtherChargeDeductionAmount>320.00</OtherChargeDeductionAmount>
+                <OtherChargeDeductionAmount>2170.00</OtherChargeDeductionAmount>
                 <CurrencyExchange>
                     <CurrencyTypeCode>BSD</CurrencyTypeCode>
                 </CurrencyExchange>
@@ -113,8 +106,8 @@
                     <IdentificationTypeCode>HS</IdentificationTypeCode>
                 </Classification>
                 <GoodsMeasure>
-                    <GrossMassMeasure unitCode="KGM">780</GrossMassMeasure>
-                    <NetNetWeightMeasure unitCode="KGM">720</NetNetWeightMeasure>
+                    <GrossMassMeasure unitCode="LB">1719.606</GrossMassMeasure>
+                    <NetNetWeightMeasure unitCode="LB">1587.328</NetNetWeightMeasure>
                     <TariffQuantity unitCode="IMP_GAL">132</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
@@ -123,8 +116,7 @@
             </Commodity>
             <CustomsValuation>
                 <ExitToEntryChargeAmount currencyID="BSD">7742.26</ExitToEntryChargeAmount>
-                <FreightChargeAmount currencyID="BSD">673.08</FreightChargeAmount>
-                <InsuranceAmount currencyID="BSD">116.42</InsuranceAmount>
+                <FreightChargeAmount currencyID="BSD">2170.00</FreightChargeAmount>
                 <ChargeDeduction>
                     <ChargesTypeCode>104</ChargesTypeCode>
                     <OtherChargeDeductionAmount>52.76</OtherChargeDeductionAmount>
@@ -134,7 +126,7 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>4000</CurrentCode>
+                <CurrentCode>400</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>
@@ -159,8 +151,8 @@
                     <IdentificationTypeCode>HS</IdentificationTypeCode>
                 </Classification>
                 <GoodsMeasure>
-                    <GrossMassMeasure unitCode="KGM">450</GrossMassMeasure>
-                    <NetNetWeightMeasure unitCode="KGM">430</NetNetWeightMeasure>
+                    <GrossMassMeasure unitCode="LB">992.080</GrossMassMeasure>
+                    <NetNetWeightMeasure unitCode="LB">947.988</NetNetWeightMeasure>
                     <TariffQuantity unitCode="PCS">1500</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
@@ -169,8 +161,6 @@
             </Commodity>
             <CustomsValuation>
                 <ExitToEntryChargeAmount currencyID="BSD">6984.87</ExitToEntryChargeAmount>
-                <FreightChargeAmount currencyID="BSD">607.24</FreightChargeAmount>
-                <InsuranceAmount currencyID="BSD">105.04</InsuranceAmount>
                 <ChargeDeduction>
                     <ChargesTypeCode>104</ChargesTypeCode>
                     <OtherChargeDeductionAmount>47.59</OtherChargeDeductionAmount>
@@ -180,7 +170,7 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>4000</CurrentCode>
+                <CurrentCode>400</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>
@@ -205,8 +195,8 @@
                     <IdentificationTypeCode>HS</IdentificationTypeCode>
                 </Classification>
                 <GoodsMeasure>
-                    <GrossMassMeasure unitCode="KGM">1220</GrossMassMeasure>
-                    <NetNetWeightMeasure unitCode="KGM">1100</NetNetWeightMeasure>
+                    <GrossMassMeasure unitCode="LB">2689.640</GrossMassMeasure>
+                    <NetNetWeightMeasure unitCode="LB">2425.085</NetNetWeightMeasure>
                     <TariffQuantity unitCode="PCS">8</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
@@ -215,8 +205,6 @@
             </Commodity>
             <CustomsValuation>
                 <ExitToEntryChargeAmount currencyID="BSD">6552.87</ExitToEntryChargeAmount>
-                <FreightChargeAmount currencyID="BSD">569.68</FreightChargeAmount>
-                <InsuranceAmount currencyID="BSD">98.54</InsuranceAmount>
                 <ChargeDeduction>
                     <ChargesTypeCode>104</ChargesTypeCode>
                     <OtherChargeDeductionAmount>44.65</OtherChargeDeductionAmount>
@@ -226,7 +214,7 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>4000</CurrentCode>
+                <CurrentCode>400</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>

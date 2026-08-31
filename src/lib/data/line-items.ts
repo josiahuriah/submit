@@ -24,7 +24,7 @@ import { AppError } from '@/lib/errors'
 import { toShipmentTotals } from '@/lib/data/shipments'
 import { d } from '@/lib/calculations/money'
 import type { HsRate, LineItem, ServerLineCharges, ShipmentTotals } from '@/lib/types'
-import { poundsToKilograms } from '@/lib/units/weight'
+import { normalizeHsCode } from '@/lib/customs/normalization'
 
 /** Every line on a shipment, priced by the server where a calculation exists. */
 export async function getLineItems(shipmentId: string): Promise<LineItem[]> {
@@ -175,8 +175,9 @@ export async function commitLineItem(
 
   // The HS code is matched to a real tariff line so the engine can resolve its
   // rate; without hsCodeId, calculation refuses the whole shipment.
-  const hs = await hsCodesService.search(draft.hsCode, 1)
-  const matched = hs.find((h) => h.code === draft.hsCode)
+  const normalizedHsCode = normalizeHsCode(draft.hsCode)
+  const hs = await hsCodesService.search(normalizedHsCode, 1)
+  const matched = hs.find((h) => h.code === normalizedHsCode)
 
   const quantity = d(draft.quantity || '1')
   const unitPrice = d(draft.unitPrice || '0')
@@ -184,16 +185,16 @@ export async function commitLineItem(
   const input = lineItemCreateSchema.parse({
     invoiceId: invoice.id,
     hsCodeId: matched?.id,
-    hsCode: draft.hsCode,
-    cpcCode: draft.cpcCode.trim().toUpperCase() || '4000',
+    hsCode: normalizedHsCode,
+    cpcCode: draft.cpcCode.trim().toUpperCase() || '400',
     description: draft.description.trim() || 'Other',
     quantity: quantity.toString(),
     unit: draft.unit || 'PCS',
     unitPrice: unitPrice.toFixed(4),
     totalValue: quantity.times(unitPrice).toDecimalPlaces(2).toFixed(2),
     countryOfOrigin: draft.countryOfOrigin.trim() || undefined,
-    weightKg: poundsToKilograms(draft.weightLb) || undefined,
-    netWeightKg: poundsToKilograms(draft.netWeightLb) || undefined,
+    weightLb: draft.weightLb || undefined,
+    netWeightLb: draft.netWeightLb || undefined,
     packageCount: draft.packageCount.trim() || undefined,
     packageTypeCode: draft.packageTypeCode.trim() || undefined,
     unitsPerPackage: draft.unitsPerPackage.trim() || undefined,

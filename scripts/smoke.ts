@@ -25,7 +25,9 @@ async function main() {
   if (!shipment) throw new Error('Seed shipment missing')
 
   // Make re-runnable: reset to DRAFT and clear old entries.
+  await basePrisma.customsSubmissionAttempt.deleteMany({ where: { customsEntry: { shipmentId: shipment.id } } })
   await basePrisma.customsEntry.deleteMany({ where: { shipmentId: shipment.id } })
+  await basePrisma.customsSubmissionBatch.deleteMany({ where: { shipmentId: shipment.id } })
   await basePrisma.shipment.update({
     where: { id: shipment.id },
     data: { status: 'DRAFT', submittedAt: null, calculatedAt: null },
@@ -55,8 +57,8 @@ async function main() {
   const result = await declarationArtifactsService.generate(db, audit, shipment.id, {
     declarationType: 'C13',
   })
-  console.log(`   ${result.fileName}`)
-  console.log(`   Artifact status: ${result.artifact.status}`)
+  console.log(`   Generated ${result.artifacts.length} artifact(s)`)
+  for (const item of result.artifacts) console.log(`   ${item.fileName}: ${item.artifact.status}`)
 
   const after = await db.shipment.findUnique({
     where: { id: shipment.id },

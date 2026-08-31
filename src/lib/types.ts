@@ -43,6 +43,16 @@ export interface ShipmentHeader {
   /** The first supplier invoice on the shipment, if one exists yet. */
   invoice: InvoiceSummary | null;
   invoices: InvoiceSummary[];
+  customsArtifacts: CustomsArtifactSummary[];
+}
+
+export interface CustomsArtifactSummary {
+  id: string;
+  groupCode: string;
+  downloadUrl: string;
+  fileName: string;
+  attemptCount: number;
+  latestOutcome: string | null;
 }
 
 /** Header summary of a supplier's commercial invoice. */

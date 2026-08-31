@@ -51,13 +51,12 @@ export interface LineRates {
 
 export interface CalculationLineInput {
   id: string
-  totalValue: DecimalInput // line FOB in invoice currency
-  /** BSD per one unit of invoice currency; defaults to 1. */
-  exchangeRate?: DecimalInput
+  totalValue: DecimalInput // broker-entered BSD line FOB
+  cpcCode?: string
   quantity: DecimalInput
   dutyAssessmentQuantity?: DecimalInput | null
   exciseAssessmentQuantity?: DecimalInput | null
-  weightKg?: DecimalInput | null
+  weightLb?: DecimalInput | null
   rates: LineRates
   exemptionType?: ExemptionInput
 }
@@ -70,6 +69,7 @@ export interface ShipmentChargesInput {
 
 export interface CalculationOptions {
   apportionmentBasis?: ApportionmentBasis
+  isSplitDeclaration?: boolean
   /** Processing fee parameters — current Bahamian rule: 1%, $10–$750. */
   processingFee?: {
     rate: DecimalInput
@@ -120,20 +120,21 @@ export function calculateShipment(
 ): ShipmentCalculationResult {
   const basis = options.apportionmentBasis ?? 'VALUE'
 
-  // 1. Apportion each shipment-level charge across lines (exact-sum).
+  // 1. Values are already BSD. Submit never supplies an exchange rate.
   const fobById = new Map(
-    lines.map((line) => [
-      line.id,
-      toMoney(d(line.totalValue).times(d(line.exchangeRate ?? '1'))),
-    ]),
+    lines.map((line) => [line.id, toMoney(d(line.totalValue))]),
   )
   const apportionable = lines.map((l) => ({
     id: l.id,
     totalValue: fobById.get(l.id) ?? ZERO,
-    weightKg: l.weightKg,
+    weightLb: l.weightLb,
   }))
-  const freightShares = indexById(apportion(charges.freightCharge, apportionable, basis))
-  const insuranceShares = indexById(apportion(charges.insuranceCharge, apportionable, basis))
+  const freightShares = firstItemFreightShares(
+    lines,
+    d(charges.freightCharge).plus(d(charges.insuranceCharge)),
+    options.isSplitDeclaration ?? false,
+  )
+  const insuranceShares = new Map(lines.map((line) => [line.id, ZERO]))
   const otherShares = indexById(apportion(charges.otherCharges, apportionable, basis))
 
   // 2. Per-line CIF + taxes.
@@ -196,6 +197,36 @@ export function calculateShipment(
     processingFee,
     totalPayable,
   }
+}
+
+/**
+ * Click2Clear accepts insurance as freight in practice. One declaration's
+ * entire combined amount belongs only to its first item. Split declarations
+ * divide the amount between CPC groups by gross weight, then use each group's
+ * first item.
+ */
+function firstItemFreightShares(
+  lines: CalculationLineInput[],
+  combinedCharge: Decimal,
+  split: boolean,
+): Map<string, Decimal> {
+  const result = new Map(lines.map((line) => [line.id, ZERO]))
+  const groups = new Map<string, CalculationLineInput[]>()
+  for (const line of lines) {
+    const key = split ? (line.cpcCode ?? '400') : 'DECLARATION'
+    groups.set(key, [...(groups.get(key) ?? []), line])
+  }
+  const groupRows = [...groups.entries()].map(([id, groupLines]) => ({
+    id,
+    totalValue: sum(groupLines.map((line) => d(line.totalValue))),
+    weightLb: sum(groupLines.map((line) => d(line.weightLb))),
+  }))
+  const shares = indexById(apportion(combinedCharge, groupRows, split ? 'WEIGHT' : 'VALUE'))
+  for (const [groupId, groupLines] of groups) {
+    const first = groupLines[0]
+    if (first) result.set(first.id, shares.get(groupId) ?? ZERO)
+  }
+  return result
 }
 
 /** Duty for a single line according to its basis. */

@@ -40,8 +40,8 @@ describe('apportion', () => {
 
   it('supports weight basis with value fallback for missing weights', () => {
     const result = apportion('90.00', [
-      { id: 'heavy', totalValue: '10.00', weightKg: '200' },
-      { id: 'light', totalValue: '10.00', weightKg: '100' },
+      { id: 'heavy', totalValue: '10.00', weightLb: '200' },
+      { id: 'light', totalValue: '10.00', weightLb: '100' },
     ], 'WEIGHT')
     eq(result[0]!.amount, '60.00')
     eq(result[1]!.amount, '30.00')
@@ -65,6 +65,35 @@ describe('calculateShipment', () => {
     levyRate: '0',
     exciseRate: '0',
   }
+
+  it('folds insurance into freight and places the full amount on only the first item', () => {
+    const result = calculateShipment(
+      [
+        { id: 'first', totalValue: '100', quantity: '1', cpcCode: '400', rates: standardRates },
+        { id: 'second', totalValue: '100', quantity: '1', cpcCode: '400', rates: standardRates },
+      ],
+      { freightCharge: '80', insuranceCharge: '20', otherCharges: '0' },
+    )
+    eq(result.lines[0]!.freightApportioned, '100.00')
+    eq(result.lines[1]!.freightApportioned, '0.00')
+    eq(result.lines[0]!.insuranceApportioned, '0.00')
+    eq(result.lines[1]!.insuranceApportioned, '0.00')
+  })
+
+  it('splits combined freight between CPC declarations by weight and uses each first item', () => {
+    const result = calculateShipment(
+      [
+        { id: '400-first', totalValue: '100', quantity: '1', cpcCode: '400', weightLb: '60', rates: standardRates },
+        { id: '400-second', totalValue: '100', quantity: '1', cpcCode: '400', weightLb: '15', rates: standardRates },
+        { id: '4098-first', totalValue: '100', quantity: '1', cpcCode: '4098', weightLb: '25', rates: standardRates },
+      ],
+      { freightCharge: '90', insuranceCharge: '10', otherCharges: '0' },
+      { isSplitDeclaration: true },
+    )
+    eq(result.lines[0]!.freightApportioned, '75.00')
+    eq(result.lines[1]!.freightApportioned, '0.00')
+    eq(result.lines[2]!.freightApportioned, '25.00')
+  })
 
   it('computes CIF, duty, VAT and processing fee for a simple shipment', () => {
     const result = calculateShipment(
@@ -227,13 +256,12 @@ describe('calculateShipment', () => {
     eq(result.totalVat, '126.74')
   })
 
-  it('converts invoice currency to BSD before CIF and duty', () => {
+  it('treats broker-entered invoice values as BSD without automatic conversion', () => {
     const result = calculateShipment(
       [
         {
           id: 'usd-line',
           totalValue: '100.00',
-          exchangeRate: '1.50000000',
           quantity: '1',
           rates: {
             dutyBasis: 'AD_VALOREM',
@@ -246,9 +274,8 @@ describe('calculateShipment', () => {
       ],
       { freightCharge: '0', insuranceCharge: '0', otherCharges: '0' },
     )
-    // FOB BSD = 100.00 x 1.5 = 150.00; duty = 15.00.
-    eq(result.totalFobValue, '150.00')
-    eq(result.totalDuty, '15.00')
+    eq(result.totalFobValue, '100.00')
+    eq(result.totalDuty, '10.00')
   })
 })
 

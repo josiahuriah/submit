@@ -292,12 +292,12 @@ const HS_SUBSET: SeedHsCode[] = [
 ]
 
 async function seedHsCode(entry: SeedHsCode) {
-  const [chapterPart] = entry.code.split('.')
-  const chapter = chapterPart!.slice(0, 2)
-  const heading = chapterPart!
+  const code = entry.code.replace(/\D/g, '')
+  const chapter = code.slice(0, 2)
+  const heading = code.slice(0, 4)
 
   const hsCode = await prisma.hSCode.upsert({
-    where: { code: entry.code },
+    where: { code },
     update: {
       description: entry.description,
       unit: entry.unit,
@@ -306,7 +306,7 @@ async function seedHsCode(entry: SeedHsCode) {
       permitType: entry.permitType,
     },
     create: {
-      code: entry.code,
+      code,
       description: entry.description,
       chapter,
       heading,
@@ -419,7 +419,7 @@ async function main() {
     console.log('  No tariff extraction at prisma/data/hs-codes.json — curated subset only.')
   } else {
     const raw = JSON.parse(readFileSync(fullFile, 'utf8')) as RawTariffRecord[]
-    const curated = new Set(HS_SUBSET.map((c) => c.code))
+    const curated = new Set(HS_SUBSET.map((c) => c.code.replace(/\D/g, '')))
     const report = normalizeTariffFile(raw, (code) => curated.has(code))
 
     for (const entry of report.imported) await seedHsCode(entry)

@@ -23,6 +23,7 @@ import { buildWcoDeclarationXml } from '../src/lib/beaip'
 import { preflightTfpDeclaration } from '../src/lib/beaip/tfp-field-mapping'
 import {
   loadDeclarationSource,
+  partitionBeaipDeclaration,
   toBeaipDeclaration,
 } from '../src/server/services/declaration-mapper'
 
@@ -62,35 +63,40 @@ async function main() {
     )
   }
 
-  const declaration = toBeaipDeclaration(source, 'C13')
-  const preflight = preflightTfpDeclaration(declaration)
-  if (!preflight.ready) {
-    const blockers = preflight.issues
-      .filter((issue) => issue.severity === 'BLOCKER')
-      .map((issue) => `${issue.field}: ${issue.message}`)
-      .join('\n  ')
-    throw new Error(`Declaration failed TFP preflight:\n  ${blockers}`)
-  }
-  const xml = buildWcoDeclarationXml(declaration)
-
+  const declarations = partitionBeaipDeclaration(
+    toBeaipDeclaration(source, 'C13'),
+    `script:${source.id}`,
+  )
   const outDir = path.join(process.cwd(), 'docs', 'tfp', 'generated')
   mkdirSync(outDir, { recursive: true })
-  const outPath = path.join(outDir, `declaration-${shipmentNumber}.xml`)
-  writeFileSync(outPath, xml, 'utf8')
-  console.log(`✓ wrote ${path.relative(process.cwd(), outPath)}`)
-  console.log(
-    `  ${declaration.lines.length} goods item(s), ${declaration.invoices.length} invoice(s), ` +
-      `office ${declaration.customsOfficeCode}, regime ${declaration.regimeCode} (provisional code master)`,
-  )
-  const warnings = preflight.issues.filter((issue) => issue.severity === 'WARNING')
-  console.log(`  ${warnings.length} code-master warning(s) recorded for Customs review`)
+  for (const declaration of declarations) {
+    const preflight = preflightTfpDeclaration(declaration)
+    if (!preflight.ready) {
+      const blockers = preflight.issues
+        .filter((issue) => issue.severity === 'BLOCKER')
+        .map((issue) => `${issue.field}: ${issue.message}`)
+        .join('\n  ')
+      throw new Error(`CPC ${declaration.declarationGroupCode} failed TFP preflight:\n  ${blockers}`)
+    }
+    const xml = buildWcoDeclarationXml(declaration)
+    const groupSuffix = declarations.length > 1 ? `-${declaration.declarationGroupCode}` : ''
+    const outPath = path.join(outDir, `declaration-${shipmentNumber}${groupSuffix}.xml`)
+    writeFileSync(outPath, xml, 'utf8')
+    console.log(`✓ wrote ${path.relative(process.cwd(), outPath)}`)
+    console.log(
+      `  ${declaration.lines.length} goods item(s), ${declaration.invoices.length} invoice(s), ` +
+        `office ${declaration.customsOfficeCode}, CPC ${declaration.declarationGroupCode}`,
+    )
+    const warnings = preflight.issues.filter((issue) => issue.severity === 'WARNING')
+    console.log(`  ${warnings.length} code-master warning(s) recorded for Customs review`)
 
-  const result = validateWcoXml(outPath)
-  if (result.ok) {
-    console.log(`✓ schema validation passed (${path.basename(XSD_PATH)} + common-types stub)`)
-  } else {
-    console.error(`✗ schema validation: ${result.detail}`)
-    process.exitCode = 1
+    const result = validateWcoXml(outPath)
+    if (result.ok) {
+      console.log(`✓ schema validation passed (${path.basename(XSD_PATH)} + common-types stub)`)
+    } else {
+      console.error(`✗ schema validation: ${result.detail}`)
+      process.exitCode = 1
+    }
   }
 }
 

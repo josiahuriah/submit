@@ -4,7 +4,6 @@ import { requireSession } from '@/lib/auth/session'
 import { createTenantClient } from '@/lib/db/tenant-client'
 import { NotFoundError } from '@/lib/errors'
 import { TFP_COMPANY_REGISTRATION_NUMBER } from '@/lib/beaip/constants'
-import { kilogramsToPounds } from '@/lib/units/weight'
 import type { DeclarationProfile } from '@/lib/types'
 
 function text(value: unknown): string {
@@ -29,8 +28,8 @@ export async function getDeclarationProfile(shipmentId: string): Promise<Declara
       containerFullnessCode: true,
       packageCount: true,
       packageType: true,
-      grossWeightKg: true,
-      netWeightKg: true,
+      grossWeightLb: true,
+      netWeightLb: true,
     },
   })
   if (!shipment) throw new NotFoundError('Shipment')
@@ -50,7 +49,7 @@ export async function getDeclarationProfile(shipmentId: string): Promise<Declara
     containerFullnessCode: text(shipment.containerFullnessCode),
     packageCount: String(shipment.packageCount),
     packageType: shipment.packageType,
-    grossWeightLb: kilogramsToPounds(shipment.grossWeightKg === null ? null : String(shipment.grossWeightKg)),
-    netWeightLb: kilogramsToPounds(shipment.netWeightKg === null ? null : String(shipment.netWeightKg)),
+    grossWeightLb: shipment.grossWeightLb === null ? '' : String(shipment.grossWeightLb),
+    netWeightLb: shipment.netWeightLb === null ? '' : String(shipment.netWeightLb),
   }
 }

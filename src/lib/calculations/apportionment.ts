@@ -22,8 +22,8 @@ export interface ApportionableLine {
   id: string
   /** line FOB value (basis VALUE) */
   totalValue: DecimalInput
-  /** line weight in kg (basis WEIGHT) — optional, falls back to value */
-  weightKg?: DecimalInput | null
+  /** line weight in lb (basis WEIGHT) — optional, falls back to value */
+  weightLb?: DecimalInput | null
 }
 
 export interface ApportionedAmount {
@@ -88,7 +88,7 @@ export function apportion(
 
 function basisWeight(line: ApportionableLine, basis: ApportionmentBasis): Decimal {
   if (basis === 'WEIGHT') {
-    const w = d(line.weightKg)
+    const w = d(line.weightLb)
     if (w.greaterThan(0)) return w
     // Missing weight on a weight-basis apportionment: fall back to value so
     // the line still receives a fair share instead of zero.

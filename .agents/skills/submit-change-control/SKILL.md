@@ -119,6 +119,11 @@ before trusting them; skill edits are Class C.
 
 ## Provenance and maintenance
 
+Rechecked 2026-08-31: git remote/main and the ignored dev seed. The UAT
+recovery verification is recorded in `docs/uat-recovery-verification.md`;
+older test counts and endpoint-debt descriptions above are historical,
+not a verification of the recovered implementation.
+
 Verified 2026-08-14 against: git status/remote, `.gitignore` contents,
 README (deploy warnings, security note, architecture), `src/lib/env.ts`,
 `.env`/`.env.example` (keys only, values not printed), `docs/` emptiness,

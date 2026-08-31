@@ -8,8 +8,8 @@ import { declarationArtifactsService } from '@/server/services/declaration-artif
 import { AppError } from '@/lib/errors'
 
 export interface GenerateReviewXmlResult {
-  downloadUrl: string | null
-  fileName: string | null
+  batchId: string | null
+  artifacts: { id: string; groupCode: string; downloadUrl: string; fileName: string }[]
   warnings: string[]
   issues: { severity: 'BLOCKER' | 'WARNING'; field: string; message: string }[]
   error: string | null
@@ -33,22 +33,28 @@ export async function generateReviewXml(
       shipmentId,
       { declarationType },
     )
-    const warnings = result.validation.issues
+    const issues = result.artifacts.flatMap((artifact) => artifact.validation.issues)
+    const warnings = issues
       .filter((issue) => issue.severity === 'WARNING')
       .map((issue) => `${issue.field}: ${issue.message}`)
     return {
-      downloadUrl: result.downloadUrl,
-      fileName: result.fileName,
+      batchId: result.batchId,
+      artifacts: result.artifacts.map((artifact) => ({
+        id: artifact.artifact.id,
+        groupCode: artifact.artifact.declarationGroupCode,
+        downloadUrl: artifact.downloadUrl,
+        fileName: artifact.fileName,
+      })),
       warnings,
-      issues: result.validation.issues,
+      issues,
       error: null,
     }
   } catch (error) {
     if (error instanceof AppError) {
       const details = error.details as { issues?: GenerateReviewXmlResult['issues'] } | undefined
       return {
-        downloadUrl: null,
-        fileName: null,
+        batchId: null,
+        artifacts: [],
         warnings: [],
         issues: details?.issues ?? [],
         error: error.message,

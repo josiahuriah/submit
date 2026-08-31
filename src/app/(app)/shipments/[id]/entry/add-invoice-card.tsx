@@ -95,7 +95,7 @@ export function AddInvoiceCard({
     <div className="sb-card sb-pad" style={{ margin: "14px 0", borderLeft: "3px solid var(--sb-gold)" }}>
       <div style={{ marginBottom: 10 }}>
         <div className="sb-h2">Add supplier invoice</div>
-        <div className="sb-meta">Each line is linked to its commercial invoice; foreign currency values are converted with the recorded BSD exchange rate.</div>
+        <div className="sb-meta">Enter values in BSD. Submit does not calculate or assume responsibility for currency conversion.</div>
       </div>
       {notice && (
         <div style={{ padding: "8px 12px", marginBottom: 10, background: "var(--sb-gold-soft)", borderRadius: 6, fontSize: 12.5 }}>
@@ -160,11 +160,11 @@ export function AddInvoiceCard({
         </label>
         <label style={field}>
           <span className="sb-eyebrow">Currency</span>
-          <input className="sb-inp sb-mono" maxLength={3} value={draft.currency} onChange={(e) => setDraft((d) => ({ ...d, currency: e.target.value.toUpperCase() }))} />
+          <input className="sb-inp sb-mono" value="BSD" readOnly aria-readonly="true" />
         </label>
         <label style={field}>
           <span className="sb-eyebrow">BSD rate</span>
-          <input className="sb-inp sb-mono" value={draft.exchangeRate} onChange={(e) => setDraft((d) => ({ ...d, exchangeRate: e.target.value }))} />
+          <input className="sb-inp sb-mono" value="1" readOnly aria-readonly="true" />
         </label>
         <label style={field}>
           <span className="sb-eyebrow">Incoterm</span>

@@ -16,7 +16,7 @@ import {
   calculateShipment,
   type CalculationLineInput,
 } from '@/lib/calculations/duty-calculator'
-import { moneyString } from '@/lib/calculations/money'
+import { d, moneyString } from '@/lib/calculations/money'
 import { resolveSpecificQuantity } from '@/lib/calculations/measurement'
 import { writeAudit, type AuditContext } from '@/lib/audit'
 import { BusinessRuleError, NotFoundError } from '@/lib/errors'
@@ -55,11 +55,41 @@ export const calculationsService = {
       throw new BusinessRuleError('Only DRAFT shipments can be recalculated')
     }
 
+    const nonBsdInvoices = shipment.invoices.filter(
+      (invoice) => invoice.currency !== 'BSD' || String(invoice.exchangeRate) !== '1',
+    )
+    if (nonBsdInvoices.length > 0) {
+      throw new BusinessRuleError('Convert every invoice value to BSD before calculation')
+    }
     const lineItems = shipment.invoices.flatMap((inv) =>
-      inv.lineItems.map((line) => ({ ...line, exchangeRate: inv.exchangeRate })),
+      inv.lineItems.map((line) => ({ ...line })),
     )
     if (lineItems.length === 0) {
       throw new BusinessRuleError('Shipment has no line items to calculate')
+    }
+    if (d(shipment.freightCharge).lessThanOrEqualTo(0)) {
+      throw new BusinessRuleError('Every shipment must have a freight charge greater than zero')
+    }
+    const cpcs = new Set(lineItems.map((line) => line.cpcCode))
+    if (!shipment.isSplitDeclaration && cpcs.size > 1) {
+      throw new BusinessRuleError('Mixed CPC lines require the split declaration option')
+    }
+    if (shipment.isSplitDeclaration) {
+      if (cpcs.size < 2) {
+        throw new BusinessRuleError('A split declaration requires at least two CPC groups')
+      }
+      const missingSplitWeight = lineItems.filter((line) => d(line.weightLb).lessThanOrEqualTo(0))
+      if (missingSplitWeight.length > 0) {
+        throw new BusinessRuleError('Every item in a split declaration requires a positive pound weight', {
+          lineItemIds: missingSplitWeight.map((line) => line.id),
+        })
+      }
+      const missingPackages = lineItems.filter((line) => !line.packageCount || line.packageCount <= 0)
+      if (missingPackages.length > 0) {
+        throw new BusinessRuleError('Every item in a split declaration requires a package count', {
+          lineItemIds: missingPackages.map((line) => line.id),
+        })
+      }
     }
     const missingHs = lineItems.filter((l) => !l.hsCodeId)
     if (missingHs.length > 0) {
@@ -164,11 +194,11 @@ export const calculationsService = {
       return {
         id: l.id,
         totalValue: String(l.totalValue),
-        exchangeRate: String(l.exchangeRate),
+        cpcCode: l.cpcCode,
         quantity: String(l.quantity),
         dutyAssessmentQuantity: dutyAssessment,
         exciseAssessmentQuantity: exciseAssessment,
-        weightKg: l.weightKg === null ? null : String(l.weightKg),
+        weightLb: l.weightLb === null ? null : String(l.weightLb),
         exemptionType: l.exemptionType,
         rates: {
           dutyBasis: rate.dutyBasis,
@@ -191,7 +221,10 @@ export const calculationsService = {
         insuranceCharge: String(shipment.insuranceCharge),
         otherCharges: String(shipment.otherCharges),
       },
-      { apportionmentBasis: options.apportionmentBasis },
+      {
+        apportionmentBasis: options.apportionmentBasis,
+        isSplitDeclaration: shipment.isSplitDeclaration,
+      },
     )
 
     // 4. Persist atomically: line updates + shipment roll-up.
