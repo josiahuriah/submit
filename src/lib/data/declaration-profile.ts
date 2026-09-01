@@ -3,7 +3,8 @@
 import { requireSession } from '@/lib/auth/session'
 import { createTenantClient } from '@/lib/db/tenant-client'
 import { NotFoundError } from '@/lib/errors'
-import { TFP_COMPANY_REGISTRATION_NUMBER } from '@/lib/beaip/constants'
+import { resolveBeaipBrokerCode } from '@/lib/beaip/constants'
+import { env } from '@/lib/env'
 import type { DeclarationProfile } from '@/lib/types'
 
 function text(value: unknown): string {
@@ -30,12 +31,16 @@ export async function getDeclarationProfile(shipmentId: string): Promise<Declara
       packageType: true,
       grossWeightLb: true,
       netWeightLb: true,
+      organization: { select: { companyRegistrationNumber: true } },
     },
   })
   if (!shipment) throw new NotFoundError('Shipment')
 
   return {
-    companyRegistrationNumber: TFP_COMPANY_REGISTRATION_NUMBER,
+    submitterId: resolveBeaipBrokerCode(
+      env().BEAIP_BROKER_CODE,
+      shipment.organization.companyRegistrationNumber,
+    ),
     declarationDate: shipment.submittedAt?.toISOString().slice(0, 10) ?? '',
     declarationFunctionCode: '9',
     regimeCode: shipment.regimeCode,

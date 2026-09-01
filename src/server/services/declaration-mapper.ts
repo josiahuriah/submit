@@ -5,8 +5,9 @@
  *
  * Placeholders pending government worksheets (labeled here, nowhere else):
  *   - regimeCode "4" remains the schema default pending TTFB_SYS_REGIME.
- *   - Submitter ID and declaration function are fixed by the current filing
- *     workflow and cannot be overridden per entry.
+ *   - Submitter ID comes from the server-only BEAIP broker code for live QA;
+ *     the organization field remains an offline-review fallback.
+ *   - Declaration function is fixed by the current filing workflow.
  */
 import type { TenantClient } from '@/lib/db/tenant-client'
 import type { BeaipDeclaration, BeaipInvoice, BeaipParty } from '@/lib/beaip'
@@ -16,7 +17,7 @@ import type { DeclarationType } from '@/generated/prisma/enums'
 import type { Prisma } from '@/generated/prisma/client'
 import {
   ORIGINAL_DECLARATION_FUNCTION_CODE,
-  TFP_COMPANY_REGISTRATION_NUMBER,
+  resolveBeaipBrokerCode,
   TFP_DECLARANT_NAME,
   TFP_DECLARATION_OFFICE_CODE,
 } from '@/lib/beaip/constants'
@@ -147,6 +148,7 @@ export type DeclarationSource = NonNullable<Awaited<ReturnType<typeof loadDeclar
 export function toBeaipDeclaration(
   shipment: DeclarationSource,
   declarationType: DeclarationType,
+  configuredBrokerCode = '',
 ): BeaipDeclaration {
   const org = shipment.organization
   const declarationDate = (shipment.submittedAt ?? shipment.declarationDate).toISOString()
@@ -254,7 +256,10 @@ export function toBeaipDeclaration(
     functionalReferenceId: buildFunctionalReferenceId(declarationDate, shipment.shipmentNumber),
     brokerReference: buildTraderAssignedReferenceId(declarationDate, shipment.shipmentNumber),
     customsOfficeCode: TFP_DECLARATION_OFFICE_CODE,
-    submitterId: TFP_COMPANY_REGISTRATION_NUMBER,
+    submitterId: resolveBeaipBrokerCode(
+      configuredBrokerCode,
+      shipment.organization.companyRegistrationNumber,
+    ),
     declarant,
     importer,
     consignee: importer,

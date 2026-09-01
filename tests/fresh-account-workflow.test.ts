@@ -115,8 +115,8 @@ describe('fresh account to Customs-review XML', () => {
     token = capturedSession.token
     expect(token).not.toBe('')
 
-    // Submitter/ID is mandatory in TFP v1.4.4. This is the same tenant-owned
-    // organization value exposed in the declaration profile UI.
+    // Submitter/ID is mandatory. Disabled/offline test mode falls back to this
+    // tenant value; live transport requires the server-only BEAIP broker code.
     const db = createTenantClient(organizationId)
     await db.organization.update({
       where: { id: organizationId },

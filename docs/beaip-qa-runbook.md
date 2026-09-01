@@ -39,6 +39,7 @@ BEAIP_DECLARATION_SERVICE_URL=""
 BEAIP_DECLARATION_SOAP_ACTION=""
 BEAIP_USERNAME=""
 BEAIP_PASSWORD=""
+BEAIP_BROKER_CODE=""
 BEAIP_SENDER=""
 BEAIP_RECEIVER="BESWS"
 BEAIP_TIMEZONE="America/Nassau"
@@ -53,6 +54,10 @@ If the government-supplied QA address is plain HTTP, set
 
 Set `BEAIP_TRANSPORT_MODE="live"` only for the controlled test window, then
 restart the server so configuration is revalidated.
+
+`BEAIP_USERNAME` authenticates the WS-Security `UsernameToken`.
+`BEAIP_BROKER_CODE` is a separate filing identity and is emitted as
+`Declaration/Submitter/ID`. Live transport refuses to start without both.
 
 ## Manual QA submission
 

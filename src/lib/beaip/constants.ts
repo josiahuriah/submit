@@ -1,5 +1,10 @@
-/** Submit's configured TFP submitter identity for Customs review artifacts. */
-export const TFP_COMPANY_REGISTRATION_NUMBER = '131249792'
+/** Live filing uses the configured BEAIP code; tenant data remains an offline-review fallback. */
+export function resolveBeaipBrokerCode(
+  configuredBrokerCode: string,
+  organizationCompanyRegistrationNumber: string | null,
+): string {
+  return configuredBrokerCode.trim() || organizationCompanyRegistrationNumber?.trim() || ''
+}
 
 /** Stakeholder-approved filing defaults pending the Click2Clear master sheets. */
 export const TFP_DECLARATION_OFFICE_CODE = 'NASACP'

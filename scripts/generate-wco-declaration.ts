@@ -21,6 +21,7 @@ import { basePrisma } from '../src/lib/db/prisma'
 import { createTenantClient } from '../src/lib/db/tenant-client'
 import { buildWcoDeclarationXml } from '../src/lib/beaip'
 import { preflightTfpDeclaration } from '../src/lib/beaip/tfp-field-mapping'
+import { env } from '../src/lib/env'
 import {
   loadDeclarationSource,
   partitionBeaipDeclaration,
@@ -64,7 +65,7 @@ async function main() {
   }
 
   const declarations = partitionBeaipDeclaration(
-    toBeaipDeclaration(source, 'C13'),
+    toBeaipDeclaration(source, 'C13', env().BEAIP_BROKER_CODE),
     `script:${source.id}`,
   )
   const outDir = path.join(process.cwd(), 'docs', 'tfp', 'generated')

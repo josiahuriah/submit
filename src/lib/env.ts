@@ -20,6 +20,7 @@ const envSchema = z.object({
   BEAIP_DECLARATION_SOAP_ACTION: z.string().optional().default(''),
   BEAIP_USERNAME: z.string().optional().default(''),
   BEAIP_PASSWORD: z.string().optional().default(''),
+  BEAIP_BROKER_CODE: z.string().trim().optional().default(''),
   BEAIP_SENDER: z.string().optional().default(''),
   BEAIP_RECEIVER: z.string().optional().default('BESWS'),
   BEAIP_TIMEZONE: z.string().default('America/Nassau'),
@@ -33,6 +34,7 @@ const envSchema = z.object({
     'BEAIP_DECLARATION_SERVICE_URL',
     'BEAIP_USERNAME',
     'BEAIP_PASSWORD',
+    'BEAIP_BROKER_CODE',
   ] as const) {
     if (!value[key]) context.addIssue({ code: 'custom', path: [key], message: `${key} is required when BEAIP transport is live` })
   }

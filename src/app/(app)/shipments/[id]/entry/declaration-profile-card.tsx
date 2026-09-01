@@ -10,7 +10,7 @@ function valueOrDash(value: string) {
 
 export function DeclarationProfileCard({ initial }: { initial: DeclarationProfile }) {
   const fields = [
-    ['Company registration', initial.companyRegistrationNumber],
+    ['BEAIP broker code (Submitter ID)', initial.submitterId],
     ['Declaration date', initial.declarationDate || 'Set on first submission'],
     ['Function', `${initial.declarationFunctionCode} — Original`],
     ['Regime', initial.regimeCode],

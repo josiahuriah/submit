@@ -192,6 +192,11 @@ function childOrder(xml: string, name: string): string[] {
 }
 
 describe('buildWcoDeclarationXml', () => {
+  it('emits the configured filing identity as Submitter/ID', () => {
+    const xml = buildWcoDeclarationXml(fixture())
+    expect(xml).toMatch(/<Submitter>\s*<ID>CRN-12345<\/ID>\s*<\/Submitter>/)
+  })
+
   it('declares the target namespace on the root (the sample-file trap)', () => {
     expect(build()).toContain(`<Declaration xmlns="${WCO_DECLARATION_NS}">`)
   })

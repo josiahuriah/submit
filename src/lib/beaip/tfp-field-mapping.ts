@@ -38,7 +38,7 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'Declaration', element: 'TypeCode', requirement: 'M', source: 'Shipment.regimeCode', transform: 'verbatim', status: 'WITHHELD_CODE_LIST', note: 'TTFB_SYS_REGIME not released; sample uses 4' },
   { section: 'Declaration', element: 'TotalGrossMassMeasure', requirement: 'C', source: 'Shipment.grossWeightLb', transform: 'unitCode=LB', status: 'MAPPED' },
   { section: 'Declaration', element: 'TotalPackageQuantity', requirement: 'C', source: 'Shipment.packageCount/packageType', transform: 'package UOM map', status: 'WITHHELD_CODE_LIST' },
-  { section: 'Declaration', element: 'Submitter/ID', requirement: 'M', source: 'constant 131249792', transform: 'configured company registration number', status: 'DERIVED' },
+  { section: 'Declaration', element: 'Submitter/ID', requirement: 'M', source: 'BEAIP_BROKER_CODE', transform: 'server-only filing configuration', status: 'MAPPED' },
   { section: 'Declaration', element: 'DeclarationOffice/ID', requirement: 'M', source: 'constant NASACP', transform: 'stakeholder-approved interim office', status: 'DERIVED' },
   { section: 'Declaration', element: 'Declarant/Name', requirement: 'C', source: 'constant Atlas Brokers', transform: 'stakeholder-approved filing identity', status: 'DERIVED' },
   { section: 'Declaration', element: 'Declarant/ID', requirement: 'C', source: 'Organization.tinNumber', transform: 'verbatim', status: 'MAPPED' },

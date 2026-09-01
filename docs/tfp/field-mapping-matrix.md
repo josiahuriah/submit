@@ -31,7 +31,7 @@ This matrix governs the stakeholder-created incoming declaration XML. It does no
 | `Declaration/TypeCode` | M | `Shipment.regimeCode` | Code value; default `4` is provisional | `WITHHELD_CODE_LIST` |
 | `Declaration/TotalGrossMassMeasure` | C | `Shipment.grossWeightKg` | Convert kilograms to pounds; `unitCode=LB` | `DERIVED` |
 | `Declaration/TotalPackageQuantity` | C | `Shipment.packageCount`, `packageType` | Provisional UN package-code map | `WITHHELD_CODE_LIST` |
-| `Declaration/Submitter/ID` | M | Constant `131249792` | Configured Company Registration Number; never substituted with TIN or broker licence | `DERIVED` |
+| `Declaration/Submitter/ID` | M | `BEAIP_BROKER_CODE` | Assigned BEAIP filing code; distinct from WS-Security username, Sender, TIN, and broker licence | `CONFIRMED_BY_BROKER` |
 | `Declaration/DeclarationOffice/ID` | M | Constant `NASACP` | Interim value for all entries until the office master sheet is available | `DERIVED` |
 | `Declaration/Declarant/Name` | C | Constant `Atlas Brokers` | Stakeholder-approved filing identity | `DERIVED` |
 | `Declaration/Declarant/ID` | C | `Organization.tinNumber` | Verbatim | `MAPPED` |
@@ -123,4 +123,11 @@ The following remain provisional until Customs releases the associated worksheet
 - dynamic additional-information qualifiers, documents, exemptions and vehicle characteristics;
 - endpoint envelope, authentication, acknowledgement and business-rejection semantics.
 
-The TFP specification makes `Declaration/Submitter/ID` mandatory. The stakeholder has configured Company Registration Number `131249792` for every current entry; Submit keeps that fixed filing identity distinct from an organization's tax identification number and an individual broker's licence number. Customs must confirm the identifier before UAT certification. The supplied `sample.xsd` is an XML instance despite its extension. It omits the root namespace, but the actual XSD declares a target namespace with `elementFormDefault="qualified"`; generated declarations therefore retain `xmlns="http://globaletrade.services/Declaration"` so they validate.
+The TFP specification makes `Declaration/Submitter/ID` mandatory. The broker
+confirmed that this value is the assigned `BEAIP_BROKER_CODE`. Submit keeps it
+separate from the WS-Security username, MessageHeader sender, organization TIN,
+company registration number, and individual broker licence. The supplied
+`sample.xsd` is an XML instance despite its extension. It omits the root
+namespace, but the actual XSD declares a target namespace with
+`elementFormDefault="qualified"`; generated declarations therefore retain
+`xmlns="http://globaletrade.services/Declaration"` so they validate.

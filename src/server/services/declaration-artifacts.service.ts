@@ -12,6 +12,7 @@ import { buildWcoDeclarationXml } from '@/lib/beaip/wco-xml'
 import { preflightTfpDeclaration } from '@/lib/beaip/tfp-field-mapping'
 import { writeAudit, type AuditContext } from '@/lib/audit'
 import { BusinessRuleError, NotFoundError } from '@/lib/errors'
+import { env } from '@/lib/env'
 import type { DeclarationType } from '@/generated/prisma/enums'
 import {
   loadDeclarationSource,
@@ -61,7 +62,7 @@ export const declarationArtifactsService = {
     let declarations
     try {
       declarations = partitionBeaipDeclaration(
-        toBeaipDeclaration(shipment, input.declarationType),
+        toBeaipDeclaration(shipment, input.declarationType, env().BEAIP_BROKER_CODE),
         batchId,
       )
     } catch (error) {

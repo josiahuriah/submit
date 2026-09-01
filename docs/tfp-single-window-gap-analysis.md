@@ -121,7 +121,7 @@ existing data with only formatting.
 | `FunctionCode` | M | constant `9` | MAPPED as original; no per-entry override |
 | `TypeCode` (Regime) | M | `Shipment.regimeCode` | **PARTIAL**: stored/editable; needs `TTFB_SYS_REGIME` worksheet; sample uses `4` |
 | `DeclarationOffice/ID` | M | `CustomsOffice.code` (NAS/FPO/…) | **PARTIAL**: official codes look numeric (`01`); mapping needs the Port worksheet |
-| `Submitter/ID` | M | constant `131249792` | MAPPED from stakeholder configuration; government must confirm identifier semantics |
+| `Submitter/ID` | M | `BEAIP_BROKER_CODE` | MAPPED from the broker-confirmed filing code; distinct from WS-Security credentials |
 | `AcceptanceDateTime` | C | submission timestamp | OK (`yyyy-MM-dd HH:mm:ss`) |
 | `TotalGrossMassMeasure` | C | `Shipment.grossWeightKg`, unitCode `KGM` | OK |
 | `TotalPackageQuantity` | C | `Shipment.packageCount` | PARTIAL: `PackageType` enum → `TTFB_SYS_PACKAGE_UOM` mapping needed |
@@ -191,7 +191,7 @@ Until then, hardcode sample-consistent placeholders and label them.
    transport, per-line values/apportioned costs/CPC); mapping extracted to
    `src/server/services/declaration-mapper.ts`, shared by the submit path and
    the generator so the wire payload cannot drift. Labeled placeholders:
-   Regime=`4`; Submitter uses configured Company Registration Number `131249792`,
+   Regime=`4`; Submitter uses the server-only `BEAIP_BROKER_CODE`,
    transport-mode + package-UOM code maps (UN/EDIFACT guesses) in `wco-xml.ts`.
 2. ✅ `npm run wco:generate` (`scripts/generate-wco-declaration.ts`) generates
    from a calculated shipment and validates via `xmllint` against

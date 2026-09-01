@@ -7,7 +7,7 @@ import {
   shipmentCreateSchema,
   vesselCreateSchema,
 } from '@/lib/validation/schemas'
-import { ORIGINAL_DECLARATION_FUNCTION_CODE, TFP_COMPANY_REGISTRATION_NUMBER } from '@/lib/beaip/constants'
+import { ORIGINAL_DECLARATION_FUNCTION_CODE, resolveBeaipBrokerCode } from '@/lib/beaip/constants'
 
 const shipment = {
   shipmentNumber: 'SHP-2026-00001',
@@ -50,7 +50,8 @@ describe('declaration workflow constraints', () => {
   it('does not permit an artifact caller to override function 9', () => {
     expect(declarationArtifactSchema.safeParse({ declarationType: 'C13', functionCode: '5' }).success).toBe(false)
     expect(ORIGINAL_DECLARATION_FUNCTION_CODE).toBe('9')
-    expect(TFP_COMPANY_REGISTRATION_NUMBER).toBe('131249792')
+    expect(resolveBeaipBrokerCode('BEAIP-CODE', 'OLD-REGISTRATION')).toBe('BEAIP-CODE')
+    expect(resolveBeaipBrokerCode('', 'OFFLINE-REGISTRATION')).toBe('OFFLINE-REGISTRATION')
   })
 
   it('limits manifest transport assets to sea vessels and aircraft', () => {

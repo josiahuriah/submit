@@ -147,7 +147,7 @@ export interface LineDraft {
 }
 
 export interface DeclarationProfile {
-  companyRegistrationNumber: string;
+  submitterId: string;
   declarationDate: string;
   declarationFunctionCode: "9";
   regimeCode: string;
