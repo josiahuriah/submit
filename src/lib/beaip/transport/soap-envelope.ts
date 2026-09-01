@@ -36,7 +36,7 @@ export function buildDeclarationSoapEnvelope(input: {
   const build = (password: string) => `<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="${SOAP_NS}" xmlns:wsse="${WSSE_NS}">
   <soapenv:Header>
-    <wsse:Security soapenv:mustUnderstand="1">
+    <wsse:Security soapenv:mustUnderstand="0">
       <wsse:UsernameToken wsu:Id="${usernameTokenId}" xmlns:wsu="${WSU_NS}">
         <wsse:Username>${escapeXml(input.username)}</wsse:Username>
         <wsse:Password Type="${PASSWORD_TEXT}">${escapeXml(password)}</wsse:Password>

@@ -95,9 +95,11 @@ amendment or cancellation workflow.
 The first recorded QA request reached the declaration service and returned HTTP
 500 with WSS4J `SecurityError` before any declaration acknowledgement. The
 persisted attempt showed that Submit's `UsernameToken` omitted the `wsu:Id`
-present in the supplied Customs SOAP header. The envelope builder now emits a
-unique `UsernameToken-<32 hexadecimal characters>` ID and declares the supplied
-WS-Security utility namespace. Offline transport and attempt tests passed.
+present in the supplied Customs SOAP header and sent `mustUnderstand="1"` where
+the template specifies `"0"`. The envelope builder now emits a unique
+`UsernameToken-<32 hexadecimal characters>` ID, declares the supplied
+WS-Security utility namespace, and matches the supplied flag. Offline transport
+and attempt tests passed.
 
 This finding does not prove that the credentials are accepted or that the
 declaration body is valid. Deploy the correction before one explicit manual
