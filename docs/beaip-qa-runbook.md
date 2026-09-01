@@ -57,9 +57,9 @@ restart the server so configuration is revalidated.
 
 `BEAIP_USERNAME` authenticates the WS-Security `UsernameToken`.
 `BEAIP_BROKER_CODE` is a separate filing identity and is emitted as
-`Declaration/Submitter/ID`. By broker direction, the same configured value is
-also emitted verbatim as the token's `wsu:Id`, without a generated prefix or
-suffix. Live transport refuses to start without both.
+`Declaration/Submitter/ID`. The token's `wsu:Id` is a unique generated
+`UsernameToken-<32 hexadecimal characters>` value matching the supplied QA
+header. Live transport refuses to start without both configured values.
 
 ## Manual QA submission
 
@@ -98,13 +98,11 @@ The first recorded QA request reached the declaration service and returned HTTP
 500 with WSS4J `SecurityError` before any declaration acknowledgement. The
 persisted attempt showed that Submit's `UsernameToken` omitted the `wsu:Id`
 present in the supplied Customs SOAP header and sent `mustUnderstand="1"` where
-the template specifies `"0"`. The first correction added the supplied
-WS-Security utility namespace and matched the supplied flag. The token ID was
-later changed by explicit broker direction to the exact configured
-`BEAIP_BROKER_CODE`, without the template's `UsernameToken-` prefix. A
-digits-only value does not meet the XML Schema `ID` lexical form, so this QA
-override may itself be rejected by a schema-aware WS-Security implementation.
-Offline transport tests cover the exact emitted value.
+the template specifies `"0"`. The corrected envelope adds the supplied
+WS-Security utility namespace, matches the supplied flag, and emits the
+template's XML-valid generated `UsernameToken-<32 hexadecimal characters>`
+identifier. Offline transport tests cover the generated form and confirm that
+the redacted audit copy keeps the exact identifier used on the wire.
 
 This finding does not prove that the credentials are accepted or that the
 declaration body is valid. Deploy the correction before one explicit manual

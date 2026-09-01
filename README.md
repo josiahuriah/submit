@@ -57,7 +57,7 @@ npm run wco:generate          # TFP declaration XML from a calculated shipment +
 | `SESSION_TTL_SECONDS` | no | default 43200 (12h) |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_REDIRECT_URI` | no | "Continue/Sign in with Google" on `/signup` and `/login`; unset = those buttons fail cleanly with an error message, password auth is unaffected |
 | `BEAIP_TRANSPORT_MODE` | no | `disabled` by default; `live` enables explicit broker requests |
-| `BEAIP_BROKER_CODE` | for QA | Assigned filing code emitted as mandatory `Declaration/Submitter/ID` and, by broker direction, used verbatim as the WS-Security `wsu:Id`; distinct from the WS-Security username |
+| `BEAIP_BROKER_CODE` | for QA | Assigned filing code emitted as mandatory `Declaration/Submitter/ID`; distinct from the WS-Security username and generated `wsu:Id` |
 | Other `BEAIP_*` settings | for QA | See `.env.example` and [the QA runbook](docs/beaip-qa-runbook.md); never commit credentials |
 
 > **Note on the Neon connection string used during development:** it was shared

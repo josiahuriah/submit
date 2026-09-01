@@ -1,4 +1,5 @@
 /** Wrap reviewed declaration XML and keep credentials out of the persisted envelope. */
+import { randomBytes } from 'node:crypto'
 import { WCO_DECLARATION_NS } from '@/lib/beaip/wco-xml'
 
 const SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/'
@@ -27,12 +28,11 @@ function declarationBody(xml: string): string {
 export function buildDeclarationSoapEnvelope(input: {
   username: string
   password: string
-  brokerCode: string
   declarationXml: string
 }): { envelope: string; redactedEnvelope: string } {
-  // Broker-directed QA override: use the configured filing code verbatim as
-  // the UsernameToken identifier in both the sent and redacted envelopes.
-  const usernameTokenId = escapeXml(input.brokerCode)
+  // Match the government-supplied QA header with a unique, XML-valid token ID.
+  // Build it once so the persisted redacted envelope describes the exact request.
+  const usernameTokenId = `UsernameToken-${randomBytes(16).toString('hex').toUpperCase()}`
   const build = (password: string) => `<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="${SOAP_NS}" xmlns:wsse="${WSSE_NS}">
   <soapenv:Header>
