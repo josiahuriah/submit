@@ -1,8 +1,10 @@
 /** Wrap reviewed declaration XML and keep credentials out of the persisted envelope. */
+import { randomBytes } from 'node:crypto'
 import { WCO_DECLARATION_NS } from '@/lib/beaip/wco-xml'
 
 const SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/'
 const WSSE_NS = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
+const WSU_NS = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd'
 const PASSWORD_TEXT = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText'
 
 function escapeXml(value: string): string {
@@ -28,11 +30,14 @@ export function buildDeclarationSoapEnvelope(input: {
   password: string
   declarationXml: string
 }): { envelope: string; redactedEnvelope: string } {
+  // The supplied Customs header identifies each UsernameToken with a WSU ID.
+  // Build it once so the persisted redacted envelope describes the exact request.
+  const usernameTokenId = `UsernameToken-${randomBytes(16).toString('hex').toUpperCase()}`
   const build = (password: string) => `<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="${SOAP_NS}" xmlns:wsse="${WSSE_NS}">
   <soapenv:Header>
     <wsse:Security soapenv:mustUnderstand="1">
-      <wsse:UsernameToken>
+      <wsse:UsernameToken wsu:Id="${usernameTokenId}" xmlns:wsu="${WSU_NS}">
         <wsse:Username>${escapeXml(input.username)}</wsse:Username>
         <wsse:Password Type="${PASSWORD_TEXT}">${escapeXml(password)}</wsse:Password>
       </wsse:UsernameToken>

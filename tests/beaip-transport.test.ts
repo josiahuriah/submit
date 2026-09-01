@@ -17,8 +17,12 @@ describe('BEAIP SOAP transport contracts', () => {
     expect(result.envelope).toContain('secret&lt;value&gt;')
     // The PasswordText URI is from the government-supplied soap_header.txt.
     expect(result.envelope).toContain('Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText"')
+    expect(result.envelope).toMatch(/<wsse:UsernameToken wsu:Id="UsernameToken-[0-9A-F]{32}"/)
+    expect(result.envelope).toContain('xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"')
     expect(result.redactedEnvelope).not.toContain('secret')
     expect(result.redactedEnvelope).toContain('[REDACTED]')
+    expect(result.redactedEnvelope.match(/UsernameToken-[0-9A-F]{32}/)?.[0])
+      .toBe(result.envelope.match(/UsernameToken-[0-9A-F]{32}/)?.[0])
     expect(result.envelope.match(/<\?xml/g)).toHaveLength(1)
   })
 

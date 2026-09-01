@@ -84,3 +84,19 @@ different group failed.
 Every repeat submission shows a duplicate warning and requires explicit broker
 confirmation. Submit does not automatically retry and does not suggest an
 amendment or cancellation workflow.
+
+## First QA transport finding
+
+The first recorded QA request reached the declaration service and returned HTTP
+500 with WSS4J `SecurityError` before any declaration acknowledgement. The
+persisted attempt showed that Submit's `UsernameToken` omitted the `wsu:Id`
+present in the supplied Customs SOAP header. The envelope builder now emits a
+unique `UsernameToken-<32 hexadecimal characters>` ID and declares the supplied
+WS-Security utility namespace. Offline transport and attempt tests passed.
+
+This finding does not prove that the credentials are accepted or that the
+declaration body is valid. Deploy the correction before one explicit manual
+retry. If the same security fault returns, stop and have Customs confirm the QA
+username, password, account activation, IP/VPN requirements, and expected
+UsernameToken profile; do not keep resubmitting. A different operation/action
+fault would instead be evidence to resolve the still-unspecified `SOAPAction`.
