@@ -88,6 +88,7 @@ export const customsSubmissionService = {
     const soap = buildDeclarationSoapEnvelope({
       username: configuration.BEAIP_USERNAME,
       password: configuration.BEAIP_PASSWORD,
+      brokerCode: configuration.BEAIP_BROKER_CODE,
       declarationXml: entry.requestPayload,
     })
     const attempt = await db.customsSubmissionAttempt.create({

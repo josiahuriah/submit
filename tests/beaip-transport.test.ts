@@ -9,7 +9,8 @@ const declaration = `<?xml version="1.0" encoding="UTF-8"?>
 describe('BEAIP SOAP transport contracts', () => {
   it('places the declaration directly in the SOAP body and redacts the password', () => {
     const result = buildDeclarationSoapEnvelope({
-      username: 'broker&qa', password: 'secret<value>', declarationXml: declaration,
+      username: 'broker&qa', password: 'secret<value>', brokerCode: '20113855131249792',
+      declarationXml: declaration,
     })
     expect(result.envelope).toContain('<soapenv:Body>\n<Declaration')
     expect(result.envelope).not.toContain('&lt;Declaration')
@@ -19,12 +20,12 @@ describe('BEAIP SOAP transport contracts', () => {
     expect(result.envelope).toContain('Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText"')
     expect(result.envelope).toContain('<wsse:Security soapenv:mustUnderstand="0">')
     expect(result.envelope).not.toContain('soapenv:mustUnderstand="1"')
-    expect(result.envelope).toMatch(/<wsse:UsernameToken wsu:Id="UsernameToken-[0-9A-F]{32}"/)
+    expect(result.envelope).toContain('<wsse:UsernameToken wsu:Id="20113855131249792"')
+    expect(result.envelope).not.toContain('UsernameToken-')
     expect(result.envelope).toContain('xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"')
     expect(result.redactedEnvelope).not.toContain('secret')
     expect(result.redactedEnvelope).toContain('[REDACTED]')
-    expect(result.redactedEnvelope.match(/UsernameToken-[0-9A-F]{32}/)?.[0])
-      .toBe(result.envelope.match(/UsernameToken-[0-9A-F]{32}/)?.[0])
+    expect(result.redactedEnvelope).toContain('<wsse:UsernameToken wsu:Id="20113855131249792"')
     expect(result.envelope.match(/<\?xml/g)).toHaveLength(1)
   })
 
