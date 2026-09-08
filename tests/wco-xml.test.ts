@@ -139,7 +139,7 @@ function fixture(): BeaipDeclaration {
         unit: 'PCS',
         weightLb: null,
         netWeightLb: null,
-        packageCount: null,
+        packageCount: 20,
         packageTypeCode: null,
         totalValue: '800.00',
         currency: 'BSD',
@@ -315,6 +315,8 @@ describe('buildWcoDeclarationXml', () => {
     expect(xml).toContain('<TariffQuantity unitCode="EA">500</TariffQuantity>')
     expect(xml).toContain('<TariffQuantity unitCode="IMP_GAL">26.400000</TariffQuantity>')
     expect(xml).toContain('<QuantityQuantity unitCode="EA">10</QuantityQuantity>')
+    expect(xml).toContain('<QuantityQuantity unitCode="EA">20</QuantityQuantity>')
+    expect(xml.match(/<Packaging>/g)).toHaveLength(2)
     const arrival = childOrder(xml, 'ArrivalTransportMeans')
     expect(arrival).toEqual(['Name', 'TypeCode', 'RegistrationNationalityCode'])
     expect(xml).toContain('<TypeCode>1</TypeCode>') // SEA → 1
@@ -339,6 +341,12 @@ describe('buildWcoDeclarationXml', () => {
       .map((match) => match[1]!)
     expect(invoices).toHaveLength(2)
     expect(invoices.every((invoice) => !invoice.includes('<TypeCode>'))).toBe(true)
+  })
+
+  it('refuses to silently omit Packaging when an item has no package quantity', () => {
+    const input = fixture()
+    input.lines[0]!.packageCount = null
+    expect(() => buildWcoDeclarationXml(input)).toThrow(/package count is required/i)
   })
 
   it.skipIf(!hasXmllint)('validates against TFB_WCO_DEC_v1.4.4.xsd + common-types stub', () => {

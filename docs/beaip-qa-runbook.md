@@ -124,6 +124,7 @@ corrections:
 - declarant and exporter IDs are `20113855131249792`;
 - standard item CPC `400` is serialized as `40000`;
 - commercial `PCS` and package quantities use `EA` on the wire;
+- every goods item includes `Packaging/QuantityQuantity`; missing line package counts block XML generation;
 - `FreightChargeAmount` and `Invoice/TypeCode` are omitted.
 
 The response still reported two required documents: Invoice and Tax Compliance

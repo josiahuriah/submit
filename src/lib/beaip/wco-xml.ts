@@ -146,6 +146,9 @@ function invoiceValuation(inv: BeaipInvoice, freightAmount: string) {
 
 /** GovernmentAgencyGoodsItem — one per line item, schema order throughout. */
 function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber: string | null) {
+  if (line.packageCount === null || line.packageCount <= 0) {
+    throw new Error(`Line ${sequence} package count is required for Customs Packaging`)
+  }
   const tariffQuantity = line.dutyAssessmentQuantity
     ? { value: line.dutyAssessmentQuantity, unit: line.dutyAssessmentUnit }
     : line.exciseAssessmentQuantity
@@ -183,17 +186,13 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
     },
     GovernmentProcedure: { CurrentCode: wireProcedureCode(line.cpcCode) },
     ...(line.countryOfOrigin ? { Origin: { CountryCode: line.countryOfOrigin } } : {}),
-    ...(line.packageCount
-      ? {
-          Packaging: {
-            SequenceNumeric: sequence,
-            QuantityQuantity: {
-              '#text': line.packageCount,
-              '@_unitCode': TFP_EACH_UNIT_CODE,
-            },
-          },
-        }
-      : {}),
+    Packaging: {
+      SequenceNumeric: sequence,
+      QuantityQuantity: {
+        '#text': line.packageCount,
+        '@_unitCode': TFP_EACH_UNIT_CODE,
+      },
+    },
   }
 }
 

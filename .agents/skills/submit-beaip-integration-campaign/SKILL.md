@@ -76,8 +76,9 @@ for provisional regime, office, transport, package, CPC and HS wire codes.
 Written Customs feedback received 2026-09-08 confirms the current QA profile:
 `USPBI` for unloading and exit office; goods location equal to declaration
 office; no AWB/BL or manifest transport document; declarant/exporter ID
-`20113855131249792`; item CPC `40000`; `EA` for commercial pieces and package
-quantities; no `FreightChargeAmount`; and no `Invoice/TypeCode`. Customs created
+`20113855131249792`; item CPC `40000`; mandatory per-item `Packaging` with `EA`
+for package quantities; `EA` for commercial pieces; no `FreightChargeAmount`;
+and no `Invoice/TypeCode`. Customs created
 provisional draft `PROV20260000020299` after applying those corrections. The
 response still requires Invoice and Tax Compliance Certificate attachments, so
 this is not acceptance or Gate-2 completion.

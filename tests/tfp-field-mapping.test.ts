@@ -136,7 +136,7 @@ describe('TFP field mapping preflight', () => {
     input.transport.goodsLocationCode = 'OTHER'
     input.transport.unloadingPortCode = 'BSNAS'
     input.transport.exitPortCode = 'USMIA'
-    input.lines[0]!.packageTypeCode = 'CT'
+    input.lines[0]!.packageCount = null
 
     const result = preflightTfpDeclaration(input)
     expect(result.ready).toBe(false)

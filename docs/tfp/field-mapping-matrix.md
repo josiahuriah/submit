@@ -111,12 +111,12 @@ Invoice linkage is positional in TFP v1.4.4: shipment `CustomsValuation` nodes a
 | `GoodsItem/CustomsValuation/ChargeDeduction[104]` | C | `LineItem.otherCostApportioned` | BSD | `MAPPED` |
 | `GoodsItem/GovernmentProcedure/CurrentCode` | C | `LineItem.cpcCode` | Standard CPC `400` becomes `40000` on the wire | `CONFIRMED_BY_CUSTOMS` |
 | `GoodsItem/Origin/CountryCode` | C | `LineItem.countryOfOrigin` | ISO alpha-2 | `MAPPED` |
-| `GoodsItem/Packaging/QuantityQuantity` | C | `LineItem.packageCount` | `unitCode=EA` | `CONFIRMED_BY_CUSTOMS` |
+| `GoodsItem/Packaging/QuantityQuantity` | C | `LineItem.packageCount` | Required for every goods item; `unitCode=EA` | `CONFIRMED_BY_CUSTOMS` |
 | `Declaration/GovernmentProcedure/CurrentCode` | C | First line CPC | First three characters | `DERIVED` |
 
 ## Generation gates and unresolved government dependencies
 
-Artifact generation blocks on a current calculation, declaration reference/function/regime/office, positive package count, importer, invoice, goods item, full HS code, valid CPC, item description, and invoice linkage. It records the schema version, mapping version, generation time, validation report, and exact XML in a `DRAFT` `CustomsEntry` without submitting it. `VALIDATED` is deliberately reserved for a future pass against the official common-types schema, not the permissive structural-validation stub.
+Artifact generation blocks on a current calculation, declaration reference/function/regime/office, positive shipment and per-item package counts, importer, invoice, goods item, full HS code, valid CPC, item description, and invoice linkage. It records the schema version, mapping version, generation time, validation report, and exact XML in a `DRAFT` `CustomsEntry` without submitting it. `VALIDATED` is deliberately reserved for a future pass against the official common-types schema, not the permissive structural-validation stub.
 
 The following remain provisional until Customs releases the associated worksheets or confirms them during UAT:
 

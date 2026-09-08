@@ -170,7 +170,7 @@ existing data with only formatting.
 | `CustomsValuation` (item level) | C | `otherCostApportioned` (104), `cifValue` (`ExitToEntryChargeAmount`) | `FreightChargeAmount` omitted per Customs feedback; shipment freight remains charge deduction 64 |
 | `GovernmentProcedure/CurrentCode` (item CPC) | C | `cpcCode` (`400`) | Customs-confirmed standard import wire value `40000`; concession `4098` remains unconfirmed |
 | `Origin/CountryCode` | C | `countryOfOrigin` | OK |
-| `Packaging` (count + supplementary quantities) | C | per-item package count | Customs-confirmed `unitCode=EA` |
+| `Packaging` (count + supplementary quantities) | C | per-item package count | Required for every goods item; Customs-confirmed `unitCode=EA` |
 | `PreviousDocument` | C | — | N/A (child declarations) |
 
 ## 5. Withheld reference data (needed before business validation, not before the file gate)
