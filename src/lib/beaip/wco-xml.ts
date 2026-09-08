@@ -219,7 +219,7 @@ export function buildWcoDeclarationXml(
     sum(declaration.invoices.map((invoice) => invoice.freightApportioned)),
   )
 
-  const cpcGroup = d.lines.length > 0 ? STANDARD_IMPORT_CPC : null
+  const cpcGroup = d.lines.length > 0 ? TFP_STANDARD_IMPORT_WIRE_CPC : null
 
   const doc = {
     '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' },
