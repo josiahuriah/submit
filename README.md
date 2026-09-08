@@ -158,7 +158,10 @@ advance shipment status or contact an endpoint.
 The formal mapping and unresolved code-master dependencies are recorded in
 `docs/tfp/field-mapping-matrix.md`. Separate broker-authorized QA submission
 uses SOAP 1.1/WS-Security, preserves every attempt and raw response, and warns
-before repeats. No automatic retry occurs; UAT acceptance must be verified.
+before repeats. The current QA XML profile includes Customs-reviewed location,
+party-ID, CPC, UOM and omission rules that produced a provisional UAT draft;
+required document attachments remain unimplemented. No automatic retry occurs;
+UAT acceptance must be verified.
 
 ### RBAC
 

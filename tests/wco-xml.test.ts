@@ -31,7 +31,7 @@ function fixture(): BeaipDeclaration {
     brokerReference: '201800OREF02331212',
     customsOfficeCode: 'NASACP',
     submitterId: 'CRN-12345',
-    declarant: { name: 'Atlas Brokers', id: 'TIN-ORG-1', address: null },
+    declarant: { name: 'Atlas Brokers', id: '20113855131249792', address: null },
     importer: {
       name: 'Island Imports Ltd',
       id: 'TIN-CLIENT-1',
@@ -48,14 +48,14 @@ function fixture(): BeaipDeclaration {
       arrivalDate: '2026-07-20T12:00:00.000Z',
       containerNumber: 'TCLU7305421',
       manifestNumber: 'MAN-2026-0142',
-      unloadingPortCode: 'BSNAS',
+      unloadingPortCode: 'USPBI',
       entryPortCode: 'BSNAS',
-      exitPortCode: 'USMIA',
+      exitPortCode: 'USPBI',
       exportCountryCode: 'US',
       containerSealNumber: 'SEAL-100',
       containerFullnessCode: 'FULL',
       transportNationalityCode: 'BS',
-      goodsLocationCode: 'NASPORT',
+      goodsLocationCode: 'NASACP',
       warehouseCode: 'WH-01',
     },
     invoices: [
@@ -130,7 +130,7 @@ function fixture(): BeaipDeclaration {
       {
         lineNumber: 1,
         invoiceNumber: 'INV-1002',
-        hsCode: '61091000',
+        hsCode: '94035090',
         cpcCode: '400',
         description: 'Cotton t-shirts',
         commercialDescription: null,
@@ -277,9 +277,6 @@ describe('buildWcoDeclarationXml', () => {
     // Item → invoice link: AdditionalDocument type 380 with the invoice number.
     expect(xml).toContain('<ID>INV-1002</ID>')
     expect(xml).toContain('<TypeCode>380</TypeCode>')
-    // BL 705 and manifest 785 transport contract documents.
-    expect(xml).toContain('<TypeCode>705</TypeCode>')
-    expect(xml).toContain('<TypeCode>785</TypeCode>')
   })
 
   it('never emits insurance fields or charge code 67', () => {
@@ -291,12 +288,12 @@ describe('buildWcoDeclarationXml', () => {
   it('emits undotted Classification IDs', () => {
     const xml = build()
     expect(xml).toContain('<ID>22083000</ID>')
-    expect(xml).toContain('<ID>61091000</ID>')
+    expect(xml).toContain('<ID>94035090</ID>')
     expect(xml).not.toContain('<ID>2208.30.00</ID>')
-    expect(xml).not.toContain('<ID>6109.10.00</ID>')
+    expect(xml).not.toContain('<ID>9403.50.90</ID>')
   })
 
-  it('places all landed-cost freight on the first invoice CustomsValuation', () => {
+  it('represents freight only as charge deduction 64', () => {
     const shipmentSection = build().match(
       /<GoodsShipment>([\s\S]*?)<Destination>/,
     )?.[1]
@@ -306,21 +303,42 @@ describe('buildWcoDeclarationXml', () => {
     )].map((match) => match[1]!)
 
     expect(valuations).toHaveLength(2)
-    expect(valuations[0]).toContain(
-      '<FreightChargeAmount currencyID="BSD">250.00</FreightChargeAmount>',
-    )
+    expect(build()).not.toContain('<FreightChargeAmount')
     expect(valuations[0]).toContain('<ChargesTypeCode>64</ChargesTypeCode>')
     expect(valuations[0]).toContain('<OtherChargeDeductionAmount>250.00</OtherChargeDeductionAmount>')
-    expect(valuations[1]).not.toContain('FreightChargeAmount')
     expect(valuations[1]).not.toContain('<ChargesTypeCode>64</ChargesTypeCode>')
   })
 
-  it('maps placeholder code tables (consignment transport mode, package UOM)', () => {
+  it('uses the Customs-confirmed each UOM while preserving specific assessment units', () => {
     const xml = build()
-    expect(xml).toContain('<TotalPackageQuantity unitCode="CT">40</TotalPackageQuantity>')
+    expect(xml).toContain('<TotalPackageQuantity unitCode="EA">40</TotalPackageQuantity>')
+    expect(xml).toContain('<TariffQuantity unitCode="EA">500</TariffQuantity>')
+    expect(xml).toContain('<TariffQuantity unitCode="IMP_GAL">26.400000</TariffQuantity>')
+    expect(xml).toContain('<QuantityQuantity unitCode="EA">10</QuantityQuantity>')
     const arrival = childOrder(xml, 'ArrivalTransportMeans')
     expect(arrival).toEqual(['Name', 'TypeCode', 'RegistrationNationalityCode'])
     expect(xml).toContain('<TypeCode>1</TypeCode>') // SEA → 1
+  })
+
+  it('applies the Customs-confirmed QA locations, identities, CPC and omissions', () => {
+    const xml = build()
+    expect(xml).toMatch(
+      /<Declarant>\s*<Name>Atlas Brokers<\/Name>\s*<ID>20113855131249792<\/ID>\s*<\/Declarant>/,
+    )
+    expect(xml).toMatch(/<GoodsLocation>\s*<ID>NASACP<\/ID>\s*<\/GoodsLocation>/)
+    expect(xml).toMatch(/<UnloadingLocation>\s*<ID>USPBI<\/ID>/)
+    expect(xml).toMatch(/<ExitOffice>\s*<ID>USPBI<\/ID>\s*<\/ExitOffice>/)
+    expect(xml).toMatch(
+      /<Exporter>\s*<Name>Miami Wholesale Co<\/Name>\s*<ID>20113855131249792<\/ID>/,
+    )
+    expect(xml).not.toContain('<TransportContractDocument>')
+    expect(xml.match(/<CurrentCode>40000<\/CurrentCode>/g)).toHaveLength(2)
+    expect(xml).toContain('<GovernmentProcedure>\n        <CurrentCode>400</CurrentCode>')
+
+    const invoices = [...xml.matchAll(/<Invoice>([\s\S]*?)<\/Invoice>/g)]
+      .map((match) => match[1]!)
+    expect(invoices).toHaveLength(2)
+    expect(invoices.every((invoice) => !invoice.includes('<TypeCode>'))).toBe(true)
   })
 
   it.skipIf(!hasXmllint)('validates against TFB_WCO_DEC_v1.4.4.xsd + common-types stub', () => {

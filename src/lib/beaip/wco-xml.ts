@@ -17,8 +17,8 @@
  *   - Shipment-level CustomsValuation elements must appear in the same order
  *     as the Invoice elements — that ordering IS the invoice linkage.
  *
- * PLACEHOLDER code maps (transport mode, package UOM) are best-guess UN/EDIFACT
- * values pending the withheld TFP code-master worksheets; each is labeled.
+ * The transport-mode map remains provisional. Customs review confirmed the
+ * QA party/location identifiers and EA quantity code used below.
  */
 import { XMLBuilder } from 'fast-xml-parser'
 import type {
@@ -29,6 +29,11 @@ import type {
 } from './types'
 import { d, moneyString, sum } from '@/lib/calculations/money'
 import { normalizeHsCode, STANDARD_IMPORT_CPC } from '@/lib/customs/normalization'
+import {
+  TFP_EACH_UNIT_CODE,
+  TFP_QA_PARTY_ID,
+  TFP_STANDARD_IMPORT_WIRE_CPC,
+} from './constants'
 
 export const WCO_DECLARATION_NS = 'http://globaletrade.services/Declaration'
 
@@ -40,19 +45,6 @@ const TRANSPORT_MODE_CODES: Record<string, string> = {
   SEA: '1',
   AIR: '4',
   LAND: '3',
-}
-
-// PLACEHOLDER (UN/EDIFACT Rec 21) until the Package UOM worksheet arrives.
-const PACKAGE_UOM_CODES: Record<string, string> = {
-  CONTAINER: 'CN',
-  PALLET: 'PX',
-  CARTON: 'CT',
-  CRATE: 'CR',
-  DRUM: 'DR',
-  BUNDLE: 'BE',
-  LOOSE: 'NE',
-  VEHICLE: 'VN',
-  OTHER: 'PK',
 }
 
 const builder = new XMLBuilder({
@@ -127,12 +119,19 @@ function isNonZero(money: string): boolean {
   return !d(money).isZero()
 }
 
+/** Click2Clear uses EA rather than the application's commercial PCS label. */
+function wireQuantityUnit(unit: string | null): string {
+  return unit === 'PCS' || !unit ? TFP_EACH_UNIT_CODE : unit
+}
+
+/** The application's standard CPC 400 is represented as 40000 on the wire. */
+function wireProcedureCode(cpcCode: string): string {
+  return cpcCode === STANDARD_IMPORT_CPC ? TFP_STANDARD_IMPORT_WIRE_CPC : cpcCode
+}
+
 /** Shipment-level CustomsValuation for one invoice (order-linked to Invoice). */
 function invoiceValuation(inv: BeaipInvoice, freightAmount: string) {
   return {
-    ...(isNonZero(freightAmount)
-      ? { FreightChargeAmount: amt(freightAmount, 'BSD') }
-      : {}),
     ChargeDeduction: [
       chargeDeduction('77', inv.subTotal, 'BSD'),
       ...(isNonZero(freightAmount)
@@ -171,21 +170,18 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
           : {}),
         TariffQuantity: {
           '#text': tariffQuantity.value,
-          '@_unitCode': tariffQuantity.unit ?? line.unit,
+          '@_unitCode': wireQuantityUnit(tariffQuantity.unit ?? line.unit),
         },
       },
       ...(containerNumber ? { TransportEquipment: { ID: containerNumber } } : {}),
     },
     CustomsValuation: {
       ExitToEntryChargeAmount: amt(line.cifValue, 'BSD'), // item customs value
-      ...(isNonZero(line.freightApportioned)
-        ? { FreightChargeAmount: amt(line.freightApportioned, 'BSD') }
-        : {}),
       ...(isNonZero(line.otherApportioned)
         ? { ChargeDeduction: chargeDeduction('104', line.otherApportioned, 'BSD') }
         : {}),
     },
-    GovernmentProcedure: { CurrentCode: line.cpcCode },
+    GovernmentProcedure: { CurrentCode: wireProcedureCode(line.cpcCode) },
     ...(line.countryOfOrigin ? { Origin: { CountryCode: line.countryOfOrigin } } : {}),
     ...(line.packageCount
       ? {
@@ -193,7 +189,7 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
             SequenceNumeric: sequence,
             QuantityQuantity: {
               '#text': line.packageCount,
-              '@_unitCode': line.packageTypeCode ?? 'PK',
+              '@_unitCode': TFP_EACH_UNIT_CODE,
             },
           },
         }
@@ -224,11 +220,6 @@ export function buildWcoDeclarationXml(
     sum(declaration.invoices.map((invoice) => invoice.freightApportioned)),
   )
 
-  const transportContractDocuments = [
-    ...(d.blNumber ? [{ ID: d.blNumber, TypeCode: '705' }] : []), // 705 = bill of lading
-    ...(t.manifestNumber ? [{ ID: t.manifestNumber, TypeCode: '785' }] : []), // 785 = manifest
-  ]
-
   const cpcGroup = d.lines.length > 0 ? STANDARD_IMPORT_CPC : null
 
   const doc = {
@@ -249,7 +240,7 @@ export function buildWcoDeclarationXml(
         : {}),
       TotalPackageQuantity: {
         '#text': d.packageCount,
-        '@_unitCode': PACKAGE_UOM_CODES[d.packageUom] ?? 'PK',
+        '@_unitCode': TFP_EACH_UNIT_CODE,
       },
       Submitter: { ID: d.submitterId },
       DeclarationOffice: { ID: d.customsOfficeCode },
@@ -273,9 +264,6 @@ export function buildWcoDeclarationXml(
               }
             : {}),
           ...(t.goodsLocationCode ? { GoodsLocation: { ID: t.goodsLocationCode } } : {}),
-          ...(transportContractDocuments.length > 0
-            ? { TransportContractDocument: transportContractDocuments }
-            : {}),
           ...(t.unloadingPortCode
             ? {
                 UnloadingLocation: {
@@ -296,7 +284,9 @@ export function buildWcoDeclarationXml(
         ...(t.entryPortCode ? { EntryOffice: { ID: t.entryPortCode } } : {}),
         ...(t.exitPortCode ? { ExitOffice: { ID: t.exitPortCode } } : {}),
         ...(t.exportCountryCode ? { ExportCountry: { ID: t.exportCountryCode } } : {}),
-        ...(d.invoices[0] ? { Exporter: party(d.invoices[0].supplier) } : {}),
+        ...(d.invoices[0]
+          ? { Exporter: party({ ...d.invoices[0].supplier, id: TFP_QA_PARTY_ID }) }
+          : {}),
         GovernmentAgencyGoodsItem: d.lines.map((line, i) =>
           goodsItem(line, i + 1, t.containerNumber),
         ),
@@ -304,7 +294,6 @@ export function buildWcoDeclarationXml(
         Invoice: d.invoices.map((inv) => ({
           ID: inv.invoiceNumber,
           ...(inv.invoiceDate ? { IssueDateTime: dt(inv.invoiceDate) } : {}),
-          ...(inv.incotermCode ? { TypeCode: inv.incotermCode } : {}),
         })),
         Supplier: d.invoices.map((inv) => party(inv.supplier)),
         TradeTerms: d.invoices

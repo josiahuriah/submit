@@ -9,7 +9,7 @@ description: >-
 
 # Single Window integration campaign
 
-Updated 2026-08-08. Work the gates in order. Never infer endpoint transport,
+Updated 2026-09-08. Work the gates in order. Never infer endpoint transport,
 authentication, envelope, code-list values, acknowledgement semantics, status
 mapping, or retry behavior from the XSD alone.
 
@@ -25,10 +25,11 @@ Submit currently supports:
 - versioned, auditable XML artifacts with authenticated download;
 - predicted duty/tax calculation for broker review and later reconciliation.
 
-Submit intentionally does **not** have a mock or production endpoint client,
-submission or remote-status routes, endpoint credentials, SOAP assumptions, or a switch that
-can advance a shipment to SUBMITTED. An earlier hypothetical SOAP/mock design
-was removed because the government has not released step-4 transport docs.
+Submit also has an owner-directed, QA-only SOAP 1.1/WS-Security submission
+adapter. It is disabled by default, persists every attempt before transmission,
+never retries automatically, and preserves raw responses. This does not
+authorize production filing; response semantics and required attachments remain
+incomplete.
 
 ## Gate ledger
 
@@ -36,9 +37,9 @@ was removed because the government has not released step-4 transport docs.
 |---|---|---|
 | 0 — supplied artifacts understood | DEC spec, declaration XSD, sample instance analyzed | complete |
 | 1 — stakeholder XML | mapper, preflight, formal matrix, downloadable exact XML, XSD contract test | complete 2026-08-08 |
-| 2 — Customs file review | integration team validates a generated stakeholder file and returns findings/common types/code masters | pending external |
-| 3 — endpoint contract | written endpoint, auth, envelope, acknowledgements, statuses, idempotency and timeout semantics | pending external |
-| 4 — sandbox/UAT adapter | owner-approved adapter, attempt-first audit, response parser, test cases, reconciliation | pending |
+| 2 — Customs file review | integration team validates a generated stakeholder file and returns findings/common types/code masters | in progress 2026-09-08; corrected body created UAT draft, official common types/code masters still pending |
+| 3 — endpoint contract | written endpoint, auth, envelope, acknowledgements, statuses, idempotency and timeout semantics | partial; QA SOAP transport is implemented, response vocabulary remains incomplete |
+| 4 — sandbox/UAT adapter | owner-approved adapter, attempt-first audit, response parser, test cases, reconciliation | active; first provisional draft observed, attachments still block completion |
 | 5 — production | UAT certification, production test and explicit owner go-live approval | pending |
 
 ## Gate 1: review XML
@@ -71,6 +72,15 @@ from organization TIN and individual broker licence. Also label every warning
 for provisional regime, office, transport, package, CPC and HS wire codes.
 
 ## Gate 2: Customs file review
+
+Written Customs feedback received 2026-09-08 confirms the current QA profile:
+`USPBI` for unloading and exit office; goods location equal to declaration
+office; no AWB/BL or manifest transport document; declarant/exporter ID
+`20113855131249792`; item CPC `40000`; `EA` for commercial pieces and package
+quantities; no `FreightChargeAmount`; and no `Invoice/TypeCode`. Customs created
+provisional draft `PROV20260000020299` after applying those corrections. The
+response still requires Invoice and Tax Compliance Certificate attachments, so
+this is not acceptance or Gate-2 completion.
 
 Obtain in writing:
 
@@ -133,7 +143,9 @@ STOP unless all are true:
 
 ## Provenance
 
-Derived from the supplied TFP GOV CBR DEC Message Specification v1.4.4,
+Re-verified 2026-09-08 against the current QA adapter, XML mapper/builder, the
+written Customs correction list, and provisional draft response. Also derived
+from the supplied TFP GOV CBR DEC Message Specification v1.4.4,
 TFB_WCO_DEC_v1.4.4.xsd, the government's stated ten-step onboarding sequence,
 the formal mapping matrix, and the implemented artifact/calculation services.
 Re-verify this skill whenever Customs releases a new artifact or endpoint rule.

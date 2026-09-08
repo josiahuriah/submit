@@ -20,10 +20,10 @@ function declaration(): BeaipDeclaration {
     brokerReference: '201800OREF02331212',
     customsOfficeCode: 'NASACP',
     submitterId: 'CR-12345',
-    declarant: { name: 'Atlas Brokers', id: null, address: null },
+    declarant: { name: 'Atlas Brokers', id: '20113855131249792', address: null },
     importer: { name: 'Importer Ltd', id: null, address: null },
     consignee: { name: 'Importer Ltd', id: null, address: null },
-    blNumber: 'BL-1',
+    blNumber: null,
     packageCount: 1,
     packageUom: 'CARTON',
     grossWeightLb: '10',
@@ -35,12 +35,12 @@ function declaration(): BeaipDeclaration {
       containerSealNumber: null,
       containerFullnessCode: null,
       manifestNumber: null,
-      unloadingPortCode: 'BSNAS',
+      unloadingPortCode: 'USPBI',
       entryPortCode: 'BSNAS',
-      exitPortCode: 'USMIA',
+      exitPortCode: 'USPBI',
       exportCountryCode: 'US',
       transportNationalityCode: null,
-      goodsLocationCode: null,
+      goodsLocationCode: 'NASACP',
       warehouseCode: null,
     },
     invoices: [{
@@ -55,7 +55,7 @@ function declaration(): BeaipDeclaration {
       lineNumber: 1, invoiceNumber: 'INV-1', hsCode: '61091000', cpcCode: '400',
       description: 'Cotton t-shirts', commercialDescription: null, countryOfOrigin: 'US',
       quantity: '1', unit: 'PCS', weightLb: '10', netWeightLb: '9', packageCount: 1,
-      packageTypeCode: 'CT', totalValue: '100.00', currency: 'BSD',
+      packageTypeCode: 'EA', totalValue: '100.00', currency: 'BSD',
       freightApportioned: '10.00', insuranceApportioned: '0.00', otherApportioned: '0.00',
       cifValue: '100.00', dutyAmount: '0.00', vatAmount: '11.00', levyAmount: '0.00',
       exciseAmount: '0.00', dutyAssessmentQuantity: null, dutyAssessmentUnit: null,
@@ -127,6 +127,27 @@ describe('TFP field mapping preflight', () => {
     const result = preflightTfpDeclaration(declaration())
     expect(result.ready).toBe(true)
     expect(result.issues.every((issue) => issue.severity === 'WARNING')).toBe(true)
+  })
+
+  it('blocks values that conflict with the Customs-confirmed QA profile', () => {
+    const input = declaration()
+    input.declarant.id = null
+    input.blNumber = 'BL-1'
+    input.transport.goodsLocationCode = 'OTHER'
+    input.transport.unloadingPortCode = 'BSNAS'
+    input.transport.exitPortCode = 'USMIA'
+    input.lines[0]!.packageTypeCode = 'CT'
+
+    const result = preflightTfpDeclaration(input)
+    expect(result.ready).toBe(false)
+    expect(result.issues).toEqual(expect.arrayContaining([
+      expect.objectContaining({ field: 'Declaration/Declarant/ID' }),
+      expect.objectContaining({ field: 'Declaration/GoodsShipment/Consignment/TransportContractDocument' }),
+      expect.objectContaining({ field: 'Declaration/GoodsShipment/Consignment/GoodsLocation/ID' }),
+      expect.objectContaining({ field: 'Declaration/GoodsShipment/Consignment/UnloadingLocation/ID' }),
+      expect.objectContaining({ field: 'Declaration/GoodsShipment/ExitOffice/ID' }),
+      expect.objectContaining({ field: 'GoodsItem[1]/Packaging/QuantityQuantity' }),
+    ]))
   })
 
   it('blocks a missing company registration number instead of substituting TIN or licence', () => {

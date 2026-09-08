@@ -110,3 +110,23 @@ retry. If the same security fault returns, stop and have Customs confirm the QA
 username, password, account activation, IP/VPN requirements, and expected
 UsernameToken profile; do not keep resubmitting. A different operation/action
 fault would instead be evidence to resolve the still-unspecified `SOAPAction`.
+
+## First Customs-reviewed declaration draft
+
+Customs corrected the first declaration body and confirmed that it appeared as
+a draft in the test environment under provisional number
+`PROV20260000020299`. Submit's current QA XML profile incorporates the written
+corrections:
+
+- `USPBI` is used for both unloading location (place of discharge) and exit office;
+- goods location equals declaration office `NASACP`;
+- AWB/BL and manifest transport-contract documents are omitted;
+- declarant and exporter IDs are `20113855131249792`;
+- standard item CPC `400` is serialized as `40000`;
+- commercial `PCS` and package quantities use `EA` on the wire;
+- `FreightChargeAmount` and `Invoice/TypeCode` are omitted.
+
+The response still reported two required documents: Invoice and Tax Compliance
+Certificate. Submit does not yet serialize declaration-level attachments, so
+the provisional draft is evidence for these body corrections, not a completed
+or accepted filing.

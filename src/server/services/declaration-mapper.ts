@@ -20,6 +20,9 @@ import {
   resolveBeaipBrokerCode,
   TFP_DECLARANT_NAME,
   TFP_DECLARATION_OFFICE_CODE,
+  TFP_EACH_UNIT_CODE,
+  TFP_QA_PARTY_ID,
+  TFP_QA_PLACE_OF_DISCHARGE_CODE,
 } from '@/lib/beaip/constants'
 import {
   buildFunctionalReferenceId,
@@ -150,7 +153,6 @@ export function toBeaipDeclaration(
   declarationType: DeclarationType,
   configuredBrokerCode = '',
 ): BeaipDeclaration {
-  const org = shipment.organization
   const declarationDate = (shipment.submittedAt ?? shipment.declarationDate).toISOString()
   const voyage = shipment.manifest?.voyage ?? null
   const journey = voyage?.journey ?? null
@@ -159,7 +161,7 @@ export function toBeaipDeclaration(
 
   const declarant: BeaipParty = {
     name: TFP_DECLARANT_NAME,
-    id: org.tinNumber,
+    id: TFP_QA_PARTY_ID,
     address: null,
   }
   const importer: BeaipParty = {
@@ -225,7 +227,7 @@ export function toBeaipDeclaration(
       weightLb: l.weightLb === null ? null : String(l.weightLb),
       netWeightLb: l.netWeightLb === null ? null : String(l.netWeightLb),
       packageCount: l.packageCount,
-      packageTypeCode: l.packageTypeCode,
+      packageTypeCode: TFP_EACH_UNIT_CODE,
       totalValue: moneyString(String(l.totalValue)),
       currency: inv.currency,
       freightApportioned: moneyString(String(l.freightApportioned)),
@@ -263,7 +265,8 @@ export function toBeaipDeclaration(
     declarant,
     importer,
     consignee: importer,
-    blNumber: shipment.blNumber,
+    // Customs QA requested the declaration be submitted without manifest linkage.
+    blNumber: null,
     packageCount: shipment.packageCount,
     packageUom: shipment.packageType,
     grossWeightLb: shipment.grossWeightLb === null ? null : String(shipment.grossWeightLb),
@@ -274,13 +277,13 @@ export function toBeaipDeclaration(
       containerNumber: shipment.containerNumber,
       containerSealNumber: shipment.containerSealNumber,
       containerFullnessCode: shipment.containerFullnessCode,
-      manifestNumber: shipment.manifest?.manifestNumber ?? null,
-      unloadingPortCode: journey?.destinationPort.unLocode ?? null,
+      manifestNumber: null,
+      unloadingPortCode: TFP_QA_PLACE_OF_DISCHARGE_CODE,
       entryPortCode: journey?.destinationPort.unLocode ?? null,
-      exitPortCode: journey?.originPort.unLocode ?? null,
+      exitPortCode: TFP_QA_PLACE_OF_DISCHARGE_CODE,
       exportCountryCode: journey?.originPort.country ?? firstSupplierCountry,
       transportNationalityCode: shipment.transportNationalityCode,
-      goodsLocationCode: shipment.goodsLocationCode,
+      goodsLocationCode: TFP_DECLARATION_OFFICE_CODE,
       warehouseCode: shipment.warehouseCode,
     },
     invoices,

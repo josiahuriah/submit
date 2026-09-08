@@ -7,15 +7,16 @@
     <FunctionalReferenceID>2026DEC0000000001</FunctionalReferenceID>
     <TypeCode>4</TypeCode>
     <TotalGrossMassMeasure unitCode="LB">5401.325</TotalGrossMassMeasure>
-    <TotalPackageQuantity unitCode="PX">6</TotalPackageQuantity>
+    <TotalPackageQuantity unitCode="EA">6</TotalPackageQuantity>
     <Submitter>
-        <ID>131249792</ID>
+        <ID>20113855131249792</ID>
     </Submitter>
     <DeclarationOffice>
         <ID>NASACP</ID>
     </DeclarationOffice>
     <Declarant>
         <Name>Atlas Brokers</Name>
+        <ID>20113855131249792</ID>
     </Declarant>
     <GoodsShipment>
         <Consignee>
@@ -29,18 +30,10 @@
                 <RegistrationNationalityCode>BS</RegistrationNationalityCode>
             </ArrivalTransportMeans>
             <GoodsLocation>
-                <ID>NASPORT</ID>
+                <ID>NASACP</ID>
             </GoodsLocation>
-            <TransportContractDocument>
-                <ID>TROP26070001</ID>
-                <TypeCode>705</TypeCode>
-            </TransportContractDocument>
-            <TransportContractDocument>
-                <ID>MAN-2026-0142</ID>
-                <TypeCode>785</TypeCode>
-            </TransportContractDocument>
             <UnloadingLocation>
-                <ID>BSNAS</ID>
+                <ID>USPBI</ID>
                 <ArrivalDateTime>
                     <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-03 05:00:00</DateTimeString>
                 </ArrivalDateTime>
@@ -50,7 +43,6 @@
             </UnloadingLocation>
         </Consignment>
         <CustomsValuation>
-            <FreightChargeAmount currencyID="BSD">2170.00</FreightChargeAmount>
             <ChargeDeduction>
                 <ChargesTypeCode>77</ChargesTypeCode>
                 <OtherChargeDeductionAmount>18965.00</OtherChargeDeductionAmount>
@@ -80,13 +72,14 @@
             <ID>BSNAS</ID>
         </EntryOffice>
         <ExitOffice>
-            <ID>USPEF</ID>
+            <ID>USPBI</ID>
         </ExitOffice>
         <ExportCountry>
             <ID>US</ID>
         </ExportCountry>
         <Exporter>
             <Name>Caribbean Spirits Export</Name>
+            <ID>20113855131249792</ID>
             <Address>
                 <CountryCode>US</CountryCode>
             </Address>
@@ -116,7 +109,6 @@
             </Commodity>
             <CustomsValuation>
                 <ExitToEntryChargeAmount currencyID="BSD">7742.26</ExitToEntryChargeAmount>
-                <FreightChargeAmount currencyID="BSD">2170.00</FreightChargeAmount>
                 <ChargeDeduction>
                     <ChargesTypeCode>104</ChargesTypeCode>
                     <OtherChargeDeductionAmount>52.76</OtherChargeDeductionAmount>
@@ -126,14 +118,14 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>400</CurrentCode>
+                <CurrentCode>40000</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>
             </Origin>
             <Packaging>
                 <SequenceNumeric>1</SequenceNumeric>
-                <QuantityQuantity unitCode="CT">50</QuantityQuantity>
+                <QuantityQuantity unitCode="EA">50</QuantityQuantity>
             </Packaging>
         </GovernmentAgencyGoodsItem>
         <GovernmentAgencyGoodsItem>
@@ -153,7 +145,7 @@
                 <GoodsMeasure>
                     <GrossMassMeasure unitCode="LB">992.080</GrossMassMeasure>
                     <NetNetWeightMeasure unitCode="LB">947.988</NetNetWeightMeasure>
-                    <TariffQuantity unitCode="PCS">1500</TariffQuantity>
+                    <TariffQuantity unitCode="EA">1500</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
                     <ID>TCLU7305421</ID>
@@ -170,14 +162,14 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>400</CurrentCode>
+                <CurrentCode>40000</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>
             </Origin>
             <Packaging>
                 <SequenceNumeric>2</SequenceNumeric>
-                <QuantityQuantity unitCode="CT">30</QuantityQuantity>
+                <QuantityQuantity unitCode="EA">30</QuantityQuantity>
             </Packaging>
         </GovernmentAgencyGoodsItem>
         <GovernmentAgencyGoodsItem>
@@ -197,7 +189,7 @@
                 <GoodsMeasure>
                     <GrossMassMeasure unitCode="LB">2689.640</GrossMassMeasure>
                     <NetNetWeightMeasure unitCode="LB">2425.085</NetNetWeightMeasure>
-                    <TariffQuantity unitCode="PCS">8</TariffQuantity>
+                    <TariffQuantity unitCode="EA">8</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
                     <ID>TCLU7305421</ID>
@@ -214,14 +206,14 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>400</CurrentCode>
+                <CurrentCode>40000</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>
             </Origin>
             <Packaging>
                 <SequenceNumeric>3</SequenceNumeric>
-                <QuantityQuantity unitCode="CT">8</QuantityQuantity>
+                <QuantityQuantity unitCode="EA">8</QuantityQuantity>
             </Packaging>
         </GovernmentAgencyGoodsItem>
         <Importer>
@@ -233,7 +225,6 @@
             <IssueDateTime>
                 <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-06-27 20:00:00</DateTimeString>
             </IssueDateTime>
-            <TypeCode>FOB</TypeCode>
         </Invoice>
         <Supplier>
             <Name>Caribbean Spirits Export</Name>

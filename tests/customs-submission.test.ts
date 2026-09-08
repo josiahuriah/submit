@@ -5,7 +5,12 @@ import type { TenantClient } from '@/lib/db/tenant-client'
 
 const mocks = vi.hoisted(() => ({ post: vi.fn(), audit: vi.fn() }))
 vi.mock('server-only', () => ({}))
-vi.mock('@/lib/env', () => ({ env: () => ({ BEAIP_TRANSPORT_MODE: 'live', BEAIP_USERNAME: 'test-user', BEAIP_PASSWORD: 'test-only' }) }))
+vi.mock('@/lib/env', () => ({ env: () => ({
+  BEAIP_TRANSPORT_MODE: 'live',
+  BEAIP_USERNAME: 'test-user',
+  BEAIP_PASSWORD: 'test-only',
+  BEAIP_BROKER_CODE: '20113855131249792',
+}) }))
 vi.mock('@/lib/audit', () => ({ writeAudit: mocks.audit }))
 vi.mock('@/lib/beaip/transport/http-gateway', () => ({
   postDeclarationSoap: mocks.post,

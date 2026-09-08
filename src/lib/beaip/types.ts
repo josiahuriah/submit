@@ -47,7 +47,7 @@ export interface BeaipTransport {
   containerSealNumber: string | null
   containerFullnessCode: string | null
   manifestNumber: string | null
-  /** UN/LOCODEs from the voyage's journey. */
+  /** Transport/location codes after the current Customs QA profile is applied. */
   unloadingPortCode: string | null
   entryPortCode: string | null
   exitPortCode: string | null
@@ -120,7 +120,7 @@ export interface BeaipDeclaration {
   consignee: BeaipParty
   blNumber: string | null
   packageCount: number
-  /** Our PackageType enum value; wire UOM codes map in wco-xml. */
+  /** Stored PackageType value; the current Customs QA wire profile emits EA. */
   packageUom: string
   grossWeightLb: string | null
   transport: BeaipTransport
