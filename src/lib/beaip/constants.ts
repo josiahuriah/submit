@@ -12,7 +12,7 @@ export const TFP_DECLARANT_NAME = 'Atlas Brokers'
 export const TFP_QA_PARTY_ID = '20113855131249792'
 export const TFP_QA_PLACE_OF_DISCHARGE_CODE = 'USPBI'
 export const TFP_EACH_UNIT_CODE = 'EA'
-export const TFP_STANDARD_IMPORT_WIRE_CPC = '40000'
+export const TFP_STANDARD_IMPORT_WIRE_CPC = '400000'
 
 /** This workflow creates original declarations only. */
 export const ORIGINAL_DECLARATION_FUNCTION_CODE = '9' as const

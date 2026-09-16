@@ -118,7 +118,7 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>40000</CurrentCode>
+                <CurrentCode>400000</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>
@@ -162,7 +162,7 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>40000</CurrentCode>
+                <CurrentCode>400000</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>
@@ -206,7 +206,7 @@
                 </ChargeDeduction>
             </CustomsValuation>
             <GovernmentProcedure>
-                <CurrentCode>40000</CurrentCode>
+                <CurrentCode>400000</CurrentCode>
             </GovernmentProcedure>
             <Origin>
                 <CountryCode>US</CountryCode>
@@ -240,6 +240,6 @@
         </UCR>
     </GoodsShipment>
     <GovernmentProcedure>
-        <CurrentCode>40000</CurrentCode>
+        <CurrentCode>400000</CurrentCode>
     </GovernmentProcedure>
 </Declaration>

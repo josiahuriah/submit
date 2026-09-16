@@ -129,7 +129,7 @@ existing data with only formatting.
 | `AdditionalDocument` (TIER/permits/uploads) | C | `ShipmentDocument` (has fileName/mime/size, bytes in S3) | GAP: response requires Invoice and Tax Compliance Certificate; no declaration attachment serialization yet |
 | `AdditionalInformation` (dynamic fields) | C | — | GAP: needs `TTFB_SYS_DEC_FIELD_MASTER` worksheet |
 | `PreviousDocument` | C | — | N/A (amendments only) |
-| `GovernmentProcedure/CurrentCode` (final declaration element) | C | import procedure | Customs-confirmed QA value `40000` |
+| `GovernmentProcedure/CurrentCode` (final declaration element) | C | import procedure | Customs-confirmed QA value `400000` |
 | `DutyTaxFee` | — | omit (blank for incoming) | OK — do not send our totals |
 
 ### GoodsShipment
@@ -168,7 +168,7 @@ existing data with only formatting.
 | `Commodity/ProductCharacteristics` (chassis, engine, make…) | C | — | GAP: vehicles only; no vehicle fields modeled |
 | `Commodity/TransportEquipment` | C | `Shipment.containerNumber` | OK |
 | `CustomsValuation` (item level) | C | `otherCostApportioned` (104), `cifValue` (`ExitToEntryChargeAmount`) | `FreightChargeAmount` omitted per Customs feedback; shipment freight remains charge deduction 64 |
-| `GovernmentProcedure/CurrentCode` (item CPC) | C | `cpcCode` (`400`) | Customs-confirmed standard import wire value `40000`; concession `4098` remains unconfirmed |
+| `GovernmentProcedure/CurrentCode` (item CPC) | C | `cpcCode` (`400`) | Customs-confirmed standard import wire value `400000`; concession `4098` remains unconfirmed |
 | `Origin/CountryCode` | C | `countryOfOrigin` | OK |
 | `Packaging` (count + supplementary quantities) | C | per-item package count | Required for every goods item; Customs-confirmed `unitCode=EA` |
 | `PreviousDocument` | C | — | N/A (child declarations) |

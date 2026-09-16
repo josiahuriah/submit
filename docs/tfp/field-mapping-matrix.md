@@ -109,10 +109,10 @@ Invoice linkage is positional in TFP v1.4.4: shipment `CustomsValuation` nodes a
 | `GoodsItem/CustomsValuation/FreightChargeAmount` | C | Not emitted | Omit from goods-item valuation | `OMIT_INCOMING` |
 | `GoodsItem/CustomsValuation/InsuranceAmount` | C | `LineItem.insuranceApportioned` | BSD | `MAPPED` |
 | `GoodsItem/CustomsValuation/ChargeDeduction[104]` | C | `LineItem.otherCostApportioned` | BSD | `MAPPED` |
-| `GoodsItem/GovernmentProcedure/CurrentCode` | C | `LineItem.cpcCode` | Standard CPC `400` becomes `40000` on the wire | `CONFIRMED_BY_CUSTOMS` |
+| `GoodsItem/GovernmentProcedure/CurrentCode` | C | `LineItem.cpcCode` | Standard CPC `400` becomes `400000` on the wire | `CONFIRMED_BY_CUSTOMS` |
 | `GoodsItem/Origin/CountryCode` | C | `LineItem.countryOfOrigin` | ISO alpha-2 | `MAPPED` |
 | `GoodsItem/Packaging/QuantityQuantity` | C | `LineItem.packageCount` | Required for every goods item; `unitCode=EA` | `CONFIRMED_BY_CUSTOMS` |
-| `Declaration/GovernmentProcedure/CurrentCode` | C | Import procedure | Constant `40000` | `CONFIRMED_BY_CUSTOMS` |
+| `Declaration/GovernmentProcedure/CurrentCode` | C | Import procedure | Constant `400000` | `CONFIRMED_BY_CUSTOMS` |
 
 ## Generation gates and unresolved government dependencies
 

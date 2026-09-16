@@ -16,7 +16,7 @@ import {
 } from './constants'
 
 export const TFP_SCHEMA_VERSION = 'TFB_WCO_DEC_v1.4.4'
-export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.2.2'
+export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.2.3'
 
 export type TfpRequirement = 'M' | 'C' | 'OUTBOUND_ONLY'
 export type TfpMappingStatus =
@@ -100,10 +100,10 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'GovernmentAgencyGoodsItem', element: 'CustomsValuation/ExitToEntryChargeAmount', requirement: 'C', source: 'LineItem.cifValue', transform: 'BSD', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'CustomsValuation/FreightChargeAmount', requirement: 'C', source: 'not emitted', transform: 'omit from goods-item valuation', status: 'OMIT_INCOMING' },
   { section: 'GovernmentAgencyGoodsItem', element: 'CustomsValuation/ChargeDeduction[104]', requirement: 'C', source: 'LineItem.otherCostApportioned', transform: 'BSD', status: 'MAPPED' },
-  { section: 'GovernmentAgencyGoodsItem', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'LineItem.cpcCode', transform: 'standard CPC 400 becomes 40000', status: 'CONFIRMED_BY_CUSTOMS' },
+  { section: 'GovernmentAgencyGoodsItem', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'LineItem.cpcCode', transform: 'standard CPC 400 becomes 400000', status: 'CONFIRMED_BY_CUSTOMS' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Origin/CountryCode', requirement: 'C', source: 'LineItem.countryOfOrigin', transform: 'ISO alpha-2', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Packaging/QuantityQuantity', requirement: 'C', source: 'LineItem.packageCount', transform: 'required for every goods item; unitCode=EA', status: 'CONFIRMED_BY_CUSTOMS' },
-  { section: 'Declaration', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'import procedure', transform: 'constant 40000', status: 'CONFIRMED_BY_CUSTOMS' },
+  { section: 'Declaration', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'import procedure', transform: 'constant 400000', status: 'CONFIRMED_BY_CUSTOMS' },
 ] as const
 
 export interface TfpReviewIssue {

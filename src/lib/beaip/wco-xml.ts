@@ -124,7 +124,7 @@ function wireQuantityUnit(unit: string | null): string {
   return unit === 'PCS' || !unit ? TFP_EACH_UNIT_CODE : unit
 }
 
-/** The application's standard CPC 400 is represented as 40000 on the wire. */
+/** The application's standard CPC 400 is represented as 400000 on the wire. */
 function wireProcedureCode(cpcCode: string): string {
   return cpcCode === STANDARD_IMPORT_CPC ? TFP_STANDARD_IMPORT_WIRE_CPC : cpcCode
 }
