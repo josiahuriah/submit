@@ -129,7 +129,7 @@ existing data with only formatting.
 | `AdditionalDocument` (TIER/permits/uploads) | C | `ShipmentDocument` (has fileName/mime/size, bytes in S3) | GAP: response requires Invoice and Tax Compliance Certificate; no declaration attachment serialization yet |
 | `AdditionalInformation` (dynamic fields) | C | — | GAP: needs `TTFB_SYS_DEC_FIELD_MASTER` worksheet |
 | `PreviousDocument` | C | — | N/A (amendments only) |
-| `GovernmentProcedure/CurrentCode` (final declaration element) | C | import procedure | Customs-confirmed QA value `400000` |
+| `GovernmentProcedure/CurrentCode` (final declaration element) | C | import procedure | Customs-confirmed QA value `400` |
 | `DutyTaxFee` | — | omit (blank for incoming) | OK — do not send our totals |
 
 ### GoodsShipment

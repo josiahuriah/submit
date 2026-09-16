@@ -16,7 +16,7 @@ import {
 } from './constants'
 
 export const TFP_SCHEMA_VERSION = 'TFB_WCO_DEC_v1.4.4'
-export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.2.3'
+export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.2.4'
 
 export type TfpRequirement = 'M' | 'C' | 'OUTBOUND_ONLY'
 export type TfpMappingStatus =
@@ -103,7 +103,7 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'GovernmentAgencyGoodsItem', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'LineItem.cpcCode', transform: 'standard CPC 400 becomes 400000', status: 'CONFIRMED_BY_CUSTOMS' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Origin/CountryCode', requirement: 'C', source: 'LineItem.countryOfOrigin', transform: 'ISO alpha-2', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Packaging/QuantityQuantity', requirement: 'C', source: 'LineItem.packageCount', transform: 'required for every goods item; unitCode=EA', status: 'CONFIRMED_BY_CUSTOMS' },
-  { section: 'Declaration', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'import procedure', transform: 'constant 400000', status: 'CONFIRMED_BY_CUSTOMS' },
+  { section: 'Declaration', element: 'GovernmentProcedure/CurrentCode', requirement: 'C', source: 'import procedure', transform: 'constant 400', status: 'CONFIRMED_BY_CUSTOMS' },
 ] as const
 
 export interface TfpReviewIssue {

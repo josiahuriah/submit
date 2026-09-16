@@ -130,7 +130,7 @@ corrections:
 - goods location equals declaration office `NASACP`;
 - AWB/BL and manifest transport-contract documents are omitted;
 - declarant and exporter IDs are `20113855131249792`;
-- standard item CPC `400` and the final declaration-level procedure code are serialized as `400000`;
+- standard item CPC `400` is serialized as `400000`; the final declaration-level procedure code is `400`;
 - commercial `PCS` and package quantities use `EA` on the wire;
 - every goods item includes `Packaging/QuantityQuantity`; missing line package counts block XML generation;
 - `FreightChargeAmount` and `Invoice/TypeCode` are omitted.

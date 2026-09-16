@@ -334,8 +334,9 @@ describe('buildWcoDeclarationXml', () => {
       /<Exporter>\s*<Name>Miami Wholesale Co<\/Name>\s*<ID>20113855131249792<\/ID>/,
     )
     expect(xml).not.toContain('<TransportContractDocument>')
-    expect(xml.match(/<CurrentCode>400000<\/CurrentCode>/g)).toHaveLength(3)
-    expect(xml).toContain('<GovernmentProcedure>\n        <CurrentCode>400000</CurrentCode>')
+    expect(xml.match(/<CurrentCode>400000<\/CurrentCode>/g)).toHaveLength(2)
+    expect(xml.match(/<CurrentCode>400<\/CurrentCode>/g)).toHaveLength(1)
+    expect(xml).toContain('<GovernmentProcedure>\n        <CurrentCode>400</CurrentCode>')
 
     const invoices = [...xml.matchAll(/<Invoice>([\s\S]*?)<\/Invoice>/g)]
       .map((match) => match[1]!)

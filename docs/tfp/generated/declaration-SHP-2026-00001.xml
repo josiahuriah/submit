@@ -240,6 +240,6 @@
         </UCR>
     </GoodsShipment>
     <GovernmentProcedure>
-        <CurrentCode>400000</CurrentCode>
+        <CurrentCode>400</CurrentCode>
     </GovernmentProcedure>
 </Declaration>
