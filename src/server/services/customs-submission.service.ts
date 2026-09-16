@@ -1,4 +1,4 @@
-/** Persist an explicit broker attempt before sending immutable XML to QA. */
+/** Preview locally or persist an explicit broker attempt before sending immutable XML to QA. */
 import 'server-only'
 import { createHash, randomUUID } from 'node:crypto'
 import type { TenantClient } from '@/lib/db/tenant-client'
@@ -20,8 +20,12 @@ export const customsSubmissionService = {
     input: { confirmResubmission: boolean; resubmissionReason?: string },
   ) {
     const configuration = env()
-    if (configuration.BEAIP_TRANSPORT_MODE !== 'live') {
+    const isDevelopmentPreview = configuration.NODE_ENV === 'development'
+    if (!isDevelopmentPreview && configuration.BEAIP_TRANSPORT_MODE !== 'live') {
       throw new BusinessRuleError('BEAIP transport is disabled. Add the QA settings, then explicitly enable live transport.')
+    }
+    if (isDevelopmentPreview && (!configuration.BEAIP_USERNAME || !configuration.BEAIP_PASSWORD)) {
+      throw new BusinessRuleError('Add the QA username and password to preview the exact SOAP XML in development.')
     }
     const entry = await db.customsEntry.findUnique({
       where: { id: customsEntryId },
@@ -47,6 +51,34 @@ export const customsSubmissionService = {
     )) {
       throw new BusinessRuleError('Shipment changed after this artifact was generated; recalculate and generate new review XML before submitting')
     }
+    const exactHash = createHash('sha256').update(entry.requestPayload, 'utf8').digest('hex')
+    if (exactHash !== entry.declarationHash) {
+      throw new BusinessRuleError('Stored declaration hash does not match its immutable XML artifact')
+    }
+    const messageId = randomUUID()
+    const attemptNumber = (entry.attempts[0]?.attemptNumber ?? 0) + 1
+    const soap = buildDeclarationSoapEnvelope({
+      username: configuration.BEAIP_USERNAME,
+      password: configuration.BEAIP_PASSWORD,
+      declarationXml: entry.requestPayload,
+    })
+
+    // `next dev` is a hard no-send environment. Return the exact credential-bearing
+    // envelope to the authenticated broker without creating an attempt or audit row.
+    if (isDevelopmentPreview) {
+      return {
+        attemptId: null,
+        attemptNumber,
+        messageId,
+        outcome: 'PREVIEW' as const,
+        httpStatus: null,
+        beaipReference: null,
+        fault: null,
+        responsePayload: null,
+        soapEnvelope: soap.envelope,
+      }
+    }
+
     if (entry.attempts.some((attempt) => attempt.outcome === 'PENDING')) {
       throw new BusinessRuleError('A submission attempt is still pending; reconcile it before sending again')
     }
@@ -79,17 +111,6 @@ export const customsSubmissionService = {
       })
     }
 
-    const exactHash = createHash('sha256').update(entry.requestPayload, 'utf8').digest('hex')
-    if (exactHash !== entry.declarationHash) {
-      throw new BusinessRuleError('Stored declaration hash does not match its immutable XML artifact')
-    }
-    const messageId = randomUUID()
-    const attemptNumber = (entry.attempts[0]?.attemptNumber ?? 0) + 1
-    const soap = buildDeclarationSoapEnvelope({
-      username: configuration.BEAIP_USERNAME,
-      password: configuration.BEAIP_PASSWORD,
-      declarationXml: entry.requestPayload,
-    })
     const attempt = await db.customsSubmissionAttempt.create({
       data: {
         customsEntryId: entry.id,

@@ -34,6 +34,11 @@ npm run dev                   # http://localhost:3000
 Log in with `broker@bahamabrokerage.test` / `Password123!`, calculate shipment
 `SHP-2026-00001`, then use **Generate review XML**.
 
+Development is hard-fenced from Customs: under `npm run dev`, the submission
+control returns and displays the exact credential-bearing SOAP XML for review
+without creating an attempt or making a network request. Treat its download as
+a secret-bearing file and delete it when review is complete.
+
 ### Verifying everything
 
 ```bash

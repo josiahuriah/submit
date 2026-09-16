@@ -36,7 +36,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         <Chip kind={shipment.status === "DRAFT" ? "draft" : "acc"}>{shipment.status}</Chip>
         <div style={{ flex: 1 }} />
         {shipment.status === "DRAFT" && <Link href={`/shipments/${id}/edit`} className="sb-btn"><span aria-hidden>✎</span> Edit shipment</Link>}
-        <ReviewXmlButton shipmentId={id} status={shipment.status} disabled={shipment.totals === null} canSubmit={hasPermission(claims.role, 'shipments:submit')} initialArtifacts={shipment.customsArtifacts} />
+        <ReviewXmlButton shipmentId={id} status={shipment.status} disabled={shipment.totals === null} canSubmit={hasPermission(claims.role, 'shipments:submit')} previewOnly={process.env.NODE_ENV === 'development'} initialArtifacts={shipment.customsArtifacts} />
       </div>
 
       <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 4 }}>

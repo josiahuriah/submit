@@ -3,14 +3,19 @@ import { createHash } from 'node:crypto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { TenantClient } from '@/lib/db/tenant-client'
 
-const mocks = vi.hoisted(() => ({ post: vi.fn(), audit: vi.fn() }))
+const mocks = vi.hoisted(() => ({
+  post: vi.fn(),
+  audit: vi.fn(),
+  configuration: {
+    BEAIP_TRANSPORT_MODE: 'live',
+    BEAIP_USERNAME: 'test-user',
+    BEAIP_PASSWORD: 'test-only',
+    BEAIP_BROKER_CODE: '20113855131249792',
+    NODE_ENV: 'production',
+  },
+}))
 vi.mock('server-only', () => ({}))
-vi.mock('@/lib/env', () => ({ env: () => ({
-  BEAIP_TRANSPORT_MODE: 'live',
-  BEAIP_USERNAME: 'test-user',
-  BEAIP_PASSWORD: 'test-only',
-  BEAIP_BROKER_CODE: '20113855131249792',
-}) }))
+vi.mock('@/lib/env', () => ({ env: () => mocks.configuration }))
 vi.mock('@/lib/audit', () => ({ writeAudit: mocks.audit }))
 vi.mock('@/lib/beaip/transport/http-gateway', () => ({
   postDeclarationSoap: mocks.post,
@@ -36,7 +41,12 @@ function fixture() {
   return { entry, db, submit: () => customsSubmissionService.submit(db as unknown as TenantClient, { userId: 'broker-1' }, entry.id, { confirmResubmission: false }) }
 }
 
-beforeEach(() => { vi.clearAllMocks(); mocks.post.mockResolvedValue({ httpStatus: 200, body: rawResponse }) })
+beforeEach(() => {
+  vi.clearAllMocks()
+  mocks.configuration.BEAIP_TRANSPORT_MODE = 'live'
+  mocks.configuration.NODE_ENV = 'production'
+  mocks.post.mockResolvedValue({ httpStatus: 200, body: rawResponse })
+})
 
 describe('Customs submission safety', () => {
   it('does not send an artifact after edits invalidate its calculation', async () => {
@@ -66,6 +76,31 @@ describe('Customs submission safety', () => {
     f.db.customsSubmissionAttempt.count.mockResolvedValue(1)
     await expect(f.submit()).rejects.toThrow(/Explicit confirmation/)
     expect(mocks.post).not.toHaveBeenCalled()
+  })
+
+  it('returns the exact SOAP XML without sending or writing during development', async () => {
+    mocks.configuration.BEAIP_TRANSPORT_MODE = 'disabled'
+    mocks.configuration.NODE_ENV = 'development'
+    const f = fixture()
+    f.entry.attempts = [{ attemptNumber: 2, outcome: 'PENDING' }]
+    f.db.customsSubmissionAttempt.count.mockResolvedValue(1)
+
+    const result = await f.submit()
+
+    expect(result).toEqual(expect.objectContaining({
+      outcome: 'PREVIEW',
+      attemptNumber: 3,
+      soapEnvelope: expect.stringContaining('<wsse:Username>test-user</wsse:Username>'),
+    }))
+    expect(result.soapEnvelope).toContain('<wsse:Password Type=')
+    expect(result.soapEnvelope).toContain('>test-only</wsse:Password>')
+    expect(result.soapEnvelope).toContain(xml)
+    expect(result.soapEnvelope).toMatch(/wsu:Id="UsernameToken-[0-9A-F]{32}"/)
+    expect(mocks.post).not.toHaveBeenCalled()
+    expect(f.db.customsSubmissionAttempt.count).not.toHaveBeenCalled()
+    expect(f.db.customsSubmissionAttempt.create).not.toHaveBeenCalled()
+    expect(f.db.customsSubmissionAttempt.update).not.toHaveBeenCalled()
+    expect(mocks.audit).not.toHaveBeenCalled()
   })
 
   it('records the raw response and preserves its government reference', async () => {

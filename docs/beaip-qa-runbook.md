@@ -61,6 +61,14 @@ restart the server so configuration is revalidated.
 `UsernameToken-<32 hexadecimal characters>` value matching the supplied QA
 header. Live transport refuses to start without both configured values.
 
+## Local submission preview
+
+`npm run dev` is hard-fenced from the Customs gateway. Clicking the submission
+control builds the exact SOAP envelope, including the configured QA username and
+password, and displays it with a download button. It does not create a submission
+attempt, write an audit event, or call the Customs endpoint. Treat the downloaded
+preview as a secret-bearing file and delete it when review is complete.
+
 ## Manual QA submission
 
 1. Sign in as Broker, Admin, or Owner.

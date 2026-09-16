@@ -7,5 +7,7 @@ import { customsSubmissionService } from '@/server/services/customs-submission.s
 export const POST = withAuth(async (req, { db, audit, params }) => {
   const { id } = await params
   const input = customsSubmissionSchema.parse(await req.json().catch(() => ({})))
-  return created(await customsSubmissionService.submit(db, audit, id, input))
+  const response = created(await customsSubmissionService.submit(db, audit, id, input))
+  response.headers.set('Cache-Control', 'private, no-store')
+  return response
 }, { permission: 'shipments:submit' })

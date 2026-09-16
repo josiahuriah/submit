@@ -10,6 +10,7 @@ interface GeneratedArtifact { id: string; groupCode: string; downloadUrl: string
 interface SubmissionResult {
   outcome: string; attemptNumber: number; httpStatus: number | null;
   responsePayload: string | null; fault: { code: string | null; reason: string | null } | null;
+  soapEnvelope?: string | null;
 }
 
 export function ReviewXmlButton({
@@ -18,6 +19,7 @@ export function ReviewXmlButton({
   disabled = false,
   variant = "header",
   canSubmit = false,
+  previewOnly = false,
   initialArtifacts = [],
 }: {
   shipmentId: string;
@@ -25,6 +27,7 @@ export function ReviewXmlButton({
   disabled?: boolean;
   variant?: "header" | "ledger";
   canSubmit?: boolean;
+  previewOnly?: boolean;
   initialArtifacts?: GeneratedArtifact[];
 }) {
   const [notice, setNotice] = useState<string | null>(null);
@@ -63,7 +66,9 @@ export function ReviewXmlButton({
         body: JSON.stringify({ confirmResubmission, ...(confirmResubmission ? { resubmissionReason: "Broker explicitly confirmed repeat QA submission" } : {}) }),
       });
       setResponses((current) => ({ ...current, [artifact.id]: response }));
-      setNotice(`CPC ${artifact.groupCode}: ${response.outcome}${response.httpStatus ? ` (HTTP ${response.httpStatus})` : ""}.`);
+      setNotice(response.outcome === "PREVIEW"
+        ? `CPC ${artifact.groupCode}: full SOAP XML ready. Nothing was sent to Customs.`
+        : `CPC ${artifact.groupCode}: ${response.outcome}${response.httpStatus ? ` (HTTP ${response.httpStatus})` : ""}.`);
     } catch (error) {
       if (error instanceof ApiClientError && error.status === 409) {
         const confirmed = window.confirm("This declaration has already been submitted. Submit it again? This may create another government record.");
@@ -75,21 +80,42 @@ export function ReviewXmlButton({
     }
   }
 
+  function downloadSoapPreview(artifact: GeneratedArtifact, envelope: string) {
+    const url = URL.createObjectURL(new Blob([envelope], { type: "application/xml;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = artifact.fileName.replace(/\.xml$/i, "-soap-preview.xml");
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
   const artifactControls = artifacts.length > 0 && (
-    <span style={{ display: "inline-flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+    <div style={{ display: "flex", gap: 8, alignItems: "flex-start", flexWrap: "wrap" }}>
       {artifacts.map((artifact) => (
-        <span key={artifact.id} style={{ display: "inline-flex", gap: 5, alignItems: "center" }}>
-          <a className="sb-btn is-sm" href={artifact.downloadUrl}>Review CPC {artifact.groupCode}</a>
-          {(artifact.attemptCount ?? 0) > 0 && <span className="sb-meta">{artifact.attemptCount} attempt{artifact.attemptCount === 1 ? "" : "s"} · {artifact.latestOutcome}</span>}
-          {canSubmit && <button className="sb-btn is-sm is-primary" type="button" disabled={submittingId !== null} onClick={() => void submitArtifact(artifact)}>
-            {submittingId === artifact.id ? "Submitting…" : `Submit CPC ${artifact.groupCode} to QA`}
-          </button>}
+        <div key={artifact.id} style={{ display: "grid", gap: 6 }}>
+          <div style={{ display: "inline-flex", gap: 5, alignItems: "center", flexWrap: "wrap" }}>
+            <a className="sb-btn is-sm" href={artifact.downloadUrl}>Review CPC {artifact.groupCode}</a>
+            {(artifact.attemptCount ?? 0) > 0 && <span className="sb-meta">{artifact.attemptCount} attempt{artifact.attemptCount === 1 ? "" : "s"} · {artifact.latestOutcome}</span>}
+            {canSubmit && <button className="sb-btn is-sm is-primary" type="button" disabled={submittingId !== null} onClick={() => void submitArtifact(artifact)}>
+              {submittingId === artifact.id
+                ? (previewOnly ? "Building preview…" : "Submitting…")
+                : (previewOnly ? `Preview CPC ${artifact.groupCode} SOAP XML` : `Submit CPC ${artifact.groupCode} to QA`)}
+            </button>}
+          </div>
+          {responses[artifact.id]?.soapEnvelope && (
+            <details open style={{ width: "min(760px, 90vw)" }}>
+              <summary className="sb-meta">Full SOAP XML — not sent</summary>
+              <p className="sb-meta" style={{ margin: "6px 0" }}>Private preview: this contains the configured QA username and password.</p>
+              <button className="sb-btn is-sm" type="button" onClick={() => downloadSoapPreview(artifact, responses[artifact.id]!.soapEnvelope!)}>Download exact SOAP XML</button>
+              <pre style={{ maxHeight: 420, overflow: "auto", whiteSpace: "pre-wrap", marginTop: 8, padding: 10, border: "1px solid var(--sb-line)" }}>{responses[artifact.id].soapEnvelope}</pre>
+            </details>
+          )}
           {responses[artifact.id]?.responsePayload && (
             <details><summary className="sb-meta">Response</summary><pre style={{ maxWidth: 620, maxHeight: 240, overflow: "auto", whiteSpace: "pre-wrap" }}>{responses[artifact.id].responsePayload}</pre></details>
           )}
-        </span>
+        </div>
       ))}
-    </span>
+    </div>
   );
 
   const label = pending ? "Generating…" : "Generate review XML";
@@ -106,14 +132,14 @@ export function ReviewXmlButton({
 
   if (variant === "header") {
     return (
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
         {notice && <span className="sb-meta">{notice}</span>}
         <select className="sb-inp sb-mono" style={{ width: 88 }} value={declarationType} onChange={(e) => setDeclarationType(e.target.value as typeof declarationType)} aria-label="Declaration type">
           {["C13", "C14", "C17", "C18", "OTHER"].map((value) => <option key={value}>{value}</option>)}
         </select>
         {button}
         {artifactControls}
-      </span>
+      </div>
     );
   }
 
