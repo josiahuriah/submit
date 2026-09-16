@@ -19,7 +19,7 @@ import { createTenantClient } from '@/lib/db/tenant-client'
 import { invoicesService } from '@/server/services/invoices.service'
 import { hsCodesService } from '@/server/services/hs-codes.service'
 import { calculationsService } from '@/server/services/calculations.service'
-import { lineItemCreateSchema } from '@/lib/validation/schemas'
+import { lineItemCreateSchema, lineItemUpdateSchema } from '@/lib/validation/schemas'
 import { AppError } from '@/lib/errors'
 import { toShipmentTotals } from '@/lib/data/shipments'
 import { d } from '@/lib/calculations/money'
@@ -186,10 +186,10 @@ export async function commitLineItem(
     invoiceId: invoice.id,
     hsCodeId: matched?.id,
     hsCode: normalizedHsCode,
-    cpcCode: draft.cpcCode.trim().toUpperCase() || '400',
+    cpcCode: draft.cpcCode.trim().toUpperCase(),
     description: draft.description.trim() || 'Other',
     quantity: quantity.toString(),
-    unit: draft.unit || 'PCS',
+    unit: draft.unit || 'EA',
     unitPrice: unitPrice.toFixed(4),
     totalValue: quantity.times(unitPrice).toDecimalPlaces(2).toFixed(2),
     countryOfOrigin: draft.countryOfOrigin.trim() || undefined,
@@ -222,6 +222,28 @@ export async function commitLineItem(
     calculationError = error instanceof Error ? error.message : 'Could not reprice the shipment'
   }
 
+  return refreshed(db, shipmentId, calculationError)
+}
+
+/** Correct CPC/UOM on existing draft lines, including unresolved legacy values. */
+export async function updateLineCustomsReferences(shipmentId: string, lineItemId: string, values: { cpcCode: string; unit: string }): Promise<CommitLineResult> {
+  const { db, audit } = await writeContext('shipments:write')
+  const line = await db.lineItem.findFirst({ where: { id: lineItemId, invoice: { shipmentId } }, select: { id: true } })
+  if (!line) return refused(db, shipmentId, 'Line item not found on this shipment.')
+  const parsed = lineItemUpdateSchema.pick({ cpcCode: true, unit: true }).safeParse(values)
+  if (!parsed.success) return refused(db, shipmentId, 'Select a valid full CPC and Customs UOM.')
+  try {
+    await invoicesService.updateLineItem(db, audit, lineItemId, parsed.data)
+  } catch (error) {
+    if (error instanceof AppError) return refused(db, shipmentId, error.message)
+    throw error
+  }
+  let calculationError: string | null = null
+  try {
+    await calculationsService.calculate(db, audit, shipmentId, { apportionmentBasis: 'VALUE' })
+  } catch (error) {
+    calculationError = error instanceof Error ? error.message : 'Could not reprice the shipment'
+  }
   return refreshed(db, shipmentId, calculationError)
 }
 

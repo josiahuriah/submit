@@ -9,6 +9,7 @@
  * calculatedAt so the submit precondition ("calculated since last change")
  * fails until the broker recalculates.
  */
+import { assertLineCustomsReferences } from './customs-reference-validation'
 import type { TenantClient } from '@/lib/db/tenant-client'
 import { writeAudit, type AuditContext } from '@/lib/audit'
 import { BusinessRuleError, NotFoundError } from '@/lib/errors'
@@ -40,7 +41,7 @@ const LINE_SELECT = {
 async function assertShipmentEditable(db: TenantClient, shipmentId: string) {
   const shipment = await db.shipment.findUnique({
     where: { id: shipmentId },
-    select: { id: true, status: true },
+    select: { id: true, status: true, cpcGroupCode: true },
   })
   if (!shipment) throw new NotFoundError('Shipment')
   if (shipment.status !== 'DRAFT') {
@@ -128,7 +129,8 @@ export const invoicesService = {
       select: { id: true, shipmentId: true },
     })
     if (!invoice) throw new NotFoundError('Invoice')
-    await assertShipmentEditable(db, invoice.shipmentId)
+    const shipment = await assertShipmentEditable(db, invoice.shipmentId)
+    assertLineCustomsReferences(shipment.cpcGroupCode, String(data.cpcCode ?? "400000"), String(data.unit ?? "EA"))
 
     // hsCodeId is optional at entry time but must reference a real code.
     if (data.hsCodeId) {
@@ -153,10 +155,11 @@ export const invoicesService = {
   async updateLineItem(db: TenantClient, audit: AuditContext, lineItemId: string, data: Record<string, unknown>) {
     const existing = await db.lineItem.findUnique({
       where: { id: lineItemId },
-      select: { id: true, invoice: { select: { shipmentId: true } } },
+      select: { id: true, cpcCode: true, unit: true, invoice: { select: { shipmentId: true } } },
     })
     if (!existing) throw new NotFoundError('Line item')
-    await assertShipmentEditable(db, existing.invoice.shipmentId)
+    const shipment = await assertShipmentEditable(db, existing.invoice.shipmentId)
+    assertLineCustomsReferences(shipment.cpcGroupCode, String(data.cpcCode ?? existing.cpcCode), String(data.unit ?? existing.unit))
     const line = await db.lineItem.update({ where: { id: lineItemId }, data: data as never, select: LINE_SELECT })
     await invalidateCalculation(db, existing.invoice.shipmentId)
     await writeAudit(db, audit, { action: 'UPDATE', entityType: 'LineItem', entityId: lineItemId })
@@ -166,7 +169,7 @@ export const invoicesService = {
   async deleteLineItem(db: TenantClient, audit: AuditContext, lineItemId: string) {
     const existing = await db.lineItem.findUnique({
       where: { id: lineItemId },
-      select: { id: true, invoice: { select: { shipmentId: true } } },
+      select: { id: true, cpcCode: true, unit: true, invoice: { select: { shipmentId: true } } },
     })
     if (!existing) throw new NotFoundError('Line item')
     await assertShipmentEditable(db, existing.invoice.shipmentId)

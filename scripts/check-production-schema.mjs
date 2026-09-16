@@ -3,7 +3,7 @@ import pg from 'pg'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 
-const migration = '20260830160000_beaip_uat_foundation'
+const migration = '20260916120000_customs_reference_lists'
 
 if (process.env.VERCEL_ENV === 'production') {
   const client = new pg.Client({

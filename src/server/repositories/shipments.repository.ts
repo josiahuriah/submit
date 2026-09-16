@@ -34,6 +34,7 @@ const LIST_SELECT = {
     select: {
       id: true,
       manifestNumber: true,
+      customsPortCode: true,
       voyage: { select: { arrivalDate: true } },
     },
   },
@@ -51,6 +52,7 @@ const DETAIL_SELECT = {
   declarationDate: true,
   declarationFunctionCode: true,
   regimeCode: true,
+  cpcGroupCode: true,
   isSplitDeclaration: true,
   goodsLocationCode: true,
   warehouseCode: true,
@@ -95,6 +97,7 @@ const DETAIL_SELECT = {
       submittedAt: true,
       totalPayable: true,
       declarationGroupCode: true,
+      declarationSequence: true,
       generatedAt: true,
       _count: { select: { attempts: true } },
       attempts: {
@@ -152,8 +155,10 @@ export const shipmentsRepository = {
     data: {
       shipmentNumber: string
       clientId: string
+      cpcGroupCode?: string
       createdById: string
       declarationOfficeId: string
+      goodsLocationCode?: string
       manifestId?: string
       goodsType?: string
       packageType?: string
@@ -192,6 +197,7 @@ export const shipmentsRepository = {
         status: true,
         declarationDate: true,
         isSplitDeclaration: true,
+        cpcGroupCode: true,
         freightCharge: true,
         insuranceCharge: true,
         otherCharges: true,

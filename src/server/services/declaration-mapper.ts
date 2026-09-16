@@ -9,6 +9,7 @@
  *     the organization field remains an offline-review fallback.
  *   - Declaration function is fixed by the current filing workflow.
  */
+import { isCpcGroup, isCpcInGroup, isCustomsPort } from '@/lib/customs/reference-data'
 import type { TenantClient } from '@/lib/db/tenant-client'
 import type { BeaipDeclaration, BeaipInvoice, BeaipParty } from '@/lib/beaip'
 import { apportion } from '@/lib/calculations/apportionment'
@@ -19,10 +20,8 @@ import {
   ORIGINAL_DECLARATION_FUNCTION_CODE,
   resolveBeaipBrokerCode,
   TFP_DECLARANT_NAME,
-  TFP_DECLARATION_OFFICE_CODE,
   TFP_EACH_UNIT_CODE,
   TFP_QA_PARTY_ID,
-  TFP_QA_PLACE_OF_DISCHARGE_CODE,
 } from '@/lib/beaip/constants'
 import {
   buildFunctionalReferenceId,
@@ -48,6 +47,7 @@ export const DECLARATION_SOURCE_SELECT = {
   submittedAt: true,
   declarationFunctionCode: true,
   regimeCode: true,
+  cpcGroupCode: true,
   isSplitDeclaration: true,
   goodsLocationCode: true,
   warehouseCode: true,
@@ -78,6 +78,7 @@ export const DECLARATION_SOURCE_SELECT = {
   manifest: {
     select: {
       manifestNumber: true,
+      customsPortCode: true,
       voyage: {
         select: {
           arrivalDate: true,
@@ -154,6 +155,8 @@ export function toBeaipDeclaration(
   configuredBrokerCode = '',
 ): BeaipDeclaration {
   const declarationDate = (shipment.submittedAt ?? shipment.declarationDate).toISOString()
+  const customsPort = shipment.manifest ? shipment.manifest.customsPortCode : shipment.goodsLocationCode
+  if (!customsPort || !isCustomsPort(customsPort)) throw new Error('Select a Customs port on the manifest (or standalone shipment) before generating XML')
   const voyage = shipment.manifest?.voyage ?? null
   const journey = voyage?.journey ?? null
   const firstSupplierCountry =
@@ -227,7 +230,7 @@ export function toBeaipDeclaration(
       weightLb: l.weightLb === null ? null : String(l.weightLb),
       netWeightLb: l.netWeightLb === null ? null : String(l.netWeightLb),
       packageCount: l.packageCount,
-      packageTypeCode: TFP_EACH_UNIT_CODE,
+      packageTypeCode: l.packageTypeCode === "PC" ? "PC" : TFP_EACH_UNIT_CODE,
       totalValue: moneyString(String(l.totalValue)),
       currency: inv.currency,
       freightApportioned: moneyString(String(l.freightApportioned)),
@@ -249,7 +252,7 @@ export function toBeaipDeclaration(
 
   return {
     isSplitDeclaration: shipment.isSplitDeclaration,
-    declarationGroupCode: '400',
+    declarationGroupCode: shipment.cpcGroupCode ?? '',
     declarationSequence: 1,
     declarationType,
     regimeCode: shipment.regimeCode,
@@ -257,7 +260,7 @@ export function toBeaipDeclaration(
     declarationDate,
     functionalReferenceId: buildFunctionalReferenceId(declarationDate, shipment.shipmentNumber),
     brokerReference: buildTraderAssignedReferenceId(declarationDate, shipment.shipmentNumber),
-    customsOfficeCode: TFP_DECLARATION_OFFICE_CODE,
+    customsOfficeCode: customsPort,
     submitterId: resolveBeaipBrokerCode(
       configuredBrokerCode,
       shipment.organization.companyRegistrationNumber,
@@ -278,12 +281,12 @@ export function toBeaipDeclaration(
       containerSealNumber: shipment.containerSealNumber,
       containerFullnessCode: shipment.containerFullnessCode,
       manifestNumber: null,
-      unloadingPortCode: TFP_QA_PLACE_OF_DISCHARGE_CODE,
+      unloadingPortCode: journey?.destinationPort.unLocode?.replace(/^BS/, "") ?? null,
       entryPortCode: journey?.destinationPort.unLocode ?? null,
-      exitPortCode: TFP_QA_PLACE_OF_DISCHARGE_CODE,
+      exitPortCode: journey?.originPort.unLocode ?? null,
       exportCountryCode: journey?.originPort.country ?? firstSupplierCountry,
       transportNationalityCode: shipment.transportNationalityCode,
-      goodsLocationCode: TFP_DECLARATION_OFFICE_CODE,
+      goodsLocationCode: customsPort,
       warehouseCode: shipment.warehouseCode,
     },
     invoices,
@@ -304,10 +307,10 @@ export function partitionBeaipDeclaration(
   referenceSeed: string,
 ): BeaipDeclaration[] {
   const cpcs = [...new Set(declaration.lines.map((line) => line.cpcCode))].sort()
-  if (!declaration.isSplitDeclaration && cpcs.length > 1) {
-    throw new Error('Mixed CPC lines require the split declaration option')
+  if (!isCpcGroup(declaration.declarationGroupCode) || declaration.lines.some((line) => !isCpcInGroup(line.cpcCode, declaration.declarationGroupCode))) {
+    throw new Error('Every line CPC must belong to the selected shipment CPC group')
   }
-  const groups = declaration.isSplitDeclaration ? cpcs : [cpcs[0] ?? '400']
+  const groups = declaration.isSplitDeclaration ? cpcs : [declaration.declarationGroupCode]
   const groupedLines = groups.map((cpc) => (
     declaration.isSplitDeclaration
       ? declaration.lines.filter((line) => line.cpcCode === cpc)
@@ -363,7 +366,7 @@ export function partitionBeaipDeclaration(
     return {
       ...declaration,
       ...references,
-      declarationGroupCode: cpc,
+      declarationGroupCode: declaration.declarationGroupCode,
       declarationSequence: index + 1,
       packageCount: declaration.isSplitDeclaration
         ? sourceLines.reduce((total, line) => total + (line.packageCount ?? 0), 0)

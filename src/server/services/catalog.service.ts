@@ -7,7 +7,8 @@
 import type { TenantClient } from '@/lib/db/tenant-client'
 import { cursorArgs, toPage, type PaginationParams } from '@/lib/db/pagination'
 import { writeAudit, type AuditContext } from '@/lib/audit'
-import { NotFoundError } from '@/lib/errors'
+import { isCustomsPort } from '@/lib/customs/reference-data'
+import { BusinessRuleError, NotFoundError } from '@/lib/errors'
 
 const CLIENT_SELECT = {
   id: true, name: true, clientType: true, tinNumber: true, email: true,
@@ -22,6 +23,7 @@ const SUPPLIER_SELECT = {
 } as const
 
 const MANIFEST_SELECT = {
+  customsPortCode: true,
   id: true, manifestNumber: true, status: true, registeredAt: true, notes: true, createdAt: true,
   voyage: {
     select: {
@@ -108,14 +110,25 @@ export const catalogService = {
   },
 
   async createManifest(db: TenantClient, audit: AuditContext, data: Record<string, unknown>) {
+    if (!isCustomsPort(String(data.customsPortCode ?? ''))) throw new BusinessRuleError('Select a Customs port.')
     const manifest = await db.manifest.create({ data: data as never, select: MANIFEST_SELECT })
     await writeAudit(db, audit, { action: 'CREATE', entityType: 'Manifest', entityId: manifest.id })
     return manifest
   },
 
   async updateManifest(db: TenantClient, audit: AuditContext, manifestId: string, data: Record<string, unknown>) {
-    await this.getManifest(db, manifestId)
-    const manifest = await db.manifest.update({ where: { id: manifestId }, data: data as never, select: MANIFEST_SELECT })
+    const existing = await this.getManifest(db, manifestId)
+    if (!isCustomsPort(String(data.customsPortCode ?? existing.customsPortCode ?? ''))) throw new BusinessRuleError('Select a Customs port.')
+    const manifest = await db.$tenantTransaction(async (tx) => {
+      const updated = await tx.manifest.update({ where: { id: manifestId, organizationId: db.$organizationId }, data: data as never, select: MANIFEST_SELECT })
+      // Ports and voyage details are read from the manifest at export time.
+      // Invalidate draft snapshots atomically; historical submitted XML stays immutable.
+      await tx.shipment.updateMany({
+        where: { manifestId, organizationId: db.$organizationId, status: 'DRAFT' },
+        data: { calculatedAt: null, updatedAt: new Date() },
+      })
+      return updated
+    })
     await writeAudit(db, audit, { action: 'UPDATE', entityType: 'Manifest', entityId: manifestId })
     return manifest
   },

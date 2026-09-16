@@ -136,12 +136,12 @@ export const declarationArtifactsService = {
           select: {
             id: true, status: true, declarationType: true, functionCode: true,
             regimeCode: true, schemaVersion: true, mappingVersion: true,
-            generatedAt: true, declarationGroupCode: true,
+            generatedAt: true, declarationGroupCode: true, declarationSequence: true,
           },
         })
         rows.push({
           artifact: entry,
-          fileName: artifactFileName(shipment.shipmentNumber, input.declarationType, declaration.declarationGroupCode),
+          fileName: artifactFileName(shipment.shipmentNumber, input.declarationType, `${declaration.declarationGroupCode}-${declaration.declarationSequence}`),
           downloadUrl: `/api/customs-entries/${entry.id}/xml`,
           validation: validationReport,
         })
@@ -176,7 +176,7 @@ export const declarationArtifactsService = {
         id: true,
         shipment: { select: { shipmentNumber: true } },
         declarationType: true,
-        declarationGroupCode: true,
+        declarationGroupCode: true, declarationSequence: true,
         requestPayload: true,
       },
     })
@@ -185,7 +185,7 @@ export const declarationArtifactsService = {
     }
     return {
       xml: entry.requestPayload,
-      fileName: artifactFileName(entry.shipment.shipmentNumber, entry.declarationType, entry.declarationGroupCode),
+      fileName: artifactFileName(entry.shipment.shipmentNumber, entry.declarationType, `${entry.declarationGroupCode}-${entry.declarationSequence}`),
     }
   },
 }

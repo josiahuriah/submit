@@ -32,6 +32,7 @@ import { revalidatePath } from 'next/cache'
 
 export interface ManifestListItem {
   id: string
+  customsPortCode: string
   manifestNumber: string
   status: string
   voyageId: string
@@ -108,6 +109,7 @@ export async function listManifests(): Promise<ManifestListItem[]> {
   return page.items.map((m) => ({
     id: m.id,
     manifestNumber: m.manifestNumber,
+    customsPortCode: m.customsPortCode ?? "",
     status: m.status,
     voyageId: m.voyage.id,
     vesselName: m.voyage.vessel.name,
@@ -300,6 +302,7 @@ export interface CreateManifestResult {
 export type UpdateManifestResult = CreateManifestResult
 
 export async function createManifest(draft: {
+  customsPortCode: string
   manifestNumber: string
   voyageId: string
   shippingAgentId: string
@@ -311,20 +314,24 @@ export async function createManifest(draft: {
   try {
     input = manifestCreateSchema.parse({
       manifestNumber: draft.manifestNumber.trim(),
+      customsPortCode: draft.customsPortCode,
       voyageId: draft.voyageId,
       shippingAgentId: draft.shippingAgentId || undefined,
       notes: draft.notes.trim() || undefined,
     })
   } catch {
-    return { manifest: null, error: 'Check the form: a manifest number and voyage are required.' }
+    return { manifest: null, error: 'Check the form: a manifest number, voyage and Customs port are required.' }
   }
 
   try {
     const m = await catalogService.createManifest(db, audit, input)
+    revalidatePath("/manifests")
+    revalidatePath("/shipments", "layout")
     return {
       manifest: {
         id: m.id,
         manifestNumber: m.manifestNumber,
+        customsPortCode: m.customsPortCode ?? "",
         status: m.status,
         voyageId: m.voyage.id,
         vesselName: m.voyage.vessel.name,
@@ -347,6 +354,7 @@ export async function createManifest(draft: {
 export async function updateManifest(
   manifestId: string,
   draft: {
+    customsPortCode: string
     manifestNumber: string
     voyageId: string
     shippingAgentId: string
@@ -361,6 +369,7 @@ export async function updateManifest(
   try {
     input = manifestUpdateSchema.parse({
       manifestNumber: draft.manifestNumber.trim(),
+      customsPortCode: draft.customsPortCode,
       voyageId: draft.voyageId,
       shippingAgentId: draft.shippingAgentId || null,
       registeredAt: draft.registeredAt || null,
@@ -368,15 +377,18 @@ export async function updateManifest(
       notes: draft.notes.trim(),
     })
   } catch {
-    return { manifest: null, error: 'Check the manifest number, voyage, status and registration date.' }
+    return { manifest: null, error: 'Check the manifest number, voyage, Customs port, status and registration date.' }
   }
 
   try {
     const m = await catalogService.updateManifest(db, audit, manifestId, input)
+    revalidatePath("/manifests")
+    revalidatePath("/shipments", "layout")
     return {
       manifest: {
         id: m.id,
         manifestNumber: m.manifestNumber,
+        customsPortCode: m.customsPortCode ?? "",
         status: m.status,
         voyageId: m.voyage.id,
         vesselName: m.voyage.vessel.name,

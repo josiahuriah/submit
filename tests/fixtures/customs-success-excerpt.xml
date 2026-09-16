@@ -1,0 +1,89 @@
+<Declaration xmlns="http://globaletrade.services/Declaration" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dec="http://globaletrade.services/Declaration">
+            <TypeCode>4</TypeCode>
+            <DeclarationOffice>
+                <ID>NASACP</ID>
+            </DeclarationOffice>
+            <GoodsShipment>
+                <Consignment>
+                    <ArrivalTransportMeans>
+                        <Name>AMERICAN AIRLINES</Name>
+                        <TypeCode>1</TypeCode>
+                        <RegistrationNationalityCode>US</RegistrationNationalityCode>
+                    </ArrivalTransportMeans>
+                    <GoodsLocation>
+                        <ID>NASACP</ID>
+                    </GoodsLocation>
+                    <UnloadingLocation>
+                        <ID>NAS</ID>
+                        <ArrivalDateTime>
+                            <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2019-09-03 20:11:14</DateTimeString>
+                        </ArrivalDateTime>
+                        <Warehouse>
+                            <ID>MHHCWD</ID>
+                        </Warehouse>
+                    </UnloadingLocation>
+                </Consignment>
+                <EntryOffice>
+                    <ID>BSNAS</ID>
+                </EntryOffice>
+                <GovernmentAgencyGoodsItem>
+                    <Commodity>
+                        <SequenceNumeric>1</SequenceNumeric>
+                        <Classification>
+                            <!-- HS Code -->
+                            <ID>01029000</ID>
+                            <!--Item Description -->
+                            <IdentificationTypeCode>Sample Item /</IdentificationTypeCode>
+                        </Classification>
+                        <GoodsMeasure>
+                            <GrossMassMeasure unitCode="LB">34950.000000</GrossMassMeasure>
+                            <NetNetWeightMeasure unitCode="LB">8.000000</NetNetWeightMeasure>
+                            <TariffQuantity unitCode="EA">10</TariffQuantity>
+                        </GoodsMeasure>
+                    </Commodity>
+                    <GovernmentProcedure>
+                        <!-- CPC at Item Level -->
+                        <CurrentCode>4098180020</CurrentCode>
+                    </GovernmentProcedure>
+                    <Packaging>
+                        <SequenceNumeric>1</SequenceNumeric>
+                        <QuantityQuantity unitCode="PC">3</QuantityQuantity>
+                    </Packaging>
+                </GovernmentAgencyGoodsItem>
+                <GovernmentAgencyGoodsItem>
+                    <Commodity>
+                        <SequenceNumeric>2</SequenceNumeric>
+                        <Classification>
+                            <!-- HS Code -->
+                            <ID>40013000</ID>
+                            <IdentificationTypeCode>Sample Item 2</IdentificationTypeCode>
+                        </Classification>
+                        <GoodsMeasure>
+                            <GrossMassMeasure unitCode="LB">50.000000</GrossMassMeasure>
+                            <NetNetWeightMeasure unitCode="LB">8.000000</NetNetWeightMeasure>
+                            <TariffQuantity unitCode="LB">10</TariffQuantity>
+                        </GoodsMeasure>
+                    </Commodity>
+                    <GovernmentProcedure>
+                        <!-- CPC at Item Level -->
+                        <CurrentCode>4098180020</CurrentCode>
+                    </GovernmentProcedure>
+                    <Packaging>
+                        <SequenceNumeric>1</SequenceNumeric>
+                        <QuantityQuantity unitCode="PC">2</QuantityQuantity>
+                    </Packaging>
+                </GovernmentAgencyGoodsItem>
+                <TradeTerms>
+                    <!-- INCO TERM -->
+                    <LocationID>FOB</LocationID>
+                </TradeTerms>
+                <TradeTerms>
+                    <LocationID>FOB</LocationID>
+                </TradeTerms>
+            </GoodsShipment>
+            <GovernmentProcedure>
+                <!-- CPC Group -->
+                <CurrentCode>4098</CurrentCode>
+            </GovernmentProcedure>
+        </Declaration>
+    

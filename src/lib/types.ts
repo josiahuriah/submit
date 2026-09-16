@@ -30,6 +30,7 @@ export interface ShipmentListItem {
 
 /** Minimal shipment shape for the entry page header. */
 export interface ShipmentHeader {
+  cpcGroupCode: string;
   id: string;
   shipmentNumber: string;
   blNumber: string;
@@ -147,6 +148,7 @@ export interface LineDraft {
 }
 
 export interface DeclarationProfile {
+  cpcGroupCode: string;
   submitterId: string;
   declarationDate: string;
   declarationFunctionCode: "9";

@@ -107,6 +107,7 @@ function toShipmentListItem(row: ListRow): ShipmentListItem {
 
 function toShipmentHeader(row: DetailRow): ShipmentHeader {
   return {
+    cpcGroupCode: row.cpcGroupCode ?? "",
     id: row.id,
     shipmentNumber: row.shipmentNumber,
     blNumber: row.blNumber ?? '—',
@@ -121,7 +122,7 @@ function toShipmentHeader(row: DetailRow): ShipmentHeader {
       id: entry.id,
       groupCode: entry.declarationGroupCode,
       downloadUrl: `/api/customs-entries/${entry.id}/xml`,
-      fileName: `${row.shipmentNumber}-${entry.declarationType}-${entry.declarationGroupCode}-review.xml`,
+      fileName: `${row.shipmentNumber}-${entry.declarationType}-${entry.declarationGroupCode}-${entry.declarationSequence}-review.xml`,
       attemptCount: entry._count.attempts,
       latestOutcome: entry.attempts[0]?.outcome ?? null,
     })),

@@ -14,5 +14,5 @@ export function isEightDigitHsCode(value: string): boolean {
 }
 
 export function normalizeImportCpc(value: string): string {
-  return value.replace(/\D/g, '')
+  return value.trim().toUpperCase()
 }

@@ -140,7 +140,7 @@ describe('fresh account to Customs-review XML', () => {
     }), context()), 201)
 
     const manifest = await data<{ id: string }>(await createManifest(request('/api/manifests', 'POST', {
-      manifestNumber: `MAN-${marker}`,
+      customsPortCode: 'NASACP', manifestNumber: `MAN-${marker}`,
       voyageId: references.voyageId,
       registeredAt: new Date().toISOString(),
     }), context()), 201)
@@ -177,10 +177,10 @@ describe('fresh account to Customs-review XML', () => {
     await data(await createLineItem(request(`/api/invoices/${invoice.id}/line-items`, 'POST', {
       hsCodeId: references.hsCodeId,
       hsCode: '6109.10.00',
-      cpcCode: '400',
+      cpcCode: '400000',
       description: 'Cotton t-shirts',
       quantity: '2',
-      unit: 'PCS',
+      unit: 'EA',
       unitPrice: '25.0000',
       totalValue: '50.00',
       weightLb: '2.000',

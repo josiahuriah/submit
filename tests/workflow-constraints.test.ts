@@ -26,7 +26,7 @@ describe('declaration workflow constraints', () => {
 
   it('accepts punctuated HS input but produces exactly eight stored digits', () => {
     const parsed = lineItemCreateSchema.parse({
-      invoiceId: 'invoice-1', hsCode: '9403.50.90', cpcCode: '400',
+      invoiceId: 'invoice-1', hsCode: '9403.50.90', cpcCode: '400000',
       description: 'Furniture', quantity: '1', unitPrice: '10', totalValue: '10.00',
     })
     expect(parsed.hsCode).toBe('94035090')

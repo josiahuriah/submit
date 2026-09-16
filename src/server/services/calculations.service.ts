@@ -10,6 +10,7 @@
  *      shipment roll-ups. Freezing rates on the line is what makes historical
  *      shipments auditable after a tariff change.
  */
+import { assertLineCustomsReferences } from './customs-reference-validation'
 import type { TenantClient } from '@/lib/db/tenant-client'
 import { shipmentsRepository } from '@/server/repositories/shipments.repository'
 import {
@@ -71,12 +72,10 @@ export const calculationsService = {
       throw new BusinessRuleError('Every shipment must have a freight charge greater than zero')
     }
     const cpcs = new Set(lineItems.map((line) => line.cpcCode))
-    if (!shipment.isSplitDeclaration && cpcs.size > 1) {
-      throw new BusinessRuleError('Mixed CPC lines require the split declaration option')
-    }
+    for (const line of lineItems) assertLineCustomsReferences(shipment.cpcGroupCode, line.cpcCode, line.unit)
     if (shipment.isSplitDeclaration) {
       if (cpcs.size < 2) {
-        throw new BusinessRuleError('A split declaration requires at least two CPC groups')
+        throw new BusinessRuleError('A split declaration requires at least two different item CPCs')
       }
       const missingSplitWeight = lineItems.filter((line) => d(line.weightLb).lessThanOrEqualTo(0))
       if (missingSplitWeight.length > 0) {
