@@ -1,0 +1,5762 @@
+[
+  {
+    "code": "4098200010",
+    "description": "Locally-produced Bahamian art work reproduced abroad by mechanical or photochemical process, as approved by the Minister",
+    "sourcePage": 1,
+    "sourceRow": 1,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098200020",
+    "description": "Locally-produced Bahamian audio and or visual media, printed and pressed abroad, as approved by the Minister",
+    "sourcePage": 1,
+    "sourceRow": 2,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098210000",
+    "description": "MATERIALS USED TO RESTORE AND MAINTAIN HISTORIC BUILDINGS REGISTERED IN THE NATIONAL REGISTER",
+    "sourcePage": 1,
+    "sourceRow": 3,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098220010",
+    "description": "BAHAMIAN ART WORK TEMPORARILY EXPORTED FOR EXHIBITION THEN REIMPORTED",
+    "sourcePage": 1,
+    "sourceRow": 4,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098220020",
+    "description": "MUSICAL INSTRUMENTS TEMPORARILY IMPORTED FOR USE IN THE BAHAMAS THEN REEXPORTED",
+    "sourcePage": 1,
+    "sourceRow": 5,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098220030",
+    "description": "PHOTOGRAPHIC AND CINEMATOGRAPHIC EQUIPMENT, SOUND RECORDERS, SOUND REPRODUCERS TEMPORARILY IMPORTED FOR USE BY FOREIGN JOURNALISTS, RADIO, TELEVISION AND MOTION PICTURE SERVICES THEN REEXPORTED",
+    "sourcePage": 1,
+    "sourceRow": 6,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098220040",
+    "description": "ACTORS CLOTHING AND PROPS TEMPORARILY IMPORTED TO ACCOMPANY MOTION PICTURE SERVICES THEN REEXPORTED, UPON RECOMMENDATION BY THE MINISTER OF TOURISM AND APPROVAL OF THE MINISTER",
+    "sourcePage": 1,
+    "sourceRow": 7,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098230000",
+    "description": "PRECIOUS METALS IMPORTED OR EXPORTED FOR THE SECURITIES EXCHANGE AS REFERRED TO IN THE SECURITIES INDUSTRY ACT, 1999",
+    "sourcePage": 1,
+    "sourceRow": 8,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098240000",
+    "description": "Equipment for commercial printers for use in the commercial printing industry that meet the conditions specified in Note 14 to this Chapter",
+    "sourcePage": 1,
+    "sourceRow": 9,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098240010",
+    "description": "Printing Materials for use in the commercial printing industry that meet the conditions specified in Note 14 to this Chapter",
+    "sourcePage": 1,
+    "sourceRow": 10,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098250000",
+    "description": "ARTICLES IMPORTED IN SMALL QUANITITIES, LIMITED SIZES OR MUTILATED CONDITION, INCAPABLE OF BEING USED FOR THEIR NORMAL PURPOSE AND WITH NO COMMERCIAL VALUE",
+    "sourcePage": 1,
+    "sourceRow": 11,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098260000",
+    "description": "Cups, shields, medals and similar articles having no other use except as trophies to convey awards for military, civil or public service or for distinction in literature, art, science or sport, whether or not engraved.",
+    "sourcePage": 1,
+    "sourceRow": 12,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098270000",
+    "description": "GOODS RECOMMENDED AND APPROVED BY THE MINISTER RESPONSIBLE FOR HOUSING AS CONSTITUTING MATERIALS AND COMPONENTS OF SYSTEMS BUILDING WHEN IMPORTED BY THE MINISTER OR A CONTRACTOR AUTHORIZED BY THE MINISTER FOR USE IN THE CONSTRUCTION OF HOUSING UNITS",
+    "sourcePage": 2,
+    "sourceRow": 13,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "100000",
+    "description": "EXPORT OF DOMESTIC GOODS",
+    "sourcePage": 2,
+    "sourceRow": 14,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "100001",
+    "description": "EXPORT OF DOMESTIC GOODS EPA COUNTRIES",
+    "sourcePage": 2,
+    "sourceRow": 15,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "100002",
+    "description": "EXPORT OF DOMESTIC GOODS CONCH",
+    "sourcePage": 2,
+    "sourceRow": 16,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "100003",
+    "description": "EXPORT OF DOMESTIC GOODS SPONGE",
+    "sourcePage": 2,
+    "sourceRow": 17,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "100004",
+    "description": "EXPORT OF DOMESTIC GOODS SPINY LOBSTER (WHOLE)",
+    "sourcePage": 2,
+    "sourceRow": 18,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "100005",
+    "description": "EXPORT OF DOMESTIC GOODS SPINY LOBSTER (TAIL)",
+    "sourcePage": 2,
+    "sourceRow": 19,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "100006",
+    "description": "EXPORT OF DOMESTIC GOODS SPINY LOBSTER (MEAT)",
+    "sourcePage": 2,
+    "sourceRow": 20,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "100007",
+    "description": "EXPORT OF DOMESTIC GOODS SCIENTIFIC PURPOSES",
+    "sourcePage": 2,
+    "sourceRow": 21,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "200003",
+    "description": "TEMPORARY EXPORT OF GOODS INTENDED FOR RE-IMPORTATION SCIENTIFIC PURPOSES",
+    "sourcePage": 2,
+    "sourceRow": 22,
+    "groupCode": "200",
+    "active": true
+  },
+  {
+    "code": "200002",
+    "description": "TEMPORARY EXPORT OF GOODS INTENDED FOR RE-IMPORTATION EXHIBITION",
+    "sourcePage": 2,
+    "sourceRow": 23,
+    "groupCode": "200",
+    "active": true
+  },
+  {
+    "code": "200004",
+    "description": "TEMPORARY EXPORT OF GOODS INTENDED FOR RE-IMPORTATION CULTURAL",
+    "sourcePage": 2,
+    "sourceRow": 24,
+    "groupCode": "200",
+    "active": true
+  },
+  {
+    "code": "200005",
+    "description": "TEMPORARY EXPORT OF GOODS INTENDED FOR RE-IMPORTATION PERSONAL USE",
+    "sourcePage": 2,
+    "sourceRow": 25,
+    "groupCode": "200",
+    "active": true
+  },
+  {
+    "code": "240000",
+    "description": "TEMPORARY EXPORT OF GOODS INTENDED FOR RE-IMPORTATION REPAIRS",
+    "sourcePage": 2,
+    "sourceRow": 26,
+    "groupCode": "240",
+    "active": true
+  },
+  {
+    "code": "240001",
+    "description": "TEMPORARY EXPORT OF GOODS INTENDED FOR RE-IMPORTATION IN AN UNALTERED STATE",
+    "sourcePage": 2,
+    "sourceRow": 27,
+    "groupCode": "240",
+    "active": true
+  },
+  {
+    "code": "440000",
+    "description": "POST ENTRY FOR GOOD SHORT SHIPPED",
+    "sourcePage": 2,
+    "sourceRow": 28,
+    "groupCode": "440",
+    "active": true
+  },
+  {
+    "code": "500001",
+    "description": "TEMPORARY IMPORTS - GOODS APPROVED AS FINE JEWELLERY REG.86(A)",
+    "sourcePage": 2,
+    "sourceRow": 29,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "340001",
+    "description": "RE-EXPORT OF IMPORTED GOODS DIPLOMATIC",
+    "sourcePage": 2,
+    "sourceRow": 30,
+    "groupCode": "340",
+    "active": false
+  },
+  {
+    "code": "500002",
+    "description": "TEMPORARY IMPORTS - GOODS FOR THE USE OF CONVENTION REG. 86(B)",
+    "sourcePage": 2,
+    "sourceRow": 31,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "350000",
+    "description": "RE-EXPORT OF TEMPORARY IMPORT",
+    "sourcePage": 2,
+    "sourceRow": 32,
+    "groupCode": "350",
+    "active": true
+  },
+  {
+    "code": "500003",
+    "description": "TEMPORARY IMPORTS -SAMPLES OF TRAVELING SALESMEN REG. 86(C)",
+    "sourcePage": 2,
+    "sourceRow": 33,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "400000",
+    "description": "IMPORT FOR HOME CONSUMPTION",
+    "sourcePage": 2,
+    "sourceRow": 34,
+    "groupCode": "400",
+    "active": true
+  },
+  {
+    "code": "4098000000",
+    "description": "DUTY CONCESSION FOR IMPORTED GOODS",
+    "sourcePage": 2,
+    "sourceRow": 35,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098010010",
+    "description": "GOODS FOR USE BY CONSULATES AND CONSUILAR OFFICERS, AS SPECIRFIED BY OR UNDER THE COUSULAR RELATIONS AND COMMONW3EALTH OFFICERS ACT",
+    "sourcePage": 3,
+    "sourceRow": 36,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098010020",
+    "description": "GOODS FOR USE BY DIPLOMATIC OFFICERS AND DIPLOMATIC OFFICERS, AS SPECIFIED BY THE MINISTER",
+    "sourcePage": 3,
+    "sourceRow": 37,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098010030",
+    "description": "GOODS FOR USE BY INTERNATIONAL ORGANIZATIONS, AS APPROVED BY THE MINISTER",
+    "sourcePage": 3,
+    "sourceRow": 38,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098020000",
+    "description": "GOODS FOR THE USE OF AN OFFICIAL ESTABLISHMENT WHOLLY MAINTAINED AND OPERATED BY A FOREIGN STATE PURSUANT TO AN AGREEMENT WITH THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 3,
+    "sourceRow": 39,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098030000",
+    "description": "GOODS FOR USE EXCLUSIVELY BY THE BAHAMAS NATIONAL TRUST, WHEN IMPORTED WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 3,
+    "sourceRow": 40,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098040000",
+    "description": "Goods imported by a charitable organization with the prior approval of the Minister and for use exclusively for charitable purposes. This exemption must meet the conditions specified in Note 10 to this Chapter.",
+    "sourcePage": 3,
+    "sourceRow": 41,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098050000",
+    "description": "Gifts to the Government of The Bahamas. Gifts over $50,000, must be approved by the Cabinet.",
+    "sourcePage": 3,
+    "sourceRow": 42,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098060000",
+    "description": "GOODS FOR USE BY REGISTERED FLORICULTURIST, HORTICULTURIST, AGRICULTURAL COOPERATIVE SOCIETIES AND FARMERS THAT MEET THE CONDITIONS SPECIFIED IN NOTE 3 TO THIS CHAPTER",
+    "sourcePage": 3,
+    "sourceRow": 43,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098070000",
+    "description": "GOODS FOR USE IN THE LIVESTOCK AND FISH FARMING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 4 TO THIS CHAPTER",
+    "sourcePage": 3,
+    "sourceRow": 44,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098080000",
+    "description": "GOODSFOR USE IN THE COMMERCIAL FISHING AND BONE FISHING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 5 TO THIS CHAPTER",
+    "sourcePage": 3,
+    "sourceRow": 45,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098090010",
+    "description": "AIRCRAFT ACCESSORIES AND INSTRUMENTS NECESSARY FOR AIRCRAFT OPERATIONS",
+    "sourcePage": 3,
+    "sourceRow": 46,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098090020",
+    "description": "LUBRICANTS, DEICING FLUIDS, HYDRAULIC AND COOLING FLUIDS TO BE USED BY AIRCRAFT",
+    "sourcePage": 3,
+    "sourceRow": 47,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098090030",
+    "description": "Equipment and machinery specifically designed for ground repair, maintenance and the service craft for use within the limits of any Customs place or any other place designated by the Minister.",
+    "sourcePage": 3,
+    "sourceRow": 48,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098090040",
+    "description": "CATERING EQUIPMENT OWNED OR LEASED BY AIRPORT OPERATORS FOR USE ABOARD AIRCRAFT",
+    "sourcePage": 3,
+    "sourceRow": 49,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098101000",
+    "description": "OF RETURNING RESIDENTS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (A)",
+    "sourcePage": 4,
+    "sourceRow": 50,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098102000",
+    "description": "OF OTHER PASSENGERS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6(B)",
+    "sourcePage": 4,
+    "sourceRow": 51,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "40981A0010",
+    "description": "Returning residents who meet the conditions specified in Note 7 to this Chapter",
+    "sourcePage": 4,
+    "sourceRow": 52,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098110000",
+    "description": "USED PERSONAL CLOTHING, INCLUDING FOOTWEAR, IMPORTED BY A RETURNING RESIDENT",
+    "sourcePage": 4,
+    "sourceRow": 53,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098120000",
+    "description": "COLLECTOR'S PIECES AND WORKS OF ART CONSIGNED TO AND FOR EXHIBITION IN PUBLIC GALLERIES, MUSEUMS AND OTHER PUBLIC INSTITUTIONS AND NOT FOR RESALE.",
+    "sourcePage": 4,
+    "sourceRow": 54,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098120012",
+    "description": "ORIGINAL PIECES AND WORKS OF ART APPROVED BY THE MINISTER AND WHICH MEET THE CONDITIONS SPECIFIED IN NOTE 6B",
+    "sourcePage": 4,
+    "sourceRow": 55,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130010",
+    "description": "PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONSTRATING AND TEACHING PURPOSES",
+    "sourcePage": 4,
+    "sourceRow": 56,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130011",
+    "description": "SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS",
+    "sourcePage": 4,
+    "sourceRow": 57,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130012",
+    "description": "SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF AN EDUCATIONAL, SCIENTIFIC OR CULTURAL CHARACTER FOR EXCLUSIVE USE",
+    "sourcePage": 4,
+    "sourceRow": 58,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130013",
+    "description": "GOODS RECOMMENDED AND APPROVED BY THE MINISTER OF EDUCATION AS BUILDING MATERIALS AND SUPPLIES FOR THE CONSTRUCTION, RENOVATION AND REPAIR OF EDUCATIONAL INSTITUTIONS",
+    "sourcePage": 4,
+    "sourceRow": 59,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130014",
+    "description": "GOODS RECOMMENDED AND APPROVED BY THE MINISTER OF EDUCATION AS FURNITURE FOR EDUCATIONAL INSTITUTIONS",
+    "sourcePage": 4,
+    "sourceRow": 60,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130015",
+    "description": "OTHER GOODS EXCLUSIVELY FOR USE IN OR BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS",
+    "sourcePage": 4,
+    "sourceRow": 61,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130020",
+    "description": "School supplies approved by the Minister not for resale",
+    "sourcePage": 4,
+    "sourceRow": 62,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130030",
+    "description": "PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONSTRATING AND TEACHING PURPOSES",
+    "sourcePage": 4,
+    "sourceRow": 63,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130031",
+    "description": "SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS IMPORTED FOR PURPOSES OF SCIENTIFIC RESEARCH",
+    "sourcePage": 4,
+    "sourceRow": 64,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130032",
+    "description": "SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF A SCIENTIFIC NATURE FOR EXCLUSIVE USE",
+    "sourcePage": 4,
+    "sourceRow": 65,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130040",
+    "description": "PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONSTRATING AND TEACHING PURPOSES IN CULTURAL INSTITUTIONS",
+    "sourcePage": 5,
+    "sourceRow": 66,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130041",
+    "description": "SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS IMPORTED FOR PURPOSES OF SCIENTIFIC RESEARCH FOR USE IN CULTURAL INSTITUTIONS",
+    "sourcePage": 5,
+    "sourceRow": 67,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130042",
+    "description": "SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF AN EDUCATIONAL, SCIENTIFIC OR CULTURAL CHARACTER FOR USE EXCLUSIVELY BY CULTURAL INSTITUTIONS, SOCIETIES OR BROADCASTING ORGANIZATIONS",
+    "sourcePage": 5,
+    "sourceRow": 68,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130050",
+    "description": "SPECIALLY DESIGNED ARTICLES OR RAW MATERIALS FOR THE EDUCATIONAL, SCIENTIFIC, CULTURAL OR ECONOMIC ADVANCEMENT OF THE HANDICAPPED",
+    "sourcePage": 5,
+    "sourceRow": 69,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130060",
+    "description": "EQUIPMENT AND MATERIALS FOR RESEARCH OF THE ACQUIRED IMMUNE DEFICIENCY SYNDROME (AIDS)",
+    "sourcePage": 5,
+    "sourceRow": 70,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130061",
+    "description": "EQUIPMENT AND MATERIALS FOR THE TREATMENT OR ASSISTANCE OF PERSONS INFECTED WITH AIDS OR THE HUMAN IMMUNE DEFICIENCY VIRUS (HIV)",
+    "sourcePage": 5,
+    "sourceRow": 71,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130062",
+    "description": "SPECIALIZED EQUIPMENT, MEDICAL SUPPLIES AND DOMESTIC SUPPLIES FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED OR THE ELDERLY",
+    "sourcePage": 5,
+    "sourceRow": 72,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098140000",
+    "description": "Sporting equipment (and supplies) for use of schools and sporting associations",
+    "sourcePage": 5,
+    "sourceRow": 73,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098150000",
+    "description": "Goods for the exclusive use of religious organizations that meet the conditions specified in Note 9 to this Chapter",
+    "sourcePage": 5,
+    "sourceRow": 74,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098160000",
+    "description": "MEDICAL EQUIPMENT AND BUILDING MATERIALS IMPORTED BY THE PUBLIC HOSPITALS AUTHORITY OR THE NATIONAL INSURANCE BOARD FOR USE IN HOSPITALS, MINIHOSPITALS OR CLINICS THAT MEET THE CONDITIONS SPECIFIED IN NOTE 8 TO THIS CHAPTER",
+    "sourcePage": 5,
+    "sourceRow": 75,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098160010",
+    "description": "MEDICAL EQUIPMENT FOR USE IN FACILITIES, INCLUDING VETERINARIAN AND DENTAL FACILITIES THAT PROVIDE SERVICES",
+    "sourcePage": 5,
+    "sourceRow": 76,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098170000",
+    "description": "General exemption to provide relief in response to a declaration of exigency by the Minister that meet the conditions specified in Note 12 to the Chapter",
+    "sourcePage": 5,
+    "sourceRow": 77,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098180010",
+    "description": "Raw materials for use in the manufacture of handicraft items or for use in cottage and light industries that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 5,
+    "sourceRow": 78,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098180020",
+    "description": "Processing equipment and garment manufacturing equipment for use in the manufacturing of handicraft items and garments in the cottage industry that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 6,
+    "sourceRow": 79,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098180030",
+    "description": "Raffia substitutes for use in the straw work industry that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 6,
+    "sourceRow": 80,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098180040",
+    "description": "RAW MATERIALS FOR USE IN THE MANUFACTURE OF HANDICRAFT ITEMS OR FOR USE IN COTTAGE AND LIGHT INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 10 TO THIS CHAPTER",
+    "sourcePage": 6,
+    "sourceRow": 81,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098180050",
+    "description": "RAFFIA SUBSTITUTES FOR USE IN THE STRAW WORK INDUSTRY",
+    "sourcePage": 6,
+    "sourceRow": 82,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098190000",
+    "description": "RECORDS, TAPES AND OTHER RECORDED MEDIA FOR SOUND OR SIMILARLY RECORDED PHENOMENA, AS APPROVED BY THE MINISTER",
+    "sourcePage": 6,
+    "sourceRow": 83,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098550020",
+    "description": "Generators and Engines (N.P.)",
+    "sourcePage": 6,
+    "sourceRow": 84,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098550030",
+    "description": "Items \u2013 Family Islands (F.I.)",
+    "sourcePage": 6,
+    "sourceRow": 85,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098550040",
+    "description": "Generators and Engines \u2013 Family Islands (F.I.)",
+    "sourcePage": 6,
+    "sourceRow": 86,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098560000",
+    "description": "CAPITAL GOODS FOR BUSINESSES LOCATED OUTSIDE OF THE PORT AREA IN GRAND BAHAMA APPROVED BY THE MINISTER",
+    "sourcePage": 6,
+    "sourceRow": 87,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098570000",
+    "description": "PROCESSING MACHINERY FOR USE IN THE RECYCLING OF WASTE, WITH THE APPROVAL OF THE MINISTER",
+    "sourcePage": 6,
+    "sourceRow": 88,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098580010",
+    "description": "WHERE THE CONDITIONS SPECIFIED IN NOTE (8A) (b) TO THIS CHAPTER ARE MET",
+    "sourcePage": 6,
+    "sourceRow": 89,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098580020",
+    "description": "WHERE THE CONDITIONS SPECIFIED IN NOTE (8A) (c) TO THIS CHAPTER ARE MET",
+    "sourcePage": 6,
+    "sourceRow": 90,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098590000",
+    "description": "Goods and materials for building projects",
+    "sourcePage": 6,
+    "sourceRow": 91,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098600010",
+    "description": "HUMAN REMAINS IN CASKETS",
+    "sourcePage": 6,
+    "sourceRow": 92,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098600090",
+    "description": "HUMAN REMAINS IN URNS",
+    "sourcePage": 6,
+    "sourceRow": 93,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "429800000",
+    "description": "EXCISE CONCESSION FOR IMPORTED GOODS",
+    "sourcePage": 6,
+    "sourceRow": 94,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298700010",
+    "description": "GOODS FOR USE BY CONSULATES AND CONSULAR OFFICERS, AS SPECIFIED BY OR UNDER THE CONSULAR RELATIONS AND COMMONWEALTH OFFICERS ACT",
+    "sourcePage": 6,
+    "sourceRow": 95,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298700020",
+    "description": "GOODS FOR USE BY DIPLOMATIC OFFICES AND DIPLOMATIC OFFICERS, AS SPECIFIED BY THE MINISTER",
+    "sourcePage": 6,
+    "sourceRow": 96,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298700030",
+    "description": "GOODS FOR USE BY INTERNATIONAL ORGANIZATIONS, AS APPROVED BY THE MINISTER",
+    "sourcePage": 6,
+    "sourceRow": 97,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298710000",
+    "description": "GOODS FOR THE USE OF AN OFFICIAL ESTABLISHMENT WHOLLY MAINTAINED AND OPERATED BY A FOREIGN STATE PURSUANT TO AN AGREEMENT WITH THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 6,
+    "sourceRow": 98,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298720000",
+    "description": "GOODS FOR USE EXCLUSIVELY BY THE BAHAMAS NATIONAL TRUST, WHEN IMPORTED WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 7,
+    "sourceRow": 99,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298730000",
+    "description": "GOODS IMPORTED BY A CHARITABLE ORGANIZATION WITH THE PRIOR APPROVAL OF THE MINISTER AND FOR USE EXCLUSIVELY FOR CHARITABLE PURPOSES",
+    "sourcePage": 7,
+    "sourceRow": 100,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298740000",
+    "description": "Gifts to the Government of The Bahamas. Any gift over $50,000 must be approved by The Cabinet",
+    "sourcePage": 7,
+    "sourceRow": 101,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298750010",
+    "description": "GOODS FOR USE BY REGISTERED FLORICULTURIST, HORTICULTURIST, AGRICULTURAL COOPERATIVE SOCIETIES AND FARMERS THAT MEET THE CONDITIONS SPECIFIED IN NOTE 3 TO THIS CHAPTER",
+    "sourcePage": 7,
+    "sourceRow": 102,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298750020",
+    "description": "FARM TRACTORS FOR AGRICULTURAL COOPERATIVE SOCIETIES REGISTERED WITH THE MINISTER",
+    "sourcePage": 7,
+    "sourceRow": 103,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298760000",
+    "description": "GOODS FOR USE IN THE LIVESTOCK AND FISH FARMING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 4 TO THIS CHAPTER",
+    "sourcePage": 7,
+    "sourceRow": 104,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298770000",
+    "description": "GOODS FOR USE IN THE COMMERCIAL FISHING AND BONE FISHING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 5 TO THIS CHAPTER",
+    "sourcePage": 7,
+    "sourceRow": 105,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298780010",
+    "description": "AIRCRAFT ACCESSORIES AND INSTRUMENTS NECESSARY FOR AIRCRAFT OPERATIONS",
+    "sourcePage": 7,
+    "sourceRow": 106,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298780020",
+    "description": "LUBRICANTS, DE-ICING FLUIDS, HYDRAULIC AND COOLING FLUIDS TO BE USED BY AIRCRAFT",
+    "sourcePage": 7,
+    "sourceRow": 107,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298780030",
+    "description": "Equipment and machinery specifically designed for ground repair, maintenance and service of craft for use within the limits of any customs place or any other approved place designated by the Minister",
+    "sourcePage": 7,
+    "sourceRow": 108,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298780040",
+    "description": "CATERING EQUIPMENT OWNED OR LEASED BY AIRPORT OPERATORS FOR USE ABOARD AIRCRAFT",
+    "sourcePage": 7,
+    "sourceRow": 109,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298790010",
+    "description": "OF RETURNING RESIDENTS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (A)",
+    "sourcePage": 7,
+    "sourceRow": 110,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298790020",
+    "description": "OF OTHER PASSENGERS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (B)",
+    "sourcePage": 7,
+    "sourceRow": 111,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298980020",
+    "description": "Hotel Encouragement Act for other supplies",
+    "sourcePage": 7,
+    "sourceRow": 112,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298980030",
+    "description": "Hotel Encouragement Act for other supplies",
+    "sourcePage": 7,
+    "sourceRow": 113,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298990000",
+    "description": "COMMONWEALTH BREWERY",
+    "sourcePage": 7,
+    "sourceRow": 114,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "42989E0010",
+    "description": "ITEMS - NEW PROVIDENCE (N.P.)",
+    "sourcePage": 8,
+    "sourceRow": 115,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "42989E0020",
+    "description": "GENERATORS AND ENGINES (N.P.)",
+    "sourcePage": 8,
+    "sourceRow": 116,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "42989E0030",
+    "description": "ITEMS-FAMILY ISLANDS (F.I.)",
+    "sourcePage": 8,
+    "sourceRow": 117,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "42989E0040",
+    "description": "GENERATORS AND ENGINES (F.I.)",
+    "sourcePage": 8,
+    "sourceRow": 118,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "42989F0000",
+    "description": "CAPITAL GOODS FOR BUSINESSES LOCATED OUTSIDE OF THE PORT AREA IN GRAND BAHAMA APPROVED BY THE MINISTER",
+    "sourcePage": 8,
+    "sourceRow": 119,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "42989G0000",
+    "description": "PROCESSING MACHINERY FOR USE IN THE RECYCLING OF WASTE, WITH THE APPROVAL OF THE MINISTER",
+    "sourcePage": 8,
+    "sourceRow": 120,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "42989H0000",
+    "description": "ALTAR WINE",
+    "sourcePage": 8,
+    "sourceRow": 121,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "500000",
+    "description": "TEMPORARY IMPORTS - REG. 86 (I)",
+    "sourcePage": 8,
+    "sourceRow": 122,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "624000",
+    "description": "RE-IMPORT OF EXPORTED GOODS IN AN UNALTERED STATE",
+    "sourcePage": 8,
+    "sourceRow": 123,
+    "groupCode": "624",
+    "active": true
+  },
+  {
+    "code": "624001",
+    "description": "RE-IMPORT OF EXPORTED GOODS FOR REPAIRS",
+    "sourcePage": 8,
+    "sourceRow": 124,
+    "groupCode": "624",
+    "active": true
+  },
+  {
+    "code": "700000",
+    "description": "IMPORT FOR BONDED WAREHOUSING",
+    "sourcePage": 8,
+    "sourceRow": 125,
+    "groupCode": "700",
+    "active": true
+  },
+  {
+    "code": "171000",
+    "description": "EX-WAREHOUSING EXPORT OF GOODS",
+    "sourcePage": 8,
+    "sourceRow": 126,
+    "groupCode": "170",
+    "active": true
+  },
+  {
+    "code": "770000",
+    "description": "RE-WAREHOUSING",
+    "sourcePage": 8,
+    "sourceRow": 127,
+    "groupCode": "770",
+    "active": true
+  },
+  {
+    "code": "900000",
+    "description": "TRANSSHIPMENT",
+    "sourcePage": 8,
+    "sourceRow": 128,
+    "groupCode": "900",
+    "active": true
+  },
+  {
+    "code": "42987A0010",
+    "description": "Returning residents who meet the conditions specified in Note 7 to this Chapter",
+    "sourcePage": 8,
+    "sourceRow": 129,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298800010",
+    "description": "SPECIALLY DESIGNED ARTICLES IMPORTED BY INSTITUTIONS OR ORGANIZATIONS CONCERNED WITH THE WELFARE OF THE HANDICAPPED, ON APPROVAL BY THE MINISTER",
+    "sourcePage": 8,
+    "sourceRow": 130,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298800020",
+    "description": "GOODS INCLUDING NEW BUSES ONCE EVERY FIVE YEARS, FOR USE EXCLUSIVELY IN OR BY PUBLIC OR PRIVATE EDUCATIONAL INSTITUTIONS, ON APPROVAL BY THE MINISTER",
+    "sourcePage": 8,
+    "sourceRow": 131,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298800030",
+    "description": "SPECIALIZED EQUIPMENT, MEDICAL SUPPLIES AND DOMESTIC SUPPLIES FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED OR THE ELDERLY",
+    "sourcePage": 8,
+    "sourceRow": 132,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298810000",
+    "description": "Goods intended to provide relief in response to a declaration of exigency by the Minister that meet the conditions specified. Note 8 to this Chapter",
+    "sourcePage": 8,
+    "sourceRow": 133,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298820000",
+    "description": "GOODS MANUFACTURED OR PROCESSED IN THE PORT AREA BY MAUFACTURERS REGISTERED WITH AND APPROVED BY THE MINISTRY RESPONSIBLE FOR TRADE AND INDUSTRY",
+    "sourcePage": 8,
+    "sourceRow": 134,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298830000",
+    "description": "GOODS IMPORTED OR TAKEN OUT OF BOND IN THE BAHAMAS BY A PERMIT, LICENCE OR LEASE HOLDER OR CONTRATOR EMPLOYED BY THE HOLDER, WHICH ARE PERCULIAR AND NECESSARY FOR THE PURPOSE OF THE PERMIT, LICENCE OR LEASE.",
+    "sourcePage": 9,
+    "sourceRow": 135,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298840000",
+    "description": "Buses not older than eight years; and limited to one import every five years with prior approval of the Minister",
+    "sourcePage": 9,
+    "sourceRow": 136,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298850010",
+    "description": "Motor vehicles not more than three years old as specified in Note 9 to this Chapter",
+    "sourcePage": 9,
+    "sourceRow": 137,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298860010",
+    "description": "Petroleum products imported by the Bahamas Power and Light as specified in Note 10 to this Chapter",
+    "sourcePage": 9,
+    "sourceRow": 138,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298860020",
+    "description": "Petroleum products imported by any licensed entity with the prior approval of the Government of The Bahamas as specified in Note 10 to this Chapter",
+    "sourcePage": 9,
+    "sourceRow": 139,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298870000",
+    "description": "MATERIALS USED TO RESTORE AND MAINTAIN HISTORIC BUILDINGS REGISTERED IN THE NATIONAL REGISTER",
+    "sourcePage": 9,
+    "sourceRow": 140,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298880010",
+    "description": "ENGINE AND OTHER MECHANICAL PARTS FOR MOTOR VESSELS USED IN THE INTER-ISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 9,
+    "sourceRow": 141,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298880020",
+    "description": "Parts and other non-consumable goods for the sole use on a vessel entered under a temporary cruising permit, (Form Number C-39)",
+    "sourcePage": 9,
+    "sourceRow": 142,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298890000",
+    "description": "GOODS FOR COMMERCIAL PRINTERS FOR USE IN THE COMMERCIAL PRINTING INDUSTRY THAT MEET THE CONDITIONS SPECIFIED IN NOTE 11 TO THIS CHAPTER",
+    "sourcePage": 9,
+    "sourceRow": 143,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298890010",
+    "description": "Printing goods that meet conditions specified in Note 12 to this chapter",
+    "sourcePage": 9,
+    "sourceRow": 144,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298890020",
+    "description": "Goods for commercial printers for use in the commercial printing industry that meet the conditions specified in Note 12 to this Chapter.",
+    "sourcePage": 9,
+    "sourceRow": 145,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298900000",
+    "description": "VEHICLES FOR THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 9,
+    "sourceRow": 146,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298910000",
+    "description": "WATER AND SEWAGE",
+    "sourcePage": 9,
+    "sourceRow": 147,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298920000",
+    "description": "FAMILY ISLAND DEVELOPMENT ENCOURAGEMENT ACT",
+    "sourcePage": 9,
+    "sourceRow": 148,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298930000",
+    "description": "NASSAU AIRPORT DEVELOPMENT PROJECT",
+    "sourcePage": 9,
+    "sourceRow": 149,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298940000",
+    "description": "ALBANY PROJECT",
+    "sourcePage": 9,
+    "sourceRow": 150,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298950000",
+    "description": "AUTEC AGREEMENT",
+    "sourcePage": 9,
+    "sourceRow": 151,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298960000",
+    "description": "RE-IMPORTED GOODS",
+    "sourcePage": 9,
+    "sourceRow": 152,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298970000",
+    "description": "INDUSTRIES ENCOURAGEMENT ACT",
+    "sourcePage": 9,
+    "sourceRow": 153,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298980010",
+    "description": "Hotel Encouragement Act for construction materials",
+    "sourcePage": 9,
+    "sourceRow": 154,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4098280000",
+    "description": "Goods manufactured or processed in the Port Area by manufacturers registered with and approved by the Ministry responsible for Trade and Industry or the Minister of Finance",
+    "sourcePage": 10,
+    "sourceRow": 155,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098290010",
+    "description": "VESSELS HOLDING A VALID PERMIT UNDER THE BOAT REGISTRATION ACT, SECTION 4",
+    "sourcePage": 10,
+    "sourceRow": 156,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098290020",
+    "description": "ENTRY OF SHIPS OF 150 GROSS TONS OR MORE",
+    "sourcePage": 10,
+    "sourceRow": 157,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098290030",
+    "description": "UPON RE-ENTRY OF A BAHAMIAN REGISTERED PLEASURE VESSEL OF LESS THAN 150 GROSS TONS AND NOT LESS THAN 30 FEET IN LENGTH FOR WHICH DUTY HAS BEEN PAID",
+    "sourcePage": 10,
+    "sourceRow": 158,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098290040",
+    "description": "ENTRY OF PLEASURE VESSELS, NOT CARRYING CARGO, WHOLLY OWNED BY PERSONS NOT ORDINARILY RESIDENT IN THE BAHAMAS, FOR A PERIOD NOT EXCEEDING TWELVE (12) MONTHS DURING WHICH IT WILL NOT BE USED FOR ANY COMMERCIAL PURPOSES",
+    "sourcePage": 10,
+    "sourceRow": 159,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098290050",
+    "description": "MOTOR VESSELS FOR USE IN THE INTERISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 10,
+    "sourceRow": 160,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098290060",
+    "description": "ENGINE AND OTHER MECHANICAL PARTS FOR MOTOR VESSELS USED IN THE INTERISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 10,
+    "sourceRow": 161,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098290070",
+    "description": "Parts and other non-consumable goods for the sole use on a vessel entered under a temporary cruising permit, (Form Number C-39)",
+    "sourcePage": 10,
+    "sourceRow": 162,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098290080",
+    "description": "HACKNEY CARRIAGES, AS DEFINED IN THE CABS ACT, SECTION 2, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 10,
+    "sourceRow": 163,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098300000",
+    "description": "FRESH WATER IMPORTED IN BULK FOR USE IN INAGUA AND ANY OTHER ISLAND SPECIFIED BY THE MINISTER BY ORDER",
+    "sourcePage": 10,
+    "sourceRow": 164,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098310000",
+    "description": "FEED FOR BIRDS AND ANIMALS IN ZOOLOGICAL GARDENS",
+    "sourcePage": 10,
+    "sourceRow": 165,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098320000",
+    "description": "BUILDING SUPPLIES AND EQUIPMENT FOR THE CONSTRUCTION AND EQUIPPING OF THE ARAWAK CAY PORT, COMMENCING ON JULY 1ST, 2010 AND ENDING ON JUNE 30TH, 2013",
+    "sourcePage": 10,
+    "sourceRow": 166,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098330010",
+    "description": "BUSINESSES UNDER 5 YEARS",
+    "sourcePage": 10,
+    "sourceRow": 167,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098330020",
+    "description": "BUSINESSES OVER 5 YEARS",
+    "sourcePage": 10,
+    "sourceRow": 168,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098340000",
+    "description": "South Riding Point",
+    "sourcePage": 10,
+    "sourceRow": 169,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098350000",
+    "description": "WATER & SEWERAGE ACT",
+    "sourcePage": 10,
+    "sourceRow": 170,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098360000",
+    "description": "CONCESSION IS LIMITED ONLY TO IMPORTS THAT ARE DIRECTLY RELATED TO THE MAINTENANCE AND REHABILITATION OF THE EAST AND WEST BRIDGES OF PARADISE ISLAND AND APPROVED BY THE MINISTER",
+    "sourcePage": 10,
+    "sourceRow": 171,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098370000",
+    "description": "NASSAU AIRPORT DEVELOPMENT PROJECT",
+    "sourcePage": 11,
+    "sourceRow": 172,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098380000",
+    "description": "THE SPORTS CENTER PROJECT",
+    "sourcePage": 11,
+    "sourceRow": 173,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098390000",
+    "description": "THE OCEAN INDUSTRIES ACT",
+    "sourcePage": 11,
+    "sourceRow": 174,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098400010",
+    "description": "ITEMS RELATED TO Z.N.S.",
+    "sourcePage": 11,
+    "sourceRow": 175,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098400020",
+    "description": "ITEMS RELATED TO CABLE BAHAMAS",
+    "sourcePage": 11,
+    "sourceRow": 176,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098410000",
+    "description": "AUTEC AGREEMENT",
+    "sourcePage": 11,
+    "sourceRow": 177,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098420000",
+    "description": "CLIFTON HERITAGE AUTHORITY ACT",
+    "sourcePage": 11,
+    "sourceRow": 178,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098430000",
+    "description": "IMMUNITIES & PRIVILEGES ACT",
+    "sourcePage": 11,
+    "sourceRow": 179,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098440000",
+    "description": "LONG RANGE PROVING GROUND ACT",
+    "sourcePage": 11,
+    "sourceRow": 180,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098450000",
+    "description": "NASSAU REVITALIZATION ACT",
+    "sourcePage": 11,
+    "sourceRow": 181,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098460000",
+    "description": "FAMILY ISLAND DEVELOPMENT ENCOURAGEMENT ACT",
+    "sourcePage": 11,
+    "sourceRow": 182,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098470000",
+    "description": "CENTRAL BANK ACT",
+    "sourcePage": 11,
+    "sourceRow": 183,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098480000",
+    "description": "REIMPORTED GOODS",
+    "sourcePage": 11,
+    "sourceRow": 184,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098490000",
+    "description": "ALBANY PROJECT",
+    "sourcePage": 11,
+    "sourceRow": 185,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098500000",
+    "description": "PETROLEUM ACT",
+    "sourcePage": 11,
+    "sourceRow": 186,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098510000",
+    "description": "CONSULAR RELATIONS AND COMMONWEALTH OFFICERS",
+    "sourcePage": 11,
+    "sourceRow": 187,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098520010",
+    "description": "Hotel Encouragement Act for construction materials",
+    "sourcePage": 11,
+    "sourceRow": 188,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098520020",
+    "description": "Hotel Encouragement Act for other supplies",
+    "sourcePage": 11,
+    "sourceRow": 189,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098520030",
+    "description": "Hotel Encouragement Act Construction Plant",
+    "sourcePage": 11,
+    "sourceRow": 190,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098530000",
+    "description": "AGRICULTURE MANUFACTURERS ACT",
+    "sourcePage": 11,
+    "sourceRow": 191,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098540000",
+    "description": "INDUSTRIES ENCOURAGEMENT ACT",
+    "sourcePage": 11,
+    "sourceRow": 192,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098550010",
+    "description": "Items \u2013 New Providence (N.P.)",
+    "sourcePage": 11,
+    "sourceRow": 193,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "F42001",
+    "description": "IMPORT CONDITIONALLY DUTY-FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) FOR STOCK OR INVENTORY ON EXPEDITED RELEASE",
+    "sourcePage": 11,
+    "sourceRow": 194,
+    "groupCode": "F42",
+    "active": false
+  },
+  {
+    "code": "4098130062D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED, OR THE ELDERLY: SPECIALIZED EQUIPMENT, MEDICAL SUPPLIES AND DOMESTIC SUPPLIES FOR USE BY THE HANDICAPPED, CHRONICALLY",
+    "sourcePage": 11,
+    "sourceRow": 195,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130061D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED, OR THE ELDERLY: EQUIPMENT AND MATERIALS FOR THE TREATMENT OR ASSISTANCE OF PERSONS INFECTED WITH AIDS OR THE HUMAN",
+    "sourcePage": 11,
+    "sourceRow": 196,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130060D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED, OR THE ELDERLY: EQUIPMENT AND MATERIALS FOR RESEARCH OF THE ACQUIRED IMMUNE DEFICIENCY SYNDROME (AIDS)",
+    "sourcePage": 12,
+    "sourceRow": 197,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130050D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED BY INSTITUTIONS OR ORGANIZATIONS CONCERNED WITH THE WELFARE OF THE HANDICAPPED: SPECIALLY DESIGNED ARTICLES OR RAW MATERIALS FOR THE EDUCATIONAL, SCIENTIFIC, CULTURAL OR ECONOMIC ADVANC",
+    "sourcePage": 12,
+    "sourceRow": 198,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130042D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY CULTURAL INSTITUTIONS, SOCIETIES OR BROADCASTING ORGANIZATIONS: SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF AN EDUCATIONAL, SCIENTIFIC OR CULTURAL CHARACTER FOR USE",
+    "sourcePage": 12,
+    "sourceRow": 199,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130041D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY CULTURAL INSTITUTIONS, SOCIETIES OR BROADCASTING ORGANIZATIONS:SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS IMPORTED FOR PURPOSES OF SCIENTIFIC RESEARC",
+    "sourcePage": 12,
+    "sourceRow": 200,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130040D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY CULTURAL INSTITUTIONS, SOCIETIES OR BROADCASTING ORGANIZATIONS: PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONSTRATING AND TEACHING PURPOSES IN",
+    "sourcePage": 12,
+    "sourceRow": 201,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130032D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY SCIENTIFIC INSTITUTIONS: SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF A SCIENTIFIC NATURE FOR EXCLUSIVE USE",
+    "sourcePage": 12,
+    "sourceRow": 202,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130031D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY SCIENTIFIC INSTITUTIONS: SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS IMPORTED FOR PURPOSES OF SCIENTIFIC RESEARCH",
+    "sourcePage": 12,
+    "sourceRow": 203,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130030D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY SCIENTIFIC INSTITUTIONS: PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONSTRATING AND TEACHING PURPOSES",
+    "sourcePage": 13,
+    "sourceRow": 204,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130020D",
+    "description": "School supplies approved by the Minister not for resale",
+    "sourcePage": 13,
+    "sourceRow": 205,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130015D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: OTHER GOODS EXCLUSIVELY FOR USE IN OR BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS",
+    "sourcePage": 13,
+    "sourceRow": 206,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130014D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: GOODS RECOMMENDED AND APPROVED BY THE MINISTER OF EDUCATION AS FURNITURE FOR EDUCATIONAL INSTITUTIONS",
+    "sourcePage": 13,
+    "sourceRow": 207,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130013D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: GOODS RECOMMENDED AND APPROVED BY THE MINISTER OF EDUCATION AS BUILDING MATERIALS AND SUPPLIES FOR THE CONSTRUCTION, RENOVATION AN",
+    "sourcePage": 13,
+    "sourceRow": 208,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "400003",
+    "description": "IMPORT OF GOODS UNDER DRAWBACK",
+    "sourcePage": 13,
+    "sourceRow": 209,
+    "groupCode": "400",
+    "active": false
+  },
+  {
+    "code": "470700",
+    "description": "EX-WAREHOUSE REMOVAL (MANUFACTURING UNDER BOND)",
+    "sourcePage": 13,
+    "sourceRow": 210,
+    "groupCode": "470",
+    "active": true
+  },
+  {
+    "code": "420000",
+    "description": "EXPEDITED RELEASE OF GOODS (C19)",
+    "sourcePage": 13,
+    "sourceRow": 211,
+    "groupCode": "420",
+    "active": true
+  },
+  {
+    "code": "340000",
+    "description": "RE-EXPORT OF GOOD UNDER DRAWBACK",
+    "sourcePage": 13,
+    "sourceRow": 212,
+    "groupCode": "340",
+    "active": true
+  },
+  {
+    "code": "990000",
+    "description": "TRANSSHIPMENT (OUTBOUND)",
+    "sourcePage": 13,
+    "sourceRow": 213,
+    "groupCode": "990",
+    "active": false
+  },
+  {
+    "code": "4098520010D",
+    "description": "Hotel Encouragement Act for construction materials",
+    "sourcePage": 13,
+    "sourceRow": 214,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4298980020E",
+    "description": "Hotel Encouragement Act for other supplies",
+    "sourcePage": 13,
+    "sourceRow": 215,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298980030E",
+    "description": "Hotel Encouragement Act for other supplies",
+    "sourcePage": 13,
+    "sourceRow": 216,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4098130012D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF AN EDUCATIONAL, SCIENTIFIC OR CULTURAL CHARACTER FOR EXCLUSIVE USE",
+    "sourcePage": 13,
+    "sourceRow": 217,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "42989K0030E",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - OTHER MADE UP CLOTHI",
+    "sourcePage": 14,
+    "sourceRow": 218,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989K0020E",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - MEN, BOYS, WOMEN AND",
+    "sourcePage": 14,
+    "sourceRow": 219,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989K0010E",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - MEN, BOYS, WOMEN AND",
+    "sourcePage": 14,
+    "sourceRow": 220,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989J0000E",
+    "description": "HEADS OF AGREEMENT ROYAL CARIBBEAN CRUISES LTD.: FOR GOODS IMPORTED DUTY EXEMPTED INTO COCO CAY LOCATED IN THE BERRY ISLAND",
+    "sourcePage": 14,
+    "sourceRow": 221,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989I0000E",
+    "description": "Concession for goods and equipment imported under any Heads of Agreement between the Government of The Bahamas and any entity",
+    "sourcePage": 14,
+    "sourceRow": 222,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989H0000E",
+    "description": "ALTAR WINE",
+    "sourcePage": 14,
+    "sourceRow": 223,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989G0000E",
+    "description": "PROCESSING MACHINERY FOR USE IN THE RECYCLING OF WASTE, WITH THE APPROVAL OF THE MINISTER",
+    "sourcePage": 14,
+    "sourceRow": 224,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989F0000E",
+    "description": "CAPITAL GOODS FOR BUSINESSES LOCATED OUTSIDE OF THE PORT AREA IN GRAND BAHAMA APPROVED BY THE MINISTER",
+    "sourcePage": 14,
+    "sourceRow": 225,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989E0040E",
+    "description": "ELECTRICITY ACT: GENERATORS AND ENGINES (F.I.)",
+    "sourcePage": 14,
+    "sourceRow": 226,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989E0030E",
+    "description": "ELECTRICITY ACT: ITEMS-FAMILY ISLANDS (F.I.)",
+    "sourcePage": 14,
+    "sourceRow": 227,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989E0020E",
+    "description": "ELECTRICITY ACT: GENERATORS AND ENGINES (N.P.)",
+    "sourcePage": 14,
+    "sourceRow": 228,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989E0010E",
+    "description": "ELECTRICITY ACT: ITEMS - NEW PROVIDENCE (N.P.)",
+    "sourcePage": 14,
+    "sourceRow": 229,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298990000E",
+    "description": "COMMONWEALTH BREWERY",
+    "sourcePage": 14,
+    "sourceRow": 230,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298970000E",
+    "description": "INDUSTRIES ENCOURAGEMENT ACT",
+    "sourcePage": 14,
+    "sourceRow": 231,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298970000E",
+    "description": "INDUSTRIES ENCOURAGEMENT ACT",
+    "sourcePage": 14,
+    "sourceRow": 232,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298960000E",
+    "description": "RE-IMPORTED GOODS",
+    "sourcePage": 15,
+    "sourceRow": 233,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298950000E",
+    "description": "AUTEC AGREEMENT",
+    "sourcePage": 15,
+    "sourceRow": 234,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298940000E",
+    "description": "ALBANY PROJECT",
+    "sourcePage": 15,
+    "sourceRow": 235,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298930000E",
+    "description": "NASSAU AIRPORT DEVELOPMENT PROJECT",
+    "sourcePage": 15,
+    "sourceRow": 236,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298920000E",
+    "description": "FAMILY ISLAND DEVELOPMENT ENCOURAGEMENT ACT",
+    "sourcePage": 15,
+    "sourceRow": 237,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298910000E",
+    "description": "WATER AND SEWAGE",
+    "sourcePage": 15,
+    "sourceRow": 238,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298900000E",
+    "description": "VEHICLES FOR THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 15,
+    "sourceRow": 239,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298890020E",
+    "description": "Goods for commercial printers for use in the commercial printing industry that meet the conditions specified in Note 12 to this Chapter.",
+    "sourcePage": 15,
+    "sourceRow": 240,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4098130011D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS",
+    "sourcePage": 15,
+    "sourceRow": 241,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098130010D",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONSTRATING AND TEACHING PURPOSES",
+    "sourcePage": 15,
+    "sourceRow": 242,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "400F40",
+    "description": "IMPORTS FROM FREEZONE TO HOME CONSUMPTION (PREVOUSLY BONDED)",
+    "sourcePage": 15,
+    "sourceRow": 243,
+    "groupCode": "4F0",
+    "active": false
+  },
+  {
+    "code": "4098120020D",
+    "description": "Original pieces and works of art approved by The Minister and which meet the conditions specified in Note 8 to this Chapter",
+    "sourcePage": 15,
+    "sourceRow": 244,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098120010D",
+    "description": "COLLECTOR'S PIECES AND WORKS OF ART CONSIGNED TO AND FOR EXHIBITION IN PUBLIC GALLERIES, MUSEUMS AND OTHER PUBLIC INSTITUTIONS AND NOT FOR RESALE.",
+    "sourcePage": 15,
+    "sourceRow": 245,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098110000D",
+    "description": "USED PERSONAL CLOTHING, INCLUDING FOOTWEAR, IMPORTED BY A RETURNING RESIDENT",
+    "sourcePage": 15,
+    "sourceRow": 246,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "40981A0010D",
+    "description": "Returning residents who meet the conditions specified in Note 7 to this Chapter",
+    "sourcePage": 15,
+    "sourceRow": 247,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098102000D",
+    "description": "FOR BAGAGE OF PASSENGERS - OF OTHER PASSENGERS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6(B)",
+    "sourcePage": 15,
+    "sourceRow": 248,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098101000D",
+    "description": "FOR BAGAGE OF PASSENGERS - OF RETURNING RESIDENTS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (A)",
+    "sourcePage": 15,
+    "sourceRow": 249,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098090040D",
+    "description": "CATERING EQUIPMENT OWNED OR LEASED BY AIRPORT OPERATORS FOR USE ABOARD AIRCRAFT",
+    "sourcePage": 15,
+    "sourceRow": 250,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098090030D",
+    "description": "Equipment and machinery specifically designed for ground repair, maintenance and the service craft for use within the limits of any Customs place or any other place designated by the Minister.",
+    "sourcePage": 16,
+    "sourceRow": 251,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098090020D",
+    "description": "LUBRICANTS, DEICING FLUIDS, HYDRAULIC AND COOLING FLUIDS TO BE USED BY AIRCRAFT",
+    "sourcePage": 16,
+    "sourceRow": 252,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098090010D",
+    "description": "AIRCRAFT ACCESSORIES AND INSTRUMENTS NECESSARY FOR AIRCRAFT OPERATIONS",
+    "sourcePage": 16,
+    "sourceRow": 253,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098080000D",
+    "description": "GOODS FOR USE IN THE COMMERCIAL FISHING AND BONE FISHING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 5 TO THIS CHAPTER",
+    "sourcePage": 16,
+    "sourceRow": 254,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098070000D",
+    "description": "GOODS FOR USE IN THE LIVESTOCK AND FISH FARMING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 4 TO THIS CHAPTER",
+    "sourcePage": 16,
+    "sourceRow": 255,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098060000D",
+    "description": "GOODS FOR USE BY REGISTERED FLORICULTURIST, HORTICULTURIST, AGRICULTURAL COOPERATIVE SOCIETIES AND FARMERS THAT MEET THE CONDITIONS SPECIFIED IN NOTE 3 TO THIS CHAPTER",
+    "sourcePage": 16,
+    "sourceRow": 256,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098050000D",
+    "description": "Gifts to the Government of The Bahamas. Gifts over $50,000, must be approved by the Cabinet.",
+    "sourcePage": 16,
+    "sourceRow": 257,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098040000D",
+    "description": "Goods imported by a charitable organization with the prior approval of the Minister and for use exclusively for charitable purposes. This exemption must meet the conditions specified in Note 10 to this Chapter.",
+    "sourcePage": 16,
+    "sourceRow": 258,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098030000D",
+    "description": "GOODS FOR USE EXCLUSIVELY BY THE BAHAMAS NATIONAL TRUST, WHEN IMPORTED WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 16,
+    "sourceRow": 259,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098020000D",
+    "description": "GOODS FOR THE USE OF AN OFFICIAL ESTABLISHMENT WHOLLY MAINTAINED AND OPERATED BY A FOREIGN STATE PURSUANT TO AN AGREEMENT WITH THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 16,
+    "sourceRow": 260,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098010030D",
+    "description": "GOODS FOR USE BY INTERNATIONAL ORGANIZATIONS, AS APPROVED BY THE MINISTER",
+    "sourcePage": 16,
+    "sourceRow": 261,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098010020D",
+    "description": "GOODS FOR USE BY DIPLOMATIC OFFICERS AND DIPLOMATIC OFFICERS, AS SPECIFIED BY THE MINISTER",
+    "sourcePage": 16,
+    "sourceRow": 262,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098010010D",
+    "description": "GOODS FOR USE BY CONSULATES AND CONSUILAR OFFICERS, AS SPECIRFIED BY OR UNDER THE COUSULAR RELATIONS AND COMMONW3EALTH OFFICERS ACT",
+    "sourcePage": 16,
+    "sourceRow": 263,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "42989L0000E",
+    "description": "STATOIL SOUTH RIDING POINT HOLDING",
+    "sourcePage": 16,
+    "sourceRow": 264,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989K0050E",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - FABRIC FOR MAKING AP",
+    "sourcePage": 17,
+    "sourceRow": 265,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42989K0040E",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - MEN, BOYS, WOMEN AND",
+    "sourcePage": 17,
+    "sourceRow": 266,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "F42000",
+    "description": "IMPORT CONDITIONALLY DUTY-FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) FOR COMPANY USE ON EXPEDITED RELEASE",
+    "sourcePage": 17,
+    "sourceRow": 267,
+    "groupCode": "F42",
+    "active": false
+  },
+  {
+    "code": "43001",
+    "description": "IMPORT FOR HOME CONSUMPTION ON EXPEDITED RELEASE",
+    "sourcePage": 17,
+    "sourceRow": 268,
+    "groupCode": "430",
+    "active": true
+  },
+  {
+    "code": "4098630010",
+    "description": "Clothing, footwear and other wearing apparels and accessories, fabric for making apparel, sewing needles, buttons and zippers for clothing imported by persons and businesses with a valid business licence and approval by the Minister. Men, boys, women",
+    "sourcePage": 17,
+    "sourceRow": 269,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098640000D",
+    "description": "General exemption on art supplies approved by the Minister (and not for resale)",
+    "sourcePage": 17,
+    "sourceRow": 270,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098630050D",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - FABRIC FOR MAKING AP",
+    "sourcePage": 17,
+    "sourceRow": 271,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098630040D",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - MEN, BOYS, WOMEN AND",
+    "sourcePage": 17,
+    "sourceRow": 272,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098630030D",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - OTHER MADE UP CLOTH",
+    "sourcePage": 17,
+    "sourceRow": 273,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098630020D",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - MEN, BOYS, WOMEN AND",
+    "sourcePage": 17,
+    "sourceRow": 274,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098630010D",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY THE MINISTER - MEN, BOYS, WOMEN AND",
+    "sourcePage": 18,
+    "sourceRow": 275,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098620000D",
+    "description": "CONCESSION FOR SOLAR PANELS IMPORTED WITH ALL COMPONENTS TO COMPLETE INSTALLATION OF THE SYSTEM(S) APPROVED BY THE MINISTER",
+    "sourcePage": 18,
+    "sourceRow": 276,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098610000D",
+    "description": "HEADS OF AGREEMENT BETWEEN THE GOVERNMENT OF THE BAHAMAS AND ROYAL CARIBBEAN CRUISES LTD.: CONCESSION FOR GOODS IMPORTED DUTY EXEMPTED INTO COCO CAY LOCATED IN THE BERRY ISLANDS",
+    "sourcePage": 18,
+    "sourceRow": 277,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098600090D",
+    "description": "HUMAN REMAINS IN CASKETS OR NOT IN CASKETS: OTHER",
+    "sourcePage": 18,
+    "sourceRow": 278,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098600010D",
+    "description": "HUMAN REMAINS IN CASKETS OR NOT IN CASKETS: IN CASKETS",
+    "sourcePage": 18,
+    "sourceRow": 279,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098590000D",
+    "description": "Goods and materials for building projects",
+    "sourcePage": 18,
+    "sourceRow": 280,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098580020D",
+    "description": "FOR BUILDINGS SITUATED IN SUCH PART OF NEW PROVIDENCE OR ANY OTHER AREA OF THE COMMONWEALTH OF THE BAHAMAS AS THE MINISTER MAY DECLARE OF ORDER, BUILDING MATERIALS AND SUPPLIES: WHERE THE CONDITIONS SPECIFIED IN NOTE (8A) (c) TO THIS CHAPTER ARE MET",
+    "sourcePage": 18,
+    "sourceRow": 281,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098580010D",
+    "description": "FOR BUILDINGS SITUATED IN SUCH PART OF NEW PROVIDENCE OR ANY OTHER AREA OF THE COMMONWEALTH OF THE BAHAMAS AS THE MINISTER MAY DECLARE OF ORDER, BUILDING MATERIALS AND SUPPLIES: WHERE THE CONDITIONS SPECIFIED IN NOTE (8A) (b) TO THIS CHAPTER ARE MET",
+    "sourcePage": 18,
+    "sourceRow": 282,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098570000D",
+    "description": "PROCESSING MACHINERY FOR USE IN THE RECYCLING OF WASTE, WITH THE APPROVAL OF THE MINISTER",
+    "sourcePage": 18,
+    "sourceRow": 283,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098560000D",
+    "description": "CAPITAL GOODS FOR BUSINESSES LOCATED OUTSIDE OF THE PORT AREA IN GRAND BAHAMA",
+    "sourcePage": 18,
+    "sourceRow": 284,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098550040D",
+    "description": "Generators and Engines \u2013 Family Islands (F.I.)",
+    "sourcePage": 18,
+    "sourceRow": 285,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098550030D",
+    "description": "Items \u2013 Family Islands (F.I.)",
+    "sourcePage": 18,
+    "sourceRow": 286,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098550020D",
+    "description": "Generators and Engines (N.P.)",
+    "sourcePage": 18,
+    "sourceRow": 287,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098550010D",
+    "description": "Items \u2013 New Providence (N.P.)",
+    "sourcePage": 18,
+    "sourceRow": 288,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098540000D",
+    "description": "INDUSTRIES ENCOURAGEMENT ACT",
+    "sourcePage": 19,
+    "sourceRow": 289,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "500050",
+    "description": "TEMPORARY IMPORTS - VEHICLES UNDER NOT OWN POWER REG. 86 ( E)",
+    "sourcePage": 19,
+    "sourceRow": 290,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "500051",
+    "description": "TEMPORARY IMPORTS - PLEASURE VESSELS NOT UNDER OWN POWER REG. 86 (E)",
+    "sourcePage": 19,
+    "sourceRow": 291,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "500052",
+    "description": "TEMPORARY IMPORTS - MOTOR CYCLES UNDER NOT OWN POWER REG. 86 (E)",
+    "sourcePage": 19,
+    "sourceRow": 292,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "500006",
+    "description": "TEMPORARY IMPORTS - COMMERCIAL VESSEL REG.86(F)",
+    "sourcePage": 19,
+    "sourceRow": 293,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "500007",
+    "description": "TEMPORARY IMPORTS - PHOTOGRAPHIC AND CINEMATOGRAPHIC EQUIPMENT REG. 86(H)",
+    "sourcePage": 19,
+    "sourceRow": 294,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "500080",
+    "description": "TEMPORARY IMPORTS - RECORDING ARTISTS REG. 94(2)C",
+    "sourcePage": 19,
+    "sourceRow": 295,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "500081",
+    "description": "TEMPORARY IMPORTS - RELIGIOUS ORGANIZATIONS REG. 94(2)A",
+    "sourcePage": 19,
+    "sourceRow": 296,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "500082",
+    "description": "TEMPORARY IMPORTS - SPORTING EVENTS REG. 94(2)B",
+    "sourcePage": 19,
+    "sourceRow": 297,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "500083",
+    "description": "TEMPORARY IMPORTS - CULTURAL EVENTS REG. 94(2)B",
+    "sourcePage": 19,
+    "sourceRow": 298,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "620002",
+    "description": "RE-IMPORT OF GOODS EXPORTED FOR EXHIBITION",
+    "sourcePage": 19,
+    "sourceRow": 299,
+    "groupCode": "620",
+    "active": true
+  },
+  {
+    "code": "620003",
+    "description": "RE-IMPORT OF GOODS EXPORTED FOR SCIENTIFIC PURPOSES",
+    "sourcePage": 19,
+    "sourceRow": 300,
+    "groupCode": "620",
+    "active": true
+  },
+  {
+    "code": "620004",
+    "description": "RE-IMPORT OF GOODS EXPORTED FOR CULTURAL",
+    "sourcePage": 19,
+    "sourceRow": 301,
+    "groupCode": "620",
+    "active": true
+  },
+  {
+    "code": "620005",
+    "description": "RE-IMPORT OF GOODS EXPORTED FOR PERSONAL USE",
+    "sourcePage": 19,
+    "sourceRow": 302,
+    "groupCode": "620",
+    "active": true
+  },
+  {
+    "code": "800000",
+    "description": "TRANSIRE FOR MOVEMENT OF GOODS BY SEA/AIR",
+    "sourcePage": 19,
+    "sourceRow": 303,
+    "groupCode": "800",
+    "active": true
+  },
+  {
+    "code": "800800",
+    "description": "TRANSIRE FOR MOVEMENT OF GOODS OVER LAND",
+    "sourcePage": 19,
+    "sourceRow": 304,
+    "groupCode": "800",
+    "active": true
+  },
+  {
+    "code": "F40000",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) FOR COMPANY USE",
+    "sourcePage": 19,
+    "sourceRow": 305,
+    "groupCode": "F40",
+    "active": false
+  },
+  {
+    "code": "F40001",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) FOR STOCK OR INVENTORY",
+    "sourcePage": 19,
+    "sourceRow": 306,
+    "groupCode": "F40",
+    "active": false
+  },
+  {
+    "code": "F40002",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) FOR MANUFACTURING/ASSEMBLY",
+    "sourcePage": 19,
+    "sourceRow": 307,
+    "groupCode": "F40",
+    "active": false
+  },
+  {
+    "code": "F40003",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) FOR STORAGE (BORCO) FUEL",
+    "sourcePage": 19,
+    "sourceRow": 308,
+    "groupCode": "F40",
+    "active": false
+  },
+  {
+    "code": "F40004",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) FOR CONTRACTORS",
+    "sourcePage": 19,
+    "sourceRow": 309,
+    "groupCode": "F40",
+    "active": false
+  },
+  {
+    "code": "F40005",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) BY PURCHASING AGENT FOR AOTHER LICENSEE",
+    "sourcePage": 20,
+    "sourceRow": 310,
+    "groupCode": "F40",
+    "active": false
+  },
+  {
+    "code": "F4F000",
+    "description": "TRANSFER FROM COMPANY TO COMPANY IN FREEZONE",
+    "sourcePage": 20,
+    "sourceRow": 311,
+    "groupCode": "F4F",
+    "active": true
+  },
+  {
+    "code": "F40006",
+    "description": "POST ENTRY OF GOODS SHORTSHIPPED FROM FREEZONE",
+    "sourcePage": 20,
+    "sourceRow": 312,
+    "groupCode": "F40",
+    "active": false
+  },
+  {
+    "code": "100F40",
+    "description": "EXPORT OF DOMESTIC GOODS FROM THE FREEZONE",
+    "sourcePage": 20,
+    "sourceRow": 313,
+    "groupCode": "100",
+    "active": true
+  },
+  {
+    "code": "200F62",
+    "description": "TEMPORARY EXPORT OF GOODS INTENDED FOR RE-IMPORTATION IN THE FREEZONE - FPO",
+    "sourcePage": 20,
+    "sourceRow": 314,
+    "groupCode": "2F0",
+    "active": true
+  },
+  {
+    "code": "F20000",
+    "description": "RE-IMPORT OF GOODS EXPORTED FROM THE FREEZONE - FPO",
+    "sourcePage": 20,
+    "sourceRow": 315,
+    "groupCode": "F20",
+    "active": false
+  },
+  {
+    "code": "300F40",
+    "description": "RE-EXPORT OF IMPORTED GOODS FROM THE FREEZONE",
+    "sourcePage": 20,
+    "sourceRow": 316,
+    "groupCode": "3F0",
+    "active": false
+  },
+  {
+    "code": "4098530000D",
+    "description": "AGRICULTURE MANUFACTURERS ACT",
+    "sourcePage": 20,
+    "sourceRow": 317,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098510000D",
+    "description": "CONSULAR RELATIONS AND COMMONWEALTH OFFICERS",
+    "sourcePage": 20,
+    "sourceRow": 318,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "500004",
+    "description": "TEMPORARY IMPORTS - GOODS FOR RENOVATION OR REPAIR REG. 86 (D)",
+    "sourcePage": 20,
+    "sourceRow": 319,
+    "groupCode": "500",
+    "active": true
+  },
+  {
+    "code": "4098500000D",
+    "description": "PETROLEUM ACT",
+    "sourcePage": 20,
+    "sourceRow": 320,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098490000D",
+    "description": "ALBANY PROJECT",
+    "sourcePage": 20,
+    "sourceRow": 321,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098480000D",
+    "description": "RE-IMPORTED GOODS",
+    "sourcePage": 20,
+    "sourceRow": 322,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098470000D",
+    "description": "CENTRAL BANK ACT",
+    "sourcePage": 20,
+    "sourceRow": 323,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098460000D",
+    "description": "FAMILY ISLAND DEVELOPMENT ENCOURAGEMENT ACT",
+    "sourcePage": 20,
+    "sourceRow": 324,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098450000D",
+    "description": "NASSAU REVITALIZATION ACT",
+    "sourcePage": 20,
+    "sourceRow": 325,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098440000D",
+    "description": "LONG RANGE PROVING GROUND ACT",
+    "sourcePage": 20,
+    "sourceRow": 326,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098430000D",
+    "description": "IMMUNITIES & PRIVILEGES ACT",
+    "sourcePage": 20,
+    "sourceRow": 327,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098420000D",
+    "description": "CLIFTON HERITAGE AUTHORITY ACT",
+    "sourcePage": 20,
+    "sourceRow": 328,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098410000D",
+    "description": "AUTEC AGREEMENT",
+    "sourcePage": 20,
+    "sourceRow": 329,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098400020D",
+    "description": "BROADCASTING ACT: ITEMS RELATED TO CABLE BAHAMAS",
+    "sourcePage": 20,
+    "sourceRow": 330,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098400010D",
+    "description": "BROADCASTING ACT: ITEMS RELATED TO Z.N.S.",
+    "sourcePage": 20,
+    "sourceRow": 331,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098390000D",
+    "description": "THE OCEAN INDUSTRIES ACT",
+    "sourcePage": 20,
+    "sourceRow": 332,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098380000D",
+    "description": "THE SPORTS CENTER PROJECT",
+    "sourcePage": 20,
+    "sourceRow": 333,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098370000D",
+    "description": "NASSAU AIRPORT DEVELOPMENT PROJECT",
+    "sourcePage": 20,
+    "sourceRow": 334,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098360000D",
+    "description": "THE BRIDGE AUTHORITY ACT: CONCESSION IS LIMITED ONLY TO IMPORTS THAT ARE DIRECTLY RELATED TO THE MAINTENANCE AND REHABILITATION OF THE EAST AND WEST BRIDGES OF PARADISE ISLAND AND APPROVED BY THE MINISTER",
+    "sourcePage": 21,
+    "sourceRow": 335,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098350000D",
+    "description": "WATER & SEWERAGE ACT",
+    "sourcePage": 21,
+    "sourceRow": 336,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098340000D",
+    "description": "South Riding Point",
+    "sourcePage": 21,
+    "sourceRow": 337,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098330020D",
+    "description": "SPIRIT AND BEER MANUFACTURING ACT: BUSINESSES OVER 5 YEARS",
+    "sourcePage": 21,
+    "sourceRow": 338,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098330010D",
+    "description": "SPIRIT AND BEER MANUFACTURING ACT: BUSINESSES UNDER 5 YEARS",
+    "sourcePage": 21,
+    "sourceRow": 339,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098310000D",
+    "description": "FEED FOR BIRDS AND ANIMALS IN ZOOLOGICAL GARDENS",
+    "sourcePage": 21,
+    "sourceRow": 340,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098300000D",
+    "description": "PORTABLE WATER: FRESH WATER IMPORTED IN BULK FOR USE IN INAGUA AND ANY OTHER ISLAND SPECIFIED BY THE MINISTER BY ORDER",
+    "sourcePage": 21,
+    "sourceRow": 341,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "400700",
+    "description": "EX-WAREHOUSE HOME CONSUMPTION ENTRY",
+    "sourcePage": 21,
+    "sourceRow": 342,
+    "groupCode": "470",
+    "active": true
+  },
+  {
+    "code": "43002",
+    "description": "IMPORT FOR DUTY CONCESSION ON EXPEDITED RELEASE",
+    "sourcePage": 21,
+    "sourceRow": 343,
+    "groupCode": "430",
+    "active": true
+  },
+  {
+    "code": "450000",
+    "description": "IMPORT OF GOODS UNDER DRAWBACK",
+    "sourcePage": 21,
+    "sourceRow": 344,
+    "groupCode": "450",
+    "active": true
+  },
+  {
+    "code": "4098520020D",
+    "description": "Hotel Encouragement Act for other supplies",
+    "sourcePage": 21,
+    "sourceRow": 345,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098520030D",
+    "description": "Hotel Encouragement Act Construction Plant",
+    "sourcePage": 21,
+    "sourceRow": 346,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4298980010E",
+    "description": "Hotel Encouragement Act for construction materials",
+    "sourcePage": 21,
+    "sourceRow": 347,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4098290080D",
+    "description": "FOR VESSELS AND VESSELS PARTS: HACKNEY CARRIAGES, AS DEFINED IN THE CABS ACT, SECTION 2, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 21,
+    "sourceRow": 348,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098290070D",
+    "description": "Parts and other non-consumable goods for the sole use on a vessel entered under a temporary cruising permit, (Form Number C-39)",
+    "sourcePage": 21,
+    "sourceRow": 349,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098290060D",
+    "description": "FOR VESSELS AND VESSELS PARTS: ENGINE AND OTHER MECHANICAL PARTS FOR MOTOR VESSELS USED IN THE INTERISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 21,
+    "sourceRow": 350,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098290050D",
+    "description": "FOR VESSELS AND VESSELS PARTS: MOTOR VESSELS FOR USE IN THE INTERISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 21,
+    "sourceRow": 351,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098290040D",
+    "description": "FOR VESSELS AND VESSELS PARTS: ENTRY OF PLEASURE VESSELS, NOT CARRYING CARGO, WHOLLY OWNED BY PERSONS NOT ORDINARILY RESIDENT IN THE BAHAMAS, FOR A PERIOD NOT EXCEEDING TWELVE (12) MONTHS DURING WHICH IT WILL NOT BE USED FOR ANY COMMERCIAL PURPOSES",
+    "sourcePage": 21,
+    "sourceRow": 352,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098290030D",
+    "description": "FOR VESSELS AND VESSELS PARTS:UPON RE-ENTRY OF A BAHAMIAN REGISTERED PLEASURE VESSEL OF LESS THAN 150 GROSS TONS AND NOT LESS THAN 30 FEET IN LENGTH FOR WHICH DUTY HAS BEEN PAID",
+    "sourcePage": 22,
+    "sourceRow": 353,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098290020D",
+    "description": "FOR VESSELS AND VESSELS PARTS: ENTRY OF SHIPS OF 150 GROSS TONS OR MORE",
+    "sourcePage": 22,
+    "sourceRow": 354,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098290010D",
+    "description": "FOR VESSELS AND VESSELS PARTS: VESSELS HOLDING A VALID PERMIT UNDER THE BOAT REGISTRATION ACT, SECTION 4",
+    "sourcePage": 22,
+    "sourceRow": 355,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098280000D",
+    "description": "Goods manufactured or processed in the Port Area by manufacturers registered with and approved by the Ministry responsible for Trade and Industry or the Minister of Finance",
+    "sourcePage": 22,
+    "sourceRow": 356,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098270000D",
+    "description": "FOR SYSTEMS BUILDING FOR GOVERNMENT HOUSING PROJECTS - GOODS RECOMMENDED AND APPROVED BY THE MINISTER RESPONSIBLE FOR HOUSING AS CONSTITUTING MATERIALS AND COMPONENTS OF SYSTEMS BUILDING WHEN IMPORTED BY THE MINISTER OR A CONTRACTOR AUTHORIZED BY THE MIN",
+    "sourcePage": 22,
+    "sourceRow": 357,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098260000D",
+    "description": "Cups, shields, medals and similar articles having no other use except as trophies to convey awards for military, civil or public service or for distinction in literature, art, science or sport, whether or not engraved.",
+    "sourcePage": 22,
+    "sourceRow": 358,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098250000D",
+    "description": "SAMPLES OF MERCHANDISE: ARTICLES IMPORTED IN SMALL QUANITITIES, LIMITED SIZES OR MUTILATED CONDITION, INCAPABLE OF BEING USED FOR THEIR NORMAL PURPOSE AND WITH NO COMMERCIAL VALUE",
+    "sourcePage": 22,
+    "sourceRow": 359,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098240010D",
+    "description": "Printing Materials for use in the commercial printing industry that meet the conditions specified in Note 14 to this Chapter",
+    "sourcePage": 22,
+    "sourceRow": 360,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098240000D",
+    "description": "Equipment for commercial printers for use in the commercial printing industry that meet the conditions specified in Note 14 to this Chapter",
+    "sourcePage": 22,
+    "sourceRow": 361,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098230000D",
+    "description": "PRECIOUS METALS IMPORTED OR EXPORTED FOR THE SECURITIES EXCHANGE AS REFERRED TO IN THE SECURITIES INDUSTRY ACT, 1999",
+    "sourcePage": 22,
+    "sourceRow": 362,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098220040D",
+    "description": "FOR ARTICLES TEMPORARILY IMPORTED OR EXPORTED: ACTORS' CLOTHING AND PROPS TEMPORARILY IMPORTED TO ACCOMPANY MOTION PICTURE SERVICES THEN REEXPORTED, UPON RECOMMENDATION BY THE MINISTER OF TOURISM AND APPROVAL OF THE MINISTER",
+    "sourcePage": 22,
+    "sourceRow": 363,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "441000",
+    "description": "IMPORT FOR HOME CONSUMPTION FOR EXPEDITED RELEASE (C19)",
+    "sourcePage": 22,
+    "sourceRow": 364,
+    "groupCode": "441",
+    "active": true
+  },
+  {
+    "code": "4098220030D",
+    "description": "FOR ARTICLES TEMPORARILY IMPORTED OR EXPORTED: PHOTOGRAPHIC AND CINEMATOGRAPHIC EQUIPMENT, SOUND RECORDERS, SOUND REPRODUCERS TEMPORARILY IMPORTED FOR USE BY FOREIGN JOURNALISTS, RADIO, TELEVISION AND MOTION PICTURE SERVICES THEN RE-EXPORTED",
+    "sourcePage": 23,
+    "sourceRow": 365,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098220020D",
+    "description": "FOR ARTICLES TEMPORARILY IMPORTED OR EXPORTED: MUSICAL INSTRUMENTS TEMPORARILY IMPORTED FOR USE IN THE BAHAMAS THEN RE-EXPORTED",
+    "sourcePage": 23,
+    "sourceRow": 366,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098220010D",
+    "description": "FOR ARTICLES TEMPORARILY IMPORTED OR EXPORTED: BAHAMIAN ART WORK TEMPORARILY EXPORTED FOR EXHIBITION THEN REIMPORTED",
+    "sourcePage": 23,
+    "sourceRow": 367,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098210000D",
+    "description": "FOR HISTORIC BUILINGS: MATERIALS USED TO RESTORE AND MAINTAIN HISTORIC BUILDINGS REGISTERED IN THE NATIONAL REGISTER",
+    "sourcePage": 23,
+    "sourceRow": 368,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098200020D",
+    "description": "Locally-produced Bahamian audio and or visual media, printed and pressed abroad, as approved by the Minister",
+    "sourcePage": 23,
+    "sourceRow": 369,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098200010D",
+    "description": "Locally-produced Bahamian art work reproduced abroad by mechanical or photochemical process, as approved by the Minister",
+    "sourcePage": 23,
+    "sourceRow": 370,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098190000D",
+    "description": "FOR PROMOTIONAL ARTICLES FOR TOURISTIC PURPOSES: RECORDS, TAPES AND OTHER RECORDED MEDIA FOR SOUND OR SIMILARLY RECORDED PHENOMENA, AS APPROVED BY THE MINISTER",
+    "sourcePage": 23,
+    "sourceRow": 371,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098180050D",
+    "description": "FOR PRODUCTION MATERIALS FOR COTTAGE AND LIGHT INDUSTRIES: RAW MATERIALS FOR USE IN THE MANUFACTURE OF HANDICRAFT ITEMS OR FOR USE IN COTTAGE AND LIGHT INDSTRIES - RAFFIA SUBSTITUTES FOR USE IN THE STRAW WORK INDUSTRY",
+    "sourcePage": 23,
+    "sourceRow": 372,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098180040D",
+    "description": "FOR PRODUCTION MATERIALS FOR COTTAGE AND LIGHT INDUSTRIES: RAW MATERIALS FOR USE IN THE MANUFACTURE OF HANDICRAFT ITEMS OR FOR USE IN COTTAGE AND LIGHT INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 10 TO THIS CHAPTER",
+    "sourcePage": 23,
+    "sourceRow": 373,
+    "groupCode": "442",
+    "active": false
+  },
+  {
+    "code": "4098180030D",
+    "description": "Raffia substitutes for use in the straw work industry that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 23,
+    "sourceRow": 374,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098180020D",
+    "description": "Processing equipment and garment manufacturing equipment for use in the manufacturing of handicraft items and garments in the cottage industry that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 23,
+    "sourceRow": 375,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098180010D",
+    "description": "Raw materials for use in the manufacture of handicraft items or for use in cottage and light industries that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 24,
+    "sourceRow": 376,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098170000D",
+    "description": "General exemption to provide relief in response to a declaration of exigency by the Minister that meet the conditions specified in Note 12 to the Chapter",
+    "sourcePage": 24,
+    "sourceRow": 377,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098160000D",
+    "description": "FOR MEDICAL EQUIPMENT AND BUILDING MATERIAL - MEDICAL EQUIPMENT FOR USE IN FACILITIES, INCLUDING VETERINARIAN AND DENTAL FACILITIES, THAT PROVIDE SERVICES TO THE PUBLIC",
+    "sourcePage": 24,
+    "sourceRow": 378,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098150000D",
+    "description": "Goods for the exclusive use of religious organizations that meet the conditions specified in Note 9 to this Chapter",
+    "sourcePage": 24,
+    "sourceRow": 379,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "4098140000D",
+    "description": "Sporting equipment (and supplies) for use of schools and sporting associations",
+    "sourcePage": 24,
+    "sourceRow": 380,
+    "groupCode": "442",
+    "active": true
+  },
+  {
+    "code": "471701",
+    "description": "EX WAREHOUSE ENTRY UNDER CONCESSION- FUEL",
+    "sourcePage": 24,
+    "sourceRow": 381,
+    "groupCode": "471",
+    "active": true
+  },
+  {
+    "code": "FW0002",
+    "description": "TO HAVE GOODS REMOVE FROM COMPANY'S BOND BY DESTRUCTION",
+    "sourcePage": 24,
+    "sourceRow": 382,
+    "groupCode": "FW0",
+    "active": true
+  },
+  {
+    "code": "FCC000",
+    "description": "exwarehousing test cpc",
+    "sourcePage": 24,
+    "sourceRow": 383,
+    "groupCode": "FCC",
+    "active": true
+  },
+  {
+    "code": "4298890010E",
+    "description": "Printing goods that meet conditions specified in Note 12 to this chapter",
+    "sourcePage": 24,
+    "sourceRow": 384,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298880020E",
+    "description": "Parts and other non-consumable goods for the sole use on a vessel entered under a temporary cruising permit, (Form Number C-39)",
+    "sourcePage": 24,
+    "sourceRow": 385,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298880010E",
+    "description": "GENERAL EXEMPTION FOR VESSELS AND VESSELS PARTS: ENGINE AND OTHER MECHANICAL PARTS FOR MOTOR VESSELS USED IN THE INTER-ISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 24,
+    "sourceRow": 386,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298870000E",
+    "description": "GENERAL EXEMPTION FOR: MATERIALS USED TO RESTORE AND MAINTAIN HISTORIC BUILDINGS REGISTERED IN THE NATIONAL REGISTER",
+    "sourcePage": 24,
+    "sourceRow": 387,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298860020E",
+    "description": "Petroleum products imported by any licensed entity with the prior approval of the Government of The Bahamas as specified in Note 10 to this Chapter",
+    "sourcePage": 24,
+    "sourceRow": 388,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298860010E",
+    "description": "Petroleum products imported by the Bahamas Power and Light as specified in Note 10 to this Chapter",
+    "sourcePage": 24,
+    "sourceRow": 389,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298850010E",
+    "description": "Motor vehicles not more than three years old as specified in Note 9 to this Chapter",
+    "sourcePage": 24,
+    "sourceRow": 390,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298840000E",
+    "description": "Buses not older than eight years; and limited to one import every five years with prior approval of the Minister",
+    "sourcePage": 24,
+    "sourceRow": 391,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298830000E",
+    "description": "SECTION OF THE PETROLEUM ACT: THE HOLDER OF A PERMIT, LICENSE, OR LEASE OR ANY CONTRACTOR EMPLOYED BY ANY SUCH HOLDER, IN RESPECT OF THE IMPORTATION INTO THE BAHAMAS OR THE TAKING OUT OF BOND WITHIN THE BAHAAS, OF ANY PLANT, MACHINERY TOOLS OR EQUIPMENT",
+    "sourcePage": 24,
+    "sourceRow": 392,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298820000E",
+    "description": "GOODS MANUFACTURED OR PROCESSED IN THE PORT AREA BY MAUFACTURERS REGISTERED WITH AND APPROVED BY THE MINISTRY RESPONSIBLE FOR TRADE AND INDUSTRY",
+    "sourcePage": 25,
+    "sourceRow": 393,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298810000E",
+    "description": "Goods intended to provide relief in response to a declaration of exigency by the Minister that meet the conditions specified. Note 8 to this Chapter",
+    "sourcePage": 25,
+    "sourceRow": 394,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298800030E",
+    "description": "GENERAL EXEMPTION FOR: SPECIALIZED EQUIPMENT, MEDICAL SUPPLIES AND DOMESTIC SUPPLIES FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED OR THE ELDERLY",
+    "sourcePage": 25,
+    "sourceRow": 395,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298800020E",
+    "description": "GENERAL EXEMPTION FOR: GOODS INCLUDING NEW BUSES ONCE EVERY FIVE YEARS, FOR USE EXCLUSIVELY IN OR BY PUBLIC OR PRIVATE EDUCATIONAL INSTITUTIONS, ON APPROVAL BY THE MINISTER",
+    "sourcePage": 25,
+    "sourceRow": 396,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298800010E",
+    "description": "GENERAL EXEMPTION FOR: SPECIALLY DESIGNED ARTICLES IMPORTED BY INSTITUTIONS OR ORGANIZATIONS CONCERNED WITH THE WELFARE OF THE HANDICAPPED, ON APPROVAL BY THE MINISTER",
+    "sourcePage": 25,
+    "sourceRow": 397,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "42987A0010E",
+    "description": "Returning residents who meet the conditions specified in Note 7 to this Chapter",
+    "sourcePage": 25,
+    "sourceRow": 398,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298792000E",
+    "description": "GENERAL EXEMPTION FOR BAGGAGE: OF OTHER PASSENGERS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (B)",
+    "sourcePage": 25,
+    "sourceRow": 399,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298791000E",
+    "description": "GENERAL EXEMPTION FOR BAGGAGE: OF RETURNING RESIDENTS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (A)",
+    "sourcePage": 25,
+    "sourceRow": 400,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298780040E",
+    "description": "GENERAL EXEMPTION FOR AIRCRAFT PARTS AND ACCESSORIES FOR USE BY CRAFT ON SCHEEDULED INTERNATIONAL AIR SERVICES, BY BAHAMASAIR HOLDINGS LIMITED AND SCHEDULED CHARTERED SERVICES DOMESTIC AND INTERNATIONAL FLIGHTS:CATERING EQUIPMENT OWNED OR LEASED BY AIRPOR",
+    "sourcePage": 25,
+    "sourceRow": 401,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298780030E",
+    "description": "Equipment and machinery specifically designed for ground repair, maintenance and service of craft for use within the limits of any customs place or any other approved place designated by the Minister",
+    "sourcePage": 25,
+    "sourceRow": 402,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298780020E",
+    "description": "GENERAL EXEMPTION FOR AIRCRAFT PARTS AND ACCESSORIES FOR USE BY CRAFT ON SCHEEDULED INTERNATIONAL AIR SERVICES, BY BAHAMASAIR HOLDINGS LIMITED AND SCHEDULED CHARTERED SERVICES DOMESTIC AND INTERNATIONAL FLIGHTS: LUBRICANTS, DE-ICING FLUIDS, HYDRAULIC",
+    "sourcePage": 25,
+    "sourceRow": 403,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298780010E",
+    "description": "GENERAL EXEMPTION FOR AIRCRAFT PARTS AND ACCESSORIES FOR USE BY CRAFT ON SCHEEDULED INTERNATIONAL AIR SERVICES, BY BAHAMASAIR HOLDINGS LIMITED AND SCHEDULED CHARTERED SERVICES DOMESTIC AND INTERNATIONAL FLIGHTS: AIRCRAFT ACCESSORIES AND INSTRUMENTS NECESS",
+    "sourcePage": 26,
+    "sourceRow": 404,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298770000E",
+    "description": "GENERAL EXEMPTION: FOR GOODS FOR USE IN THE COMMERCIAL FISHING AND BONE FISHING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 5 TO THIS CHAPTER",
+    "sourcePage": 26,
+    "sourceRow": 405,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298760000E",
+    "description": "GENERAL EXEMPTION: FOR GOODS FOR USE IN THE LIVESTOCK AND FISH FARMING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 4 TO THIS CHAPTER",
+    "sourcePage": 26,
+    "sourceRow": 406,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298750000E",
+    "description": "GENERAL EXEMPTION: FOR GOODS FOR USE BY REGISTERED FLORICULTURIST, HORTICULTURIST, AGRICULTURAL COOPERATIVE SOCIETIES AND FARMERS THAT MEET THE CONDITIONS SPECIFIED IN NOTE 3 TO THIS CHAPTER",
+    "sourcePage": 26,
+    "sourceRow": 407,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298740000E",
+    "description": "Gifts to the Government of The Bahamas. Any gift over $50,000 must be approved by The Cabinet",
+    "sourcePage": 26,
+    "sourceRow": 408,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298730000E",
+    "description": "EXEMPTION FROM DUTY FOR: GOODS IMPORTED BY A CHARITABLE ORGANIZATION WITH THE PRIOR APPROVAL OF THE MINISTER AND FOR USE EXCLUSIVELY FOR CHARITABLE PURPOSES",
+    "sourcePage": 26,
+    "sourceRow": 409,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298720000E",
+    "description": "EXEMPTION FROM DUTY FOR: GOODS FOR USE EXCLUSIVELY BY THE BAHAMAS NATIONAL TRUST, WHEN IMPORTED WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 26,
+    "sourceRow": 410,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298710000E",
+    "description": "EXEMPTION FROM DUTY FOR: GOODS FOR THE USE OF AN OFFICIAL ESTABLISHMENT WHOLLY MAINTAINED AND OPERATED BY A FOREIGN STATE PURSUANT TO AN AGREEMENT WITH THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 26,
+    "sourceRow": 411,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298700030E",
+    "description": "EXEMPTION FROM DUTY FOR: GOODS FOR USE BY INTERNATIONAL ORGANIZATIONS, AS APPROVED BY THE MINISTER",
+    "sourcePage": 26,
+    "sourceRow": 412,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298700020E",
+    "description": "EXEMPTION FROM DUTY FOR GOODS - FOR USE BY DIPLOMATIC OFFICES AND DIPLOMATIC OFFICERS, AS SPECIFIED BY THE MINISTER",
+    "sourcePage": 26,
+    "sourceRow": 413,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298700010E",
+    "description": "EXEMPTION FROM DUTY FOR GOODS - FOR USE BY CONSULATES AND CONSULAR OFFICERS, AS SPECIFIED BY OR UNDER THE CONSULAR RELATIONS AND COMMONWEALTH OFFICERS ACT",
+    "sourcePage": 27,
+    "sourceRow": 414,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4099000000",
+    "description": "Disaster Reconstruction Authority Act (Special Economic Recovery Zone) (Relief) Order, 2019 (SERZ)(No. 36 Of 2019) Concession for imports into Abaco and Abaco Cays in accordance with the Disaster Reconstruction Authority Act (Special Economic Recovery Zon",
+    "sourcePage": 27,
+    "sourceRow": 415,
+    "groupCode": "4099",
+    "active": true
+  },
+  {
+    "code": "4099000010",
+    "description": "Disaster Reconstruction Authority Act (Special Economic Recovery Zone) (Relief) Order, 2019(SERZ)(No. 36 Of 2019) Concession for imports into Grand Bahama, Deep Water Cay, Sweetings Cay and Water Cay in accordance with the Disaster Reconstruction Authori",
+    "sourcePage": 27,
+    "sourceRow": 416,
+    "groupCode": "4099",
+    "active": true
+  },
+  {
+    "code": "4299500000",
+    "description": "Disaster Reconstruction Authority Act (Special Economic Recovery Zone) (Relief) Order, 2019(SERZ)(No. 36 Of 2019) Concession for imports into Abaco and Abaco Cays in accordance with the Disaster Reconstruction Authority Act (Special Economic Recovery Zone",
+    "sourcePage": 27,
+    "sourceRow": 417,
+    "groupCode": "4299",
+    "active": true
+  },
+  {
+    "code": "4299500010",
+    "description": "Disaster Reconstruction Authority Act (Special Economic Recovery Zone) (Relief) Order, 2019(SERZ)(No. 36 Of 2019) Concession for imports into Grand Bahama, Deep Water Cay, Sweetings Cay and Water Cay in accordance with the Disaster Reconstruction Authorit",
+    "sourcePage": 27,
+    "sourceRow": 418,
+    "groupCode": "4299",
+    "active": true
+  },
+  {
+    "code": "740101",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR STOCKING",
+    "sourcePage": 27,
+    "sourceRow": 419,
+    "groupCode": "WF002",
+    "active": true
+  },
+  {
+    "code": "481001",
+    "description": "To have goods remove from stock by paying duty",
+    "sourcePage": 27,
+    "sourceRow": 420,
+    "groupCode": "F001",
+    "active": true
+  },
+  {
+    "code": "740103",
+    "description": "A LICENSEE WHO STOCKS GOODS SELLING TO A LICENSEE",
+    "sourcePage": 27,
+    "sourceRow": 421,
+    "groupCode": "WF001",
+    "active": true
+  },
+  {
+    "code": "47001",
+    "description": "A LICENSEE ACCEPTING GOODS PURCHASED FROM A STOCKING COMPANY",
+    "sourcePage": 27,
+    "sourceRow": 422,
+    "groupCode": "F002",
+    "active": true
+  },
+  {
+    "code": "FW0000",
+    "description": "EX-Warehouse from Free Trade Zone Stock to Duty Paid Cargo",
+    "sourcePage": 27,
+    "sourceRow": 423,
+    "groupCode": "F0C",
+    "active": true
+  },
+  {
+    "code": "FW0001",
+    "description": "TO HAVE GOODS REMOVE FROM COMPANY'S BOND BY PAYING DUTY",
+    "sourcePage": 27,
+    "sourceRow": 424,
+    "groupCode": "FW0",
+    "active": true
+  },
+  {
+    "code": "454200",
+    "description": "Import on Duty Concession from a Temporary Import",
+    "sourcePage": 27,
+    "sourceRow": 425,
+    "groupCode": "4542",
+    "active": true
+  },
+  {
+    "code": "470799",
+    "description": "Commonwealth Brewery - ExWarehouse Removal (Manufacturing Under Bond)",
+    "sourcePage": 27,
+    "sourceRow": 426,
+    "groupCode": "470",
+    "active": true
+  },
+  {
+    "code": "FC0000",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR COMPANY USE",
+    "sourcePage": 27,
+    "sourceRow": 427,
+    "groupCode": "FC0",
+    "active": true
+  },
+  {
+    "code": "FCW000",
+    "description": "TO SELL GOODS TO ANOTHER LICENSEE FOR COMPANY USE.",
+    "sourcePage": 27,
+    "sourceRow": 428,
+    "groupCode": "FCW",
+    "active": true
+  },
+  {
+    "code": "FWC000",
+    "description": "TO ACCEPT GOODS UNDER COMPANY'S BOND FROM ANOTHER LICENSEE",
+    "sourcePage": 27,
+    "sourceRow": 429,
+    "groupCode": "FWC",
+    "active": true
+  },
+  {
+    "code": "WFC000",
+    "description": "EXPEDITED RELEASE OF GOODS IN THE FREE ZONE FOR COMPANY USE INVENTORY",
+    "sourcePage": 28,
+    "sourceRow": 430,
+    "groupCode": "WFC",
+    "active": true
+  },
+  {
+    "code": "FW0003",
+    "description": "Ex-Warehouse From Free Trade Transfer From Company to Company (Selling Licensee Out)",
+    "sourcePage": 28,
+    "sourceRow": 431,
+    "groupCode": "FW0",
+    "active": false
+  },
+  {
+    "code": "FWD000",
+    "description": "TO HAVE GOODS REMOVED FROM STOCK BY DESTRUCTION",
+    "sourcePage": 28,
+    "sourceRow": 432,
+    "groupCode": "FWD",
+    "active": true
+  },
+  {
+    "code": "FC0001",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR MANUFACTURING/ASSEMBLY",
+    "sourcePage": 28,
+    "sourceRow": 433,
+    "groupCode": "FC0",
+    "active": true
+  },
+  {
+    "code": "FC0003",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR BORCO (FUEL)",
+    "sourcePage": 28,
+    "sourceRow": 434,
+    "groupCode": "FC0",
+    "active": true
+  },
+  {
+    "code": "4098010010F",
+    "description": "GOODS FOR USE BY CONSULATES AND CONSUILAR OFFICERS, AS SPECIRFIED BY OR UNDER THE COUSULAR RELATIONS AND COMMONW3EALTH OFFICERS ACT",
+    "sourcePage": 28,
+    "sourceRow": 435,
+    "groupCode": "FC1",
+    "active": false
+  },
+  {
+    "code": "4298700010F",
+    "description": "EXEMPTION FROM DUTY FOR GOODS - FOR USE BY CONSULATES AND CONSULAR OFFICERS, AS SPECIFIED BY OR UNDER THE CONSULAR RELATIONS AND COMMONWEALTH OFFICERS ACT",
+    "sourcePage": 28,
+    "sourceRow": 436,
+    "groupCode": "FC2",
+    "active": false
+  },
+  {
+    "code": "4FC001",
+    "description": "TO HAVE GOODS REMOVE FROM COMPANY'S BOND BY PAYING DUTY",
+    "sourcePage": 28,
+    "sourceRow": 437,
+    "groupCode": "FW0",
+    "active": true
+  },
+  {
+    "code": "FCD001",
+    "description": "TO HAVE GOODS REMOVE FROM COMPANY'S BOND BY DESTRUCTION",
+    "sourcePage": 28,
+    "sourceRow": 438,
+    "groupCode": "FW0",
+    "active": true
+  },
+  {
+    "code": "4FC003",
+    "description": "REMOVAL AFTER FINISHED PRODUCT FROM MANUFACTURER/ASSEMBLER'S BOND",
+    "sourcePage": 28,
+    "sourceRow": 439,
+    "groupCode": "FW0",
+    "active": true
+  },
+  {
+    "code": "1FC001",
+    "description": "EXPORT OF LOCALLY PRODUCED GOODS",
+    "sourcePage": 28,
+    "sourceRow": 440,
+    "groupCode": "1FC",
+    "active": true
+  },
+  {
+    "code": "1FC002",
+    "description": "FOR EXPORT OF GOODS NOT RETURNING TO COUNTRY",
+    "sourcePage": 28,
+    "sourceRow": 441,
+    "groupCode": "1FC",
+    "active": true
+  },
+  {
+    "code": "4098010010FS",
+    "description": "GOODS FOR USE BY CONSULATES AND CONSUILAR OFFICERS, AS SPECIRFIED BY OR UNDER THE COUSULAR RELATIONS AND COMMONW3EALTH OFFICERS ACT",
+    "sourcePage": 28,
+    "sourceRow": 442,
+    "groupCode": "F001",
+    "active": true
+  },
+  {
+    "code": "454100",
+    "description": "Import on Home Consumption from a Temporary Import",
+    "sourcePage": 28,
+    "sourceRow": 443,
+    "groupCode": "4541",
+    "active": true
+  },
+  {
+    "code": "850000",
+    "description": "TRANSIT FOR MOVEMENT OF GOODS",
+    "sourcePage": 28,
+    "sourceRow": 444,
+    "groupCode": "850",
+    "active": true
+  },
+  {
+    "code": "FC0002",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR CONTRACTORS",
+    "sourcePage": 28,
+    "sourceRow": 445,
+    "groupCode": "FC0",
+    "active": true
+  },
+  {
+    "code": "4FC000",
+    "description": "TO IMPORT GOODS FOR COMPANY USE WITH EXPEDITED RELEASE - C19",
+    "sourcePage": 28,
+    "sourceRow": 446,
+    "groupCode": "FE0",
+    "active": true
+  },
+  {
+    "code": "4FW001",
+    "description": "GOODS BEING IMPORTED BY LICENSEES ENGAGED IN MANUFACTURING/ASSEMBLY UNDER EXPEDITED RELEASE - C19",
+    "sourcePage": 28,
+    "sourceRow": 447,
+    "groupCode": "FEC",
+    "active": true
+  },
+  {
+    "code": "4FW002",
+    "description": "FUEL BEING IMPORTED BY BORCO UNDER EXPEDITED RELEASE - C19",
+    "sourcePage": 29,
+    "sourceRow": 448,
+    "groupCode": "FEC",
+    "active": true
+  },
+  {
+    "code": "4FW003",
+    "description": "GOODS BEING IMPORTED BY CONTRACTORS FOR THE CONSTRUCTION OF STRUCTURES",
+    "sourcePage": 29,
+    "sourceRow": 449,
+    "groupCode": "FEC",
+    "active": true
+  },
+  {
+    "code": "4FC002",
+    "description": "UPON COMPLETION OF DWELLING PLACE / STRUCTURE REMOVAL FROM CONTRACTOR'S BOND",
+    "sourcePage": 29,
+    "sourceRow": 450,
+    "groupCode": "FW0",
+    "active": true
+  },
+  {
+    "code": "4FC004",
+    "description": "SALE OF BONDED FUEL TO LICENSEES",
+    "sourcePage": 29,
+    "sourceRow": 451,
+    "groupCode": "FW0",
+    "active": true
+  },
+  {
+    "code": "4298880010FS",
+    "description": "GENERAL EXEMPTION FOR VESSELS AND VESSELS PARTS: ENGINE AND OTHER MECHANICAL PARTS FOR MOTOR VESSELS USED IN THE INTER-ISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 29,
+    "sourceRow": 452,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298880020FS",
+    "description": "GENERAL EXEMPTION FOR VESSELS AND VESSELS PARTS: PARTS FOR TEMPORARY CRUISING VESSELS IMPORTED UNDER A TEMPORARY CRUISING PERMIT (FORM NO. C-39)",
+    "sourcePage": 29,
+    "sourceRow": 453,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298890000S",
+    "description": "GOODS FOR COMMERCIAL PRINTERS FOR USE IN THE COMMERCIAL PRINTING INDUSTRY THAT MEET THE CONDITIONS SPECIFIED IN NOTE 11 TO THIS CHAPTER",
+    "sourcePage": 29,
+    "sourceRow": 454,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298890010FS",
+    "description": "GENERAL EXEMPTION FOR PRINTING EQUIPMENT AND RAW MATERIAL: PRINTING THAT MEET THE CONDITIONS SPECIFIED IN NOTE 10 TO THIS CHAPTER",
+    "sourcePage": 29,
+    "sourceRow": 455,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298890020FS",
+    "description": "GENERAL EXEMPTION FOR PRINTING EQUIPMENT AND RAW MATERIAL: GOODS FOR COMMERCIAL PRINTERS FOR USE IN THE COMMERCIAL PRINTING INDUSTRY THAT MEET THE CONDITIONS SPECIFIED IN NOTE 11 TO THIS CHAPTER",
+    "sourcePage": 29,
+    "sourceRow": 456,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298900000FS",
+    "description": "VEHICLES FOR THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 29,
+    "sourceRow": 457,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298910000FS",
+    "description": "WATER AND SEWAGE",
+    "sourcePage": 29,
+    "sourceRow": 458,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298920000FS",
+    "description": "FAMILY ISLAND DEVELOPMENT ENCOURAGEMENT ACT",
+    "sourcePage": 29,
+    "sourceRow": 459,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298930000FS",
+    "description": "NASSAU AIRPORT DEVELOPMENT PROJECT",
+    "sourcePage": 29,
+    "sourceRow": 460,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298940000FS",
+    "description": "ALBANY PROJECT",
+    "sourcePage": 29,
+    "sourceRow": 461,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298950000FS",
+    "description": "AUTEC AGREEMENT",
+    "sourcePage": 29,
+    "sourceRow": 462,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298960000FS",
+    "description": "RE-IMPORTED GOODS",
+    "sourcePage": 29,
+    "sourceRow": 463,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298970000FS",
+    "description": "INDUSTRIES ENCOURAGEMENT ACT",
+    "sourcePage": 29,
+    "sourceRow": 464,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298980010FS",
+    "description": "HOTEL ENCOURAGEMENT ACT L1",
+    "sourcePage": 29,
+    "sourceRow": 465,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298980020FS",
+    "description": "HOTEL ENCOURAGEMENT ACT L2",
+    "sourcePage": 29,
+    "sourceRow": 466,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298980030FS",
+    "description": "HOTEL ENCOURAGEMENT CONSTRUCTION PLANT",
+    "sourcePage": 30,
+    "sourceRow": 467,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298990000FS",
+    "description": "COMMONWEALTH BREWERY",
+    "sourcePage": 30,
+    "sourceRow": 468,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989E0010FS",
+    "description": "ELECTRICITY ACT: ITEMS - NEW PROVIDENCE (N.P.)",
+    "sourcePage": 30,
+    "sourceRow": 469,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989E0020FS",
+    "description": "ELECTRICITY ACT: GENERATORS AND ENGINES (N.P.)",
+    "sourcePage": 30,
+    "sourceRow": 470,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989E0030FS",
+    "description": "ELECTRICITY ACT: ITEMS-FAMILY ISLANDS (F.I.)",
+    "sourcePage": 30,
+    "sourceRow": 471,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989E0040FS",
+    "description": "ELECTRICITY ACT: GENERATORS AND ENGINES (F.I.)",
+    "sourcePage": 30,
+    "sourceRow": 472,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989F0000FS",
+    "description": "CAPITAL GOODS FOR BUSINESSES LOCATED OUTSIDE OF THE PORT AREA IN GRAND BAHAMA APPROVED BY THE MINISTER",
+    "sourcePage": 30,
+    "sourceRow": 473,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989G0000FS",
+    "description": "PROCESSING MACHINERY FOR USE IN THE RECYCLING OF WASTE, WITH THE APPROVAL OF THE MINISTER",
+    "sourcePage": 30,
+    "sourceRow": 474,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989H0000FS",
+    "description": "ALTAR WINE",
+    "sourcePage": 30,
+    "sourceRow": 475,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989I0000FS",
+    "description": "CONCESSION FOR SOLAR PANEL SYSTEM IMPORTED WITH ALL COMPONENTS TO COMPLETE INSTALLATION OF A SYSTEM APPROVED BY THE MINISTER",
+    "sourcePage": 30,
+    "sourceRow": 476,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989J0000FS",
+    "description": "HEADS OF AGREEMENT ROYAL CARIBBEAN CRUISES LTD.: FOR GOODS IMPORTED DUTY EXEMPTED INTO COCO CAY LOCATED IN THE BERRY ISLAND",
+    "sourcePage": 30,
+    "sourceRow": 477,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989K0010FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 30,
+    "sourceRow": 478,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989K0020FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 30,
+    "sourceRow": 479,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "FE0000",
+    "description": "EXPEDITED RELEASE OF GOODS IN THE FREEZONE FOR STOCKING",
+    "sourcePage": 30,
+    "sourceRow": 480,
+    "groupCode": "FE0",
+    "active": false
+  },
+  {
+    "code": "FE0101",
+    "description": "TO IMPORT GOODS FOR STOCKING WITH EXPEDITED RELEASE - C19",
+    "sourcePage": 30,
+    "sourceRow": 481,
+    "groupCode": "FEC",
+    "active": false
+  },
+  {
+    "code": "FE0100",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREE ZONE) FOR COMPANY USE ON EXPEDITED RELEASE (C19)",
+    "sourcePage": 30,
+    "sourceRow": 482,
+    "groupCode": "FEC",
+    "active": true
+  },
+  {
+    "code": "FE0102",
+    "description": "GOODS BEING IMPORTED BY LICENSEES ENGAGED IN MANUFACTURING/ASSEMBLY UNDER EXPEDITED RELEASE - C19",
+    "sourcePage": 30,
+    "sourceRow": 483,
+    "groupCode": "FEC",
+    "active": true
+  },
+  {
+    "code": "FE0103",
+    "description": "FUEL BEING IMPORTED BY BORCO UNDER EXPEDITED RELEASE - C19",
+    "sourcePage": 31,
+    "sourceRow": 484,
+    "groupCode": "FEC",
+    "active": true
+  },
+  {
+    "code": "FE0104",
+    "description": "GOODS BEING IMPORTED BY CONTRACTORS FOR THE CONSTRUCTION OF STRUCTURES",
+    "sourcePage": 31,
+    "sourceRow": 485,
+    "groupCode": "FEC",
+    "active": true
+  },
+  {
+    "code": "TEST01",
+    "description": "Test",
+    "sourcePage": 31,
+    "sourceRow": 486,
+    "groupCode": "F001",
+    "active": false
+  },
+  {
+    "code": "FEC000",
+    "description": "TO IMPORT GOODS FOR COMPANY USE WITH EXPEDITED RELEASE - C19",
+    "sourcePage": 31,
+    "sourceRow": 487,
+    "groupCode": "FE0",
+    "active": true
+  },
+  {
+    "code": "4F0001",
+    "description": "To have goods remove from stock by paying duty",
+    "sourcePage": 31,
+    "sourceRow": 488,
+    "groupCode": "F001",
+    "active": true
+  },
+  {
+    "code": "FWF001",
+    "description": "A LICENSEE ACCEPTING GOODS PURCHASED FROM A STOCKING COMPANY",
+    "sourcePage": 31,
+    "sourceRow": 489,
+    "groupCode": "F002",
+    "active": true
+  },
+  {
+    "code": "4FW000",
+    "description": "TO IMPORT GOODS FOR STOCKING WITH EXPEDITED RELEASE - C19",
+    "sourcePage": 31,
+    "sourceRow": 490,
+    "groupCode": "FEC",
+    "active": true
+  },
+  {
+    "code": "4099010010",
+    "description": "GENERAL EXEMPTION FOR FURNITURE AND APPLIANCES IN RESPECT OF THE DWELLING HOME.",
+    "sourcePage": 31,
+    "sourceRow": 491,
+    "groupCode": "4099",
+    "active": true
+  },
+  {
+    "code": "42989K0030FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 31,
+    "sourceRow": 492,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989K0040FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 31,
+    "sourceRow": 493,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989K0050FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 31,
+    "sourceRow": 494,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989L0000FS",
+    "description": "STATOIL SOUTH RIDING POINT HOLDING",
+    "sourcePage": 31,
+    "sourceRow": 495,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42989M0000S",
+    "description": "GOODS IMPORTED FOR EXPEDITED RELEASE",
+    "sourcePage": 31,
+    "sourceRow": 496,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4299510010",
+    "description": "GENERAL EXEMPTION FOR FURNITURE AND APPLIANCES IN RESPECT OF THE DWELLING HOME",
+    "sourcePage": 31,
+    "sourceRow": 497,
+    "groupCode": "4299",
+    "active": true
+  },
+  {
+    "code": "4HC000",
+    "description": "TO IMPORT GOODS FOR COMPANY USE WITH EXPEDIATED RELEASE - C19",
+    "sourcePage": 31,
+    "sourceRow": 498,
+    "groupCode": "HE0",
+    "active": true
+  },
+  {
+    "code": "4299500000F",
+    "description": "Disaster Reconstruction Authority Act (Special Economic Recovery Zone) (Relief) Order, 2019(SERZ)(No. 36 Of 2019) Concession for imports into Abaco and Abaco Cays in accordance with the Disaster Reconstruction Authority Act (Special Economic Recovery Zone",
+    "sourcePage": 31,
+    "sourceRow": 499,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4299510000F",
+    "description": "GENERAL EXEMPTION FOR MATERIALS NECESSARY FOR THE CONSTRUCTION OF A DWELLING HOME.",
+    "sourcePage": 32,
+    "sourceRow": 500,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4299500010F",
+    "description": "Disaster Reconstruction Authority Act (Special Economic Recovery Zone) (Relief) Order, 2019(SERZ)(No. 36 Of 2019) Concession for imports into Grand Bahama, Deep Water Cay, Sweetings Cay and Water Cay in accordance with the Disaster Reconstruction Authorit",
+    "sourcePage": 32,
+    "sourceRow": 501,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4299510010F",
+    "description": "GENERAL EXEMPTION FOR FURNITURE AND APPLIANCES IN RESPECT OF THE DWELLING HOME.",
+    "sourcePage": 32,
+    "sourceRow": 502,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4099000010F",
+    "description": "Disaster Reconstruction Authority Act (Special Economic Recovery Zone) (Relief) Order, 2019(SERZ)(No. 36 Of 2019) Concession for imports into Grand Bahama, Deep Water Cay, Sweetings Cay and Water Cay in accordance with the Disaster Reconstruction Authori",
+    "sourcePage": 32,
+    "sourceRow": 503,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4099010010F",
+    "description": "Access to Affordable Homes(Amendment) Act, 2021. General exemption for furniture and appliances in respect of a dwelling home with prior approval from the Minister.",
+    "sourcePage": 32,
+    "sourceRow": 504,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4099000000F",
+    "description": "Disaster Reconstruction Authority Act (Special Economic Recovery Zone) (Relief) Order, 2019 (SERZ)(No. 36 Of 2019) Concession for imports into Abaco and Abaco Cays in accordance with the Disaster Reconstruction Authority Act (Special Economic Recovery Zon",
+    "sourcePage": 32,
+    "sourceRow": 505,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4099010000F",
+    "description": "Access to Affordable Homes (Amendment) Act, 2021. General exemption for materials necessary for the construction of a dwelling home with prior approval from the Minister.",
+    "sourcePage": 32,
+    "sourceRow": 506,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "454300",
+    "description": "Import on Excise Concession from a Temporary Import",
+    "sourcePage": 32,
+    "sourceRow": 507,
+    "groupCode": "4543",
+    "active": true
+  },
+  {
+    "code": "4099010000",
+    "description": "GENERAL EXEMPTION FOR MATERIALS NECESSARY FOR THE CONSTRUCTION OF A DWELLING HOME",
+    "sourcePage": 32,
+    "sourceRow": 508,
+    "groupCode": "4099",
+    "active": true
+  },
+  {
+    "code": "4299510000",
+    "description": "GENERAL EXEMPTION FOR MATERIALS NECESSARY FOR THE CONSTRUCTION OF A DWELLING HOME.",
+    "sourcePage": 32,
+    "sourceRow": 509,
+    "groupCode": "4299",
+    "active": true
+  },
+  {
+    "code": "4098150010",
+    "description": "Goods recommended and approved by the Minister of Finance as building materials and supplies for the construction, renovation and repair of churches",
+    "sourcePage": 32,
+    "sourceRow": 510,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4HW000",
+    "description": "TO IMPORT GOODS FOR STOCKING WITH EXPEDITED RELEASE - C19",
+    "sourcePage": 32,
+    "sourceRow": 511,
+    "groupCode": "HEC",
+    "active": true
+  },
+  {
+    "code": "4HW001",
+    "description": "GOODS BEING IMPORTED BY LICENSEES ENGAGED IN MANUFACTURING/ASSEMBLY UNDER EXPEDITED RELEASE - C19",
+    "sourcePage": 32,
+    "sourceRow": 512,
+    "groupCode": "HEC",
+    "active": true
+  },
+  {
+    "code": "4HW002",
+    "description": "FUEL BEING IMPORTED BY BORCO UNDER EXPEDITED RELEASE - C19",
+    "sourcePage": 32,
+    "sourceRow": 513,
+    "groupCode": "HEC",
+    "active": true
+  },
+  {
+    "code": "4HW003",
+    "description": "GOODS BEING IMPORTED BY CONTRACTORS FOR THE CONSTRUCTION OF STRUCTURES",
+    "sourcePage": 32,
+    "sourceRow": 514,
+    "groupCode": "HEC",
+    "active": true
+  },
+  {
+    "code": "4098010010FS",
+    "description": "GOODS FOR USE BY CONSULATES AND CONSUILAR OFFICERS, AS SPECIRFIED BY OR UNDER THE COUSULAR RELATIONS AND COMMONW3EALTH OFFICERS ACT",
+    "sourcePage": 33,
+    "sourceRow": 515,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098010020FS",
+    "description": "GOODS FOR USE BY DIPLOMATIC OFFICERS AND DIPLOMATIC OFFICERS, AS SPECIFIED BY THE MINISTER",
+    "sourcePage": 33,
+    "sourceRow": 516,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098010030FS",
+    "description": "GOODS FOR USE BY INTERNATIONAL ORGANIZATIONS, AS APPROVED BY THE MINISTER",
+    "sourcePage": 33,
+    "sourceRow": 517,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098020000FS",
+    "description": "GOODS FOR THE USE OF AN OFFICIAL ESTABLISHMENT WHOLLY MAINTAINED AND OPERATED BY A FOREIGN STATE PURSUANT TO AN AGREEMENT WITH THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 33,
+    "sourceRow": 518,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098030000FS",
+    "description": "GOODS FOR USE EXCLUSIVELY BY THE BAHAMAS NATIONAL TRUST, WHEN IMPORTED WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 33,
+    "sourceRow": 519,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098040000FS",
+    "description": "Goods imported by a charitable organization with the prior approval of the Minister and for use exclusively for charitable purposes. This exemption must meet the conditions specified in Note 10 to this Chapter.",
+    "sourcePage": 33,
+    "sourceRow": 520,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098050000FS",
+    "description": "Gifts to the Government of The Bahamas. Gifts over $50,000, must be approved by the Cabinet.",
+    "sourcePage": 33,
+    "sourceRow": 521,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098060000FS",
+    "description": "GOODS FOR USE BY REGISTERED FLORICULTURIST, HORTICULTURIST, AGRICULTURAL COOPERATIVE SOCIETIES AND FARMERS THAT MEET THE CONDITIONS SPECIFIED IN NOTE 3 TO THIS CHAPTER",
+    "sourcePage": 33,
+    "sourceRow": 522,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098070000FS",
+    "description": "GOODS FOR USE IN THE LIVESTOCK AND FISH FARMING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 4 TO THIS CHAPTER",
+    "sourcePage": 33,
+    "sourceRow": 523,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098080000FS",
+    "description": "GOODS FOR USE IN THE COMMERCIAL FISHING AND BONE FISHING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 5 TO THIS CHAPTER",
+    "sourcePage": 33,
+    "sourceRow": 524,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098090010FS",
+    "description": "AIRCRAFT ACCESSORIES AND INSTRUMENTS NECESSARY FOR AIRCRAFT OPERATIONS",
+    "sourcePage": 33,
+    "sourceRow": 525,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098090020FS",
+    "description": "LUBRICANTS, DEICING FLUIDS, HYDRAULIC AND COOLING FLUIDS TO BE USED BY AIRCRAFT",
+    "sourcePage": 33,
+    "sourceRow": 526,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098090030FS",
+    "description": "Equipment and machinery specifically designed for ground repair, maintenance and the service craft for use within the limits of any Customs place or any other place designated by the Minister.",
+    "sourcePage": 33,
+    "sourceRow": 527,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098090040FS",
+    "description": "CATERING EQUIPMENT OWNED OR LEASED BY AIRPORT OPERATORS FOR USE ABOARD AIRCRAFT",
+    "sourcePage": 33,
+    "sourceRow": 528,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098101000FS",
+    "description": "FOR BAGAGE OF PASSENGERS - OF RETURNING RESIDENTS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (A)",
+    "sourcePage": 34,
+    "sourceRow": 529,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098102000FS",
+    "description": "FOR BAGAGE OF PASSENGERS - OF OTHER PASSENGERS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6(B)",
+    "sourcePage": 34,
+    "sourceRow": 530,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "40981A0010FS",
+    "description": "FOR GOODS IMPORTED AS CARGO - RETURNING RESIDENTS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6A TO THIS CHAPTER",
+    "sourcePage": 34,
+    "sourceRow": 531,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098110000FS",
+    "description": "USED PERSONAL CLOTHING, INCLUDING FOOTWEAR, IMPORTED BY A RETURNING RESIDENT",
+    "sourcePage": 34,
+    "sourceRow": 532,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098120010FS",
+    "description": "COLLECTOR'S PIECES AND WORKS OF ART CONSIGNED TO AND FOR EXHIBITION IN PUBLIC GALLERIES, MUSEUMS AND OTHER PUBLIC INSTITUTIONS AND NOT FOR RESALE.",
+    "sourcePage": 34,
+    "sourceRow": 533,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098120020FS",
+    "description": "Original pieces and works of art approved by The Minister and which meet the conditions specified in Note 8 to this Chapter",
+    "sourcePage": 34,
+    "sourceRow": 534,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130010FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONSTRATING AND TEACHING",
+    "sourcePage": 34,
+    "sourceRow": 535,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130011FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS",
+    "sourcePage": 34,
+    "sourceRow": 536,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4HC003",
+    "description": "REMOVAL AFTER FINISHED PRODUCT FROM MANUFACTURER/ASSEMBLER'S BOND",
+    "sourcePage": 34,
+    "sourceRow": 537,
+    "groupCode": "HW0",
+    "active": true
+  },
+  {
+    "code": "HC0000",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR COMPANY USE",
+    "sourcePage": 34,
+    "sourceRow": 538,
+    "groupCode": "WC0",
+    "active": true
+  },
+  {
+    "code": "4098130012FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF AN EDUCATIONAL, SCIENTIFIC OR CULTURAL CHA",
+    "sourcePage": 34,
+    "sourceRow": 539,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130013FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: GOODS RECOMMENDED AND APPROVED BY THE MINISTER OF EDUCATION AS BUILDING MATERIALS AND SUPPLIES FO",
+    "sourcePage": 34,
+    "sourceRow": 540,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130014FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: GOODS RECOMMENDED AND APPROVED BY THE MINISTER OF EDUCATION AS FURNITURE FOR EDUCATIONAL INSTITUT",
+    "sourcePage": 35,
+    "sourceRow": 541,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130015FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS: OTHER GOODS EXCLUSIVELY FOR USE IN OR BY PRIVATE OR PUBLIC EDUCATIONAL INSTITUTIONS",
+    "sourcePage": 35,
+    "sourceRow": 542,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130020FS",
+    "description": "School supplies approved by the Minister not for resale",
+    "sourcePage": 35,
+    "sourceRow": 543,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130030FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY SCIENTIFIC INSTITUTIONS: PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONSTRATING AND TEACHING PURPOSES",
+    "sourcePage": 35,
+    "sourceRow": 544,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130031FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY SCIENTIFIC INSTITUTIONS: SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS IMPORTED FOR PURPOSES OF SCIENTIFIC RESEARCH",
+    "sourcePage": 35,
+    "sourceRow": 545,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130032FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY SCIENTIFIC INSTITUTIONS: SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF A SCIENTIFIC NATURE FOR EXCLUSIVE USE",
+    "sourcePage": 35,
+    "sourceRow": 546,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130040FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY CULTURAL INSTITUTIONS, SOCIETIES OR BROADCASTING ORGANIZATIONS: PATTERNS, MODELS, WALL CHARTS AND VISUAL AIDS FOR USE EXCLUSIVELY FOR DEMONST",
+    "sourcePage": 35,
+    "sourceRow": 547,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130041FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY CULTURAL INSTITUTIONS, SOCIETIES OR BROADCASTING ORGANIZATIONS:SCIENTIFIC OR OTHER INSTRUMENTS, APPARATUS, EQUIPMENT AND MATERIALS IMPORTED F",
+    "sourcePage": 35,
+    "sourceRow": 548,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130042FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY CULTURAL INSTITUTIONS, SOCIETIES OR BROADCASTING ORGANIZATIONS: SOUND RECORDINGS AND FILMS (STILL OR CINEMATOGRAPH) OF AN EDUCATIONAL, SCIENT",
+    "sourcePage": 35,
+    "sourceRow": 549,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130050FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED BY INSTITUTIONS OR ORGANIZATIONS CONCERNED WITH THE WELFARE OF THE HANDICAPPED: SPECIALLY DESIGNED ARTICLES OR RAW MATERIALS FOR THE EDUCATIONAL, SCIEN",
+    "sourcePage": 36,
+    "sourceRow": 550,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130060FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED, OR THE ELDERLY: EQUIPMENT AND MATERIALS FOR RESEARCH OF THE ACQUIRED IMMUNE DEFICIE",
+    "sourcePage": 36,
+    "sourceRow": 551,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130061FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED, OR THE ELDERLY: EQUIPMENT AND MATERIALS FOR THE TREATMENT OR ASSISTANCE OF PERSONS",
+    "sourcePage": 36,
+    "sourceRow": 552,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130062FS",
+    "description": "FOR EDUCATIONAL, SCIENTIFIC AND CUTLTURAL GOODS - ARTICLES IMPORTED FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED, OR THE ELDERLY: SPECIALIZED EQUIPMENT, MEDICAL SUPPLIES AND DOMESTIC SUPPLIES FOR U",
+    "sourcePage": 36,
+    "sourceRow": 553,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098240000FS",
+    "description": "Equipment for commercial printers for use in the commercial printing industry that meet the conditions specified in Note 14 to this Chapter",
+    "sourcePage": 36,
+    "sourceRow": 554,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098240010FS",
+    "description": "Printing Materials for use in the commercial printing industry that meet the conditions specified in Note 14 to this Chapter",
+    "sourcePage": 36,
+    "sourceRow": 555,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098250000FS",
+    "description": "SAMPLES OF MERCHANDISE: ARTICLES IMPORTED IN SMALL QUANITITIES, LIMITED SIZES OR MUTILATED CONDITION, INCAPABLE OF BEING USED FOR THEIR NORMAL PURPOSE AND WITH NO COMMERCIAL VALUE",
+    "sourcePage": 36,
+    "sourceRow": 556,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098260000FS",
+    "description": "Cups, shields, medals and similar articles having no other use except as trophies to convey awards for military, civil or public service or for distinction in literature, art, science or sport, whether or not engraved.",
+    "sourcePage": 36,
+    "sourceRow": 557,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098270000FS",
+    "description": "FOR SYSTEMS BUILDING FOR GOVERNMENT HOUSING PROJECTS - GOODS RECOMMENDED AND APPROVED BY THE MINISTER RESPONSIBLE FOR HOUSING AS CONSTITUTING MATERIALS AND COMPONENTS OF SYSTEMS BUILDING WHEN IMPORTED BY THE MINISTER OR",
+    "sourcePage": 36,
+    "sourceRow": 558,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098280000FS",
+    "description": "GOODS MANUFACTURED OR PROCESSED IN THE PORT AREA BY MANUFACTURERS REGISTERED WITH AND APPROVED BY THE MINISTRY RESPONSIBLE FOR TRADE AND INDUSTRY",
+    "sourcePage": 37,
+    "sourceRow": 559,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098290010FS",
+    "description": "FOR VESSELS AND VESSELS PARTS: VESSELS HOLDING A VALID PERMIT UNDER THE BOAT REGISTRATION ACT, SECTION 4",
+    "sourcePage": 37,
+    "sourceRow": 560,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098290020FS",
+    "description": "FOR VESSELS AND VESSELS PARTS: ENTRY OF SHIPS OF 150 GROSS TONS OR MORE",
+    "sourcePage": 37,
+    "sourceRow": 561,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098290030FS",
+    "description": "FOR VESSELS AND VESSELS PARTS:UPON RE-ENTRY OF A BAHAMIAN REGISTERED PLEASURE VESSEL OF LESS THAN 150 GROSS TONS AND NOT LESS THAN 30 FEET IN LENGTH FOR WHICH DUTY HAS BEEN PAID",
+    "sourcePage": 37,
+    "sourceRow": 562,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098290040FS",
+    "description": "FOR VESSELS AND VESSELS PARTS: ENTRY OF PLEASURE VESSELS, NOT CARRYING CARGO, WHOLLY OWNED BY PERSONS NOT ORDINARILY RESIDENT IN THE BAHAMAS, FOR A PERIOD NOT EXCEEDING TWELVE (12) MONTHS DURING WHICH IT WILL NOT BE USED",
+    "sourcePage": 37,
+    "sourceRow": 563,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098290050FS",
+    "description": "FOR VESSELS AND VESSELS PARTS: MOTOR VESSELS FOR USE IN THE INTERISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 37,
+    "sourceRow": 564,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098290060FS",
+    "description": "FOR VESSELS AND VESSELS PARTS: ENGINE AND OTHER MECHANICAL PARTS FOR MOTOR VESSELS USED IN THE INTERISLAND SERVICE, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 37,
+    "sourceRow": 565,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098290070FS",
+    "description": "FOR VESSELS AND VESSELS PARTS: PARTS FOR TEMPORARY CRUISING VESSELS IMPORTED UNDER A TEMPORARY CRUISING PERMIT (FORM NO. C39)",
+    "sourcePage": 37,
+    "sourceRow": 566,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098290080FS",
+    "description": "FOR VESSELS AND VESSELS PARTS: HACKNEY CARRIAGES, AS DEFINED IN THE CABS ACT, SECTION 2, WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 37,
+    "sourceRow": 567,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098300000FS",
+    "description": "PORTABLE WATER: FRESH WATER IMPORTED IN BULK FOR USE IN INAGUA AND ANY OTHER ISLAND SPECIFIED BY THE MINISTER BY ORDER",
+    "sourcePage": 37,
+    "sourceRow": 568,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098310000FS",
+    "description": "FEED FOR BIRDS AND ANIMALS IN ZOOLOGICAL GARDENS",
+    "sourcePage": 37,
+    "sourceRow": 569,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098330010FS",
+    "description": "SPIRIT AND BEER MANUFACTURING ACT: BUSINESSES UNDER 5 YEARS",
+    "sourcePage": 37,
+    "sourceRow": 570,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098330020FS",
+    "description": "SPIRIT AND BEER MANUFACTURING ACT: BUSINESSES OVER 5 YEARS",
+    "sourcePage": 37,
+    "sourceRow": 571,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098340000FS",
+    "description": "STATOIL SOUTH RIDING POINT HOLDING",
+    "sourcePage": 37,
+    "sourceRow": 572,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098350000FS",
+    "description": "WATER & SEWERAGE ACT",
+    "sourcePage": 38,
+    "sourceRow": 573,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098360000FS",
+    "description": "THE BRIDGE AUTHORITY ACT: CONCESSION IS LIMITED ONLY TO IMPORTS THAT ARE DIRECTLY RELATED TO THE MAINTENANCE AND REHABILITATION OF THE EAST AND WEST BRIDGES OF PARADISE ISLAND AND APPROVED BY THE MINISTER",
+    "sourcePage": 38,
+    "sourceRow": 574,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098370000FS",
+    "description": "NASSAU AIRPORT DEVELOPMENT PROJECT",
+    "sourcePage": 38,
+    "sourceRow": 575,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "4098380000FS",
+    "description": "THE SPORTS CENTER PROJECT",
+    "sourcePage": 38,
+    "sourceRow": 576,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098390000FS",
+    "description": "THE OCEAN INDUSTRIES ACT",
+    "sourcePage": 38,
+    "sourceRow": 577,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "4098400020FS",
+    "description": "BROADCASTING ACT: ITEMS RELATED TO CABLE BAHAMAS",
+    "sourcePage": 38,
+    "sourceRow": 578,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "HWH001",
+    "description": "A LICENSEE ACCEPTING GOODS PURCHASED FROM A STOCKING COMPANY",
+    "sourcePage": 38,
+    "sourceRow": 579,
+    "groupCode": "H002",
+    "active": true
+  },
+  {
+    "code": "HCW000",
+    "description": "TO SELL GOODS TO ANOTHER LICENSEE FOR COMPANY USE.",
+    "sourcePage": 38,
+    "sourceRow": 580,
+    "groupCode": "HCW",
+    "active": true
+  },
+  {
+    "code": "HWD000",
+    "description": "TO HAVE GOODS REMOVED FROM STOCK BY DESTRUCTION",
+    "sourcePage": 38,
+    "sourceRow": 581,
+    "groupCode": "HCD",
+    "active": true
+  },
+  {
+    "code": "4HC001",
+    "description": "TO HAVE GOODS REMOVE FROM COMPANY'S BOND BY PAYING DUTY",
+    "sourcePage": 38,
+    "sourceRow": 582,
+    "groupCode": "HW0",
+    "active": true
+  },
+  {
+    "code": "4HC002",
+    "description": "UPON COMPLETION OF DWELLING PLACE / STRUCTURE REMOVAL FROM CONTRACTOR'S BOND",
+    "sourcePage": 38,
+    "sourceRow": 583,
+    "groupCode": "HW0",
+    "active": true
+  },
+  {
+    "code": "4HC004",
+    "description": "SALE OF BONDED FUEL TO LICENSEES",
+    "sourcePage": 38,
+    "sourceRow": 584,
+    "groupCode": "HW0",
+    "active": false
+  },
+  {
+    "code": "WHH001",
+    "description": "A LICENSEE WHO STOCKS GOODS SELLING TO A LICENSEE",
+    "sourcePage": 38,
+    "sourceRow": 585,
+    "groupCode": "WH001",
+    "active": true
+  },
+  {
+    "code": "WH0000",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR STOCKING",
+    "sourcePage": 38,
+    "sourceRow": 586,
+    "groupCode": "WHOO2",
+    "active": true
+  },
+  {
+    "code": "HC0001",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR MANUFACTURING/ASSEMBLY",
+    "sourcePage": 38,
+    "sourceRow": 587,
+    "groupCode": "WC0",
+    "active": true
+  },
+  {
+    "code": "HC0003",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR BORCO (FUEL)",
+    "sourcePage": 38,
+    "sourceRow": 588,
+    "groupCode": "WC0",
+    "active": true
+  },
+  {
+    "code": "HWC000",
+    "description": "TO ACCEPT GOODS UNDER COMNPANY'S BOND FROM ANOTHER LICENSEE",
+    "sourcePage": 38,
+    "sourceRow": 589,
+    "groupCode": "HWC",
+    "active": true
+  },
+  {
+    "code": "1HC001",
+    "description": "EXPORT OF LOCALLY PRODUCED GOODS",
+    "sourcePage": 38,
+    "sourceRow": 590,
+    "groupCode": "1HC",
+    "active": true
+  },
+  {
+    "code": "1HC002",
+    "description": "FOR EXPORT OF GOODS NOT RETURNING TO COUNTRY",
+    "sourcePage": 38,
+    "sourceRow": 591,
+    "groupCode": "1HC",
+    "active": true
+  },
+  {
+    "code": "4098400010FS",
+    "description": "BROADCASTING ACT: ITEMS RELATED TO Z.N.S.",
+    "sourcePage": 38,
+    "sourceRow": 592,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098410000FS",
+    "description": "AUTEC AGREEMENT",
+    "sourcePage": 39,
+    "sourceRow": 593,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098420000FS",
+    "description": "CLIFTON HERITAGE AUTHORITY ACT",
+    "sourcePage": 39,
+    "sourceRow": 594,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098430000FS",
+    "description": "IMMUNITIES & PRIVILEGES ACT",
+    "sourcePage": 39,
+    "sourceRow": 595,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098440000FS",
+    "description": "LONG RANGE PROVING GROUND ACT",
+    "sourcePage": 39,
+    "sourceRow": 596,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "4098450000FS",
+    "description": "NASSAU REVITALIZATION ACT",
+    "sourcePage": 39,
+    "sourceRow": 597,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098460000FS",
+    "description": "FAMILY ISLAND DEVELOPMENT ENCOURAGEMENT ACT",
+    "sourcePage": 39,
+    "sourceRow": 598,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098470000FS",
+    "description": "CENTRAL BANK ACT",
+    "sourcePage": 39,
+    "sourceRow": 599,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098480000FS",
+    "description": "RE-IMPORTED GOODS",
+    "sourcePage": 39,
+    "sourceRow": 600,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "4098490000FS",
+    "description": "ALBANY PROJECT",
+    "sourcePage": 39,
+    "sourceRow": 601,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098500000FS",
+    "description": "PETROLEUM ACT",
+    "sourcePage": 39,
+    "sourceRow": 602,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098510000FS",
+    "description": "CONSULAR RELATIONS AND COMMONWEALTH OFFICERS",
+    "sourcePage": 39,
+    "sourceRow": 603,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098520010FS",
+    "description": "Hotel Encouragement Act for construction materials",
+    "sourcePage": 39,
+    "sourceRow": 604,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098520020FS",
+    "description": "Hotel Encouragement Act for other supplies",
+    "sourcePage": 39,
+    "sourceRow": 605,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098520030FS",
+    "description": "Hotel Encouragement Act Construction Plant",
+    "sourcePage": 39,
+    "sourceRow": 606,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098530000FS",
+    "description": "AGRICULTURE MANUFACTURERS ACT",
+    "sourcePage": 39,
+    "sourceRow": 607,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098540000FS",
+    "description": "INDUSTRIES ENCOURAGEMENT ACT",
+    "sourcePage": 39,
+    "sourceRow": 608,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098550010FS",
+    "description": "Items \u2013 New Providence (N.P.)",
+    "sourcePage": 39,
+    "sourceRow": 609,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098550020FS",
+    "description": "Generators and Engines (N.P.)",
+    "sourcePage": 39,
+    "sourceRow": 610,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098550030FS",
+    "description": "Items \u2013 Family Islands (F.I.)",
+    "sourcePage": 39,
+    "sourceRow": 611,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098550040FS",
+    "description": "Generators and Engines \u2013 Family Islands (F.I.)",
+    "sourcePage": 39,
+    "sourceRow": 612,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098560000FS",
+    "description": "CAPITAL GOODS FOR BUSINESSES LOCATED OUTSIDE OF THE PORT AREA IN GRAND BAHAMA",
+    "sourcePage": 39,
+    "sourceRow": 613,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098570000FS",
+    "description": "PROCESSING MACHINERY FOR USE IN THE RECYCLING OF WASTE, WITH THE APPROVAL OF THE MINISTER",
+    "sourcePage": 39,
+    "sourceRow": 614,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098580010FS",
+    "description": "FOR BUILDINGS SITUATED IN SUCH PART OF NEW PROVIDENCE OR ANY OTHER AREA OF THE COMMONWEALTH OF THE BAHAMAS AS THE MINISTER MAY DECLARE OF ORDER, BUILDING MATERIALS AND SUPPLIES: WHERE THE CONDITIONS SPECIFIED IN NOTE (8A",
+    "sourcePage": 39,
+    "sourceRow": 615,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "4098580020FS",
+    "description": "FOR BUILDINGS SITUATED IN SUCH PART OF NEW PROVIDENCE OR ANY OTHER AREA OF THE COMMONWEALTH OF THE BAHAMAS AS THE MINISTER MAY DECLARE OF ORDER, BUILDING MATERIALS AND SUPPLIES: WHERE THE CONDITIONS SPECIFIED IN NOTE (8A",
+    "sourcePage": 39,
+    "sourceRow": 616,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "4098590000FS",
+    "description": "FOR DILAPIDATED BUILDINGS SITUATED IN SUCH PART OF NEW PROVIDENCE THE MINISTER MAY DESIGNATE BY ORDER, BUILDING MATERIALS AND SUPPLIES: WHERE THE CONDITIONS SPECIFY IN NOTE 13 TO THE CHAPTER ARE MET",
+    "sourcePage": 40,
+    "sourceRow": 617,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "4098600010FS",
+    "description": "HUMAN REMAINS IN CASKETS OR NOT IN CASKETS: IN CASKETS",
+    "sourcePage": 40,
+    "sourceRow": 618,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098600090FS",
+    "description": "HUMAN REMAINS IN CASKETS OR NOT IN CASKETS: OTHER",
+    "sourcePage": 40,
+    "sourceRow": 619,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4H0001",
+    "description": "To have goods remove from stock by paying duty",
+    "sourcePage": 40,
+    "sourceRow": 620,
+    "groupCode": "H001",
+    "active": true
+  },
+  {
+    "code": "HCD001",
+    "description": "TO HAVE GOODS REMOVE FROM COMPANY'S BOND BY DESTRUCTION",
+    "sourcePage": 40,
+    "sourceRow": 621,
+    "groupCode": "HW0",
+    "active": true
+  },
+  {
+    "code": "HC0002",
+    "description": "IMPORT CONDITIONALLY DUTY FREE UNDER THE HAWKSBILL CREEK AGREEMENT (FREEPORT TRADE ZONE) FOR CONTRACTORS",
+    "sourcePage": 40,
+    "sourceRow": 622,
+    "groupCode": "WC0",
+    "active": true
+  },
+  {
+    "code": "4098610000FS",
+    "description": "HEADS OF AGREEMENT BETWEEN THE GOVERNMENT OF THE BAHAMAS AND ROYAL CARIBBEAN CRUISES LTD.: CONCESSION FOR GOODS IMPORTED DUTY EXEMPTED INTO COCO CAY LOCATED IN THE BERRY ISLANDS",
+    "sourcePage": 40,
+    "sourceRow": 623,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098620000FS",
+    "description": "CONCESSION FOR SOLAR PANELS IMPORTED WITH ALL COMPONENTS TO COMPLETE INSTALLATION OF THE SYSTEM(S) APPROVED BY THE MINISTER",
+    "sourcePage": 40,
+    "sourceRow": 624,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098630010FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 40,
+    "sourceRow": 625,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098630020FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 40,
+    "sourceRow": 626,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098630030FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 40,
+    "sourceRow": 627,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098630040FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 40,
+    "sourceRow": 628,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098630050FS",
+    "description": "CLOTHING, FOOTWARE AND OTHER WEARING APPARELS AND ACCESSORIES, FABRIC FOR MAKING APPAREL, SEWING NEEDLES, BUTTONS AND ZIPPERS FOR CLOTHING; IMPORTED BY PERSONS AND BUSINESSES WITH A ALID BUSINESS LICENCE AND APPROVAL BY",
+    "sourcePage": 41,
+    "sourceRow": 629,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098640000FS",
+    "description": "GENERAL EXEMPTION ON ART SUPPLIES APPROVED BY THE MINISTER",
+    "sourcePage": 41,
+    "sourceRow": 630,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098650000S",
+    "description": "GOODS IMPORTED FOR EXPEDITED RELEASE",
+    "sourcePage": 41,
+    "sourceRow": 631,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "429800000S",
+    "description": "EXCISE CONCESSION FOR IMPORTED GOODS",
+    "sourcePage": 41,
+    "sourceRow": 632,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298700010FS",
+    "description": "EXEMPTION FROM DUTY FOR GOODS - FOR USE BY CONSULATES AND CONSULAR OFFICERS, AS SPECIFIED BY OR UNDER THE CONSULAR RELATIONS AND COMMONWEALTH OFFICERS ACT",
+    "sourcePage": 41,
+    "sourceRow": 633,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298700020FS",
+    "description": "EXEMPTION FROM DUTY FOR GOODS - FOR USE BY DIPLOMATIC OFFICES AND DIPLOMATIC OFFICERS, AS SPECIFIED BY THE MINISTER",
+    "sourcePage": 41,
+    "sourceRow": 634,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298700030FS",
+    "description": "EXEMPTION FROM DUTY FOR: GOODS FOR USE BY INTERNATIONAL ORGANIZATIONS, AS APPROVED BY THE MINISTER",
+    "sourcePage": 41,
+    "sourceRow": 635,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298710000FS",
+    "description": "EXEMPTION FROM DUTY FOR: GOODS FOR THE USE OF AN OFFICIAL ESTABLISHMENT WHOLLY MAINTAINED AND OPERATED BY A FOREIGN STATE PURSUANT TO AN AGREEMENT WITH THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 41,
+    "sourceRow": 636,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298720000FS",
+    "description": "EXEMPTION FROM DUTY FOR: GOODS FOR USE EXCLUSIVELY BY THE BAHAMAS NATIONAL TRUST, WHEN IMPORTED WITH THE PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 41,
+    "sourceRow": 637,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298730000FS",
+    "description": "EXEMPTION FROM DUTY FOR: GOODS IMPORTED BY A CHARITABLE ORGANIZATION WITH THE PRIOR APPROVAL OF THE MINISTER AND FOR USE EXCLUSIVELY FOR CHARITABLE PURPOSES",
+    "sourcePage": 41,
+    "sourceRow": 638,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298740000FS",
+    "description": "EXEMPTION FROM DUTY FOR: GIFTS TO THE GOVERNMENT OF THE BAHAMAS",
+    "sourcePage": 41,
+    "sourceRow": 639,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298750000FS",
+    "description": "GENERAL EXEMPTION: FOR GOODS FOR USE BY REGISTERED FLORICULTURIST, HORTICULTURIST, AGRICULTURAL COOPERATIVE SOCIETIES AND FARMERS THAT MEET THE CONDITIONS SPECIFIED IN NOTE 3 TO THIS CHAPTER",
+    "sourcePage": 41,
+    "sourceRow": 640,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298750020S",
+    "description": "FARM TRACTORS FOR AGRICULTURAL COOPERATIVE SOCIETIES REGISTERED WITH THE MINISTER",
+    "sourcePage": 41,
+    "sourceRow": 641,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298760000FS",
+    "description": "GENERAL EXEMPTION: FOR GOODS FOR USE IN THE LIVESTOCK AND FISH FARMING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 4 TO THIS CHAPTER",
+    "sourcePage": 42,
+    "sourceRow": 642,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298770000FS",
+    "description": "GENERAL EXEMPTION: FOR GOODS FOR USE IN THE COMMERCIAL FISHING AND BONE FISHING INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 5 TO THIS CHAPTER",
+    "sourcePage": 42,
+    "sourceRow": 643,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298780010FS",
+    "description": "GENERAL EXEMPTION FOR AIRCRAFT PARTS AND ACCESSORIES FOR USE BY CRAFT ON SCHEEDULED INTERNATIONAL AIR SERVICES, BY BAHAMASAIR HOLDINGS LIMITED AND SCHEDULED CHARTERED SERVICES DOMESTIC AND INTERNATIONAL FLIGHTS: AIRCRAFT",
+    "sourcePage": 42,
+    "sourceRow": 644,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298780020FS",
+    "description": "GENERAL EXEMPTION FOR AIRCRAFT PARTS AND ACCESSORIES FOR USE BY CRAFT ON SCHEEDULED INTERNATIONAL AIR SERVICES, BY BAHAMASAIR HOLDINGS LIMITED AND SCHEDULED CHARTERED SERVICES DOMESTIC AND INTERNATIONAL FLIGHTS: LUBRICAN",
+    "sourcePage": 42,
+    "sourceRow": 645,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298780030FS",
+    "description": "GENERAL EXEMPTION FOR AIRCRAFT PARTS AND ACCESSORIES FOR USE BY CRAFT ON SCHEEDULED INTERNATIONAL AIR SERVICES, BY BAHAMASAIR HOLDINGS LIMITED AND SCHEDULED CHARTERED SERVICES DOMESTIC AND INTERNATIONAL FLIGHTS:EQUIPMENT",
+    "sourcePage": 42,
+    "sourceRow": 646,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298780040FS",
+    "description": "GENERAL EXEMPTION FOR AIRCRAFT PARTS AND ACCESSORIES FOR USE BY CRAFT ON SCHEEDULED INTERNATIONAL AIR SERVICES, BY BAHAMASAIR HOLDINGS LIMITED AND SCHEDULED CHARTERED SERVICES DOMESTIC AND INTERNATIONAL FLIGHTS:CATERING",
+    "sourcePage": 42,
+    "sourceRow": 647,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298791000FS",
+    "description": "GENERAL EXEMPTION FOR BAGGAGE: OF RETURNING RESIDENTS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (A)",
+    "sourcePage": 42,
+    "sourceRow": 648,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298792000FS",
+    "description": "GENERAL EXEMPTION FOR BAGGAGE: OF OTHER PASSENGERS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6 (B)",
+    "sourcePage": 42,
+    "sourceRow": 649,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "42987A0010FS",
+    "description": "GENERAL EXEMPTION FOR GOODS IMPORTED AS CARGO - RETURNING RESIDENTS WHO MEET THE CONDITIONS SPECIFIED IN NOTE 6A TO THIS CHAPTER",
+    "sourcePage": 42,
+    "sourceRow": 650,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298800010FS",
+    "description": "GENERAL EXEMPTION FOR: SPECIALLY DESIGNED ARTICLES IMPORTED BY INSTITUTIONS OR ORGANIZATIONS CONCERNED WITH THE WELFARE OF THE HANDICAPPED, ON APPROVAL BY THE MINISTER",
+    "sourcePage": 42,
+    "sourceRow": 651,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298800020FS",
+    "description": "GENERAL EXEMPTION FOR: GOODS INCLUDING NEW BUSES ONCE EVERY FIVE YEARS, FOR USE EXCLUSIVELY IN OR BY PUBLIC OR PRIVATE EDUCATIONAL INSTITUTIONS, ON APPROVAL BY THE MINISTER",
+    "sourcePage": 42,
+    "sourceRow": 652,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298800030FS",
+    "description": "GENERAL EXEMPTION FOR: SPECIALIZED EQUIPMENT, MEDICAL SUPPLIES AND DOMESTIC SUPPLIES FOR USE BY THE HANDICAPPED, CHRONICALLY ILL, SOCIALLY DISADVANTAGED OR THE ELDERLY",
+    "sourcePage": 43,
+    "sourceRow": 653,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298810000FS",
+    "description": "GENERAL EXEMPTION FOR: GOODS INTENDED TO PROVIDE RELIEF IN RESPONSE TO A DECLARATION OF EXIGENCY BY THE MINISTER THAT MEET THE CONDITIONS SPECIFIED IN NOTE 7 TO THIS CHAPTER",
+    "sourcePage": 43,
+    "sourceRow": 654,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298820000FS",
+    "description": "GOODS MANUFACTURED OR PROCESSED IN THE PORT AREA BY MAUFACTURERS REGISTERED WITH AND APPROVED BY THE MINISTRY RESPONSIBLE FOR TRADE AND INDUSTRY",
+    "sourcePage": 43,
+    "sourceRow": 655,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298830000FS",
+    "description": "SECTION OF THE PETROLEUM ACT: THE HOLDER OF A PERMIT, LICENSE, OR LEASE OR ANY CONTRACTOR EMPLOYED BY ANY SUCH HOLDER, IN RESPECT OF THE IMPORTATION INTO THE BAHAMAS OR THE TAKING OUT OF BOND WITHIN THE BAHAAS, OF ANY P",
+    "sourcePage": 43,
+    "sourceRow": 656,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298840000FS",
+    "description": "GENERAL EXEMPTION FOR: NEW BUSES FOR THE EXCLUSIVE USE OF A RELIGIOUS ORGANIZATION ONCE EVERY FIVE YEARS WITH PRIOR APPROVAL OF THE MINISTER",
+    "sourcePage": 43,
+    "sourceRow": 657,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298850010FS",
+    "description": "GENERAL EXEMPTION FOR: TAXI-CABS AND OMNIBUSES: MOTOR VEHICLE NOT MORE THAN THREE YEARS OLD AS SPECIFIED IN NOTE 8 TO THIS CHAPTER",
+    "sourcePage": 43,
+    "sourceRow": 658,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298860010FS",
+    "description": "GENERAL EXEMPTION FOR: PETROLEUM PRODUCTS IMPORTED BY THE BAHAMAS ELECTRICITY CORPORATION AS SPECIFIED IN NOTE 9 TO THIS CHAPTER",
+    "sourcePage": 43,
+    "sourceRow": 659,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298860020FS",
+    "description": "GENERAL EXEMPTION FOR: PETROLEUM PRODUCTS IMPORTED BY ANY LICENSED ENTITY WITH THE PRIOR APPROVAL OF THE GOVERNMENT OF THE BAHAMAS AS SPECIFIED IN NOTE 9 TO THIS CHAPTER",
+    "sourcePage": 43,
+    "sourceRow": 660,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298870000FS",
+    "description": "GENERAL EXEMPTION FOR: MATERIALS USED TO RESTORE AND MAINTAIN HISTORIC BUILDINGS REGISTERED IN THE NATIONAL REGISTER",
+    "sourcePage": 43,
+    "sourceRow": 661,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4098140000FS",
+    "description": "Sporting equipment (and supplies) for use of schools and sporting associations",
+    "sourcePage": 43,
+    "sourceRow": 662,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098150000FS",
+    "description": "Goods for the exclusive use of religious organizations that meet the conditions specified in Note 9 to this Chapter",
+    "sourcePage": 43,
+    "sourceRow": 663,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098160000FS",
+    "description": "FOR MEDICAL EQUIPMENT AND BUILDING MATERIAL - MEDICAL EQUIPMENT FOR USE IN FACILITIES, INCLUDING VETERINARIAN AND DENTAL FACILITIES, THAT PROVIDE SERVICES TO THE PUBLIC",
+    "sourcePage": 43,
+    "sourceRow": 664,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098170000FS",
+    "description": "General exemption to provide relief in response to a declaration of exigency by the Minister that meet the conditions specified in Note 12 to the Chapter",
+    "sourcePage": 44,
+    "sourceRow": 665,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098180010FS",
+    "description": "Raw materials for use in the manufacture of handicraft items or for use in cottage and light industries that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 44,
+    "sourceRow": 666,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098180020FS",
+    "description": "Processing equipment and garment manufacturing equipment for use in the manufacturing of handicraft items and garments in the cottage industry that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 44,
+    "sourceRow": 667,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098180030FS",
+    "description": "Raffia substitutes for use in the straw work industry that meet the conditions specified in Note 13 to this Chapter",
+    "sourcePage": 44,
+    "sourceRow": 668,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098180040FS",
+    "description": "FOR PRODUCTION MATERIALS FOR COTTAGE AND LIGHT INDUSTRIES: RAW MATERIALS FOR USE IN THE MANUFACTURE OF HANDICRAFT ITEMS OR FOR USE IN COTTAGE AND LIGHT INDUSTRIES THAT MEET THE CONDITIONS SPECIFIED IN NOTE 10 TO THIS CHA",
+    "sourcePage": 44,
+    "sourceRow": 669,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098180050FS",
+    "description": "FOR PRODUCTION MATERIALS FOR COTTAGE AND LIGHT INDUSTRIES: RAW MATERIALS FOR USE IN THE MANUFACTURE OF HANDICRAFT ITEMS OR FOR USE IN COTTAGE AND LIGHT INDSTRIES - RAFFIA SUBSTITUTES FOR USE IN THE STRAW WORK INDUSTRY",
+    "sourcePage": 44,
+    "sourceRow": 670,
+    "groupCode": "H4098S",
+    "active": false
+  },
+  {
+    "code": "4098190000FS",
+    "description": "FOR PROMOTIONAL ARTICLES FOR TOURISTIC PURPOSES: RECORDS, TAPES AND OTHER RECORDED MEDIA FOR SOUND OR SIMILARLY RECORDED PHENOMENA, AS APPROVED BY THE MINISTER",
+    "sourcePage": 44,
+    "sourceRow": 671,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098200010FS",
+    "description": "Locally-produced Bahamian art work reproduced abroad by mechanical or photochemical process, as approved by the Minister",
+    "sourcePage": 44,
+    "sourceRow": 672,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098200020FS",
+    "description": "Locally-produced Bahamian audio and or visual media, printed and pressed abroad, as approved by the Minister",
+    "sourcePage": 44,
+    "sourceRow": 673,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098210000FS",
+    "description": "FOR HISTORIC BUILINGS: MATERIALS USED TO RESTORE AND MAINTAIN HISTORIC BUILDINGS REGISTERED IN THE NATIONAL REGISTER",
+    "sourcePage": 44,
+    "sourceRow": 674,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098220010FS",
+    "description": "FOR ARTICLES TEMPORARILY IMPORTED OR EXPORTED: BAHAMIAN ART WORK TEMPORARILY EXPORTED FOR EXHIBITION THEN REIMPORTED",
+    "sourcePage": 44,
+    "sourceRow": 675,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098220020FS",
+    "description": "FOR ARTICLES TEMPORARILY IMPORTED OR EXPORTED: MUSICAL INSTRUMENTS TEMPORARILY IMPORTED FOR USE IN THE BAHAMAS THEN RE-EXPORTED",
+    "sourcePage": 45,
+    "sourceRow": 676,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098220030FS",
+    "description": "FOR ARTICLES TEMPORARILY IMPORTED OR EXPORTED: PHOTOGRAPHIC AND CINEMATOGRAPHIC EQUIPMENT, SOUND RECORDERS, SOUND REPRODUCERS TEMPORARILY IMPORTED FOR USE BY FOREIGN JOURNALISTS, RADIO, TELEVISION AND MOTION PICTURE SERV",
+    "sourcePage": 45,
+    "sourceRow": 677,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098220040FS",
+    "description": "FOR ARTICLES TEMPORARILY IMPORTED OR EXPORTED: ACTORS' CLOTHING AND PROPS TEMPORARILY IMPORTED TO ACCOMPANY MOTION PICTURE SERVICES THEN REEXPORTED, UPON RECOMMENDATION BY THE MINISTER OF TOURISM AND APPROVAL OF THE MINI",
+    "sourcePage": 45,
+    "sourceRow": 678,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098230000FS",
+    "description": "PRECIOUS METALS IMPORTED OR EXPORTED FOR THE SECURITIES EXCHANGE AS REFERRED TO IN THE SECURITIES INDUSTRY ACT, 1999",
+    "sourcePage": 45,
+    "sourceRow": 679,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098270010",
+    "description": "Goods and materials for Government housing projects.",
+    "sourcePage": 45,
+    "sourceRow": 680,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098270010D",
+    "description": "Goods and materials for Government housing projects.",
+    "sourcePage": 45,
+    "sourceRow": 681,
+    "groupCode": "441",
+    "active": true
+  },
+  {
+    "code": "4098270010FS",
+    "description": "Goods and materials for Government housing projects.",
+    "sourcePage": 45,
+    "sourceRow": 682,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098270020",
+    "description": "Goods and materials for Private housing Projects.",
+    "sourcePage": 45,
+    "sourceRow": 683,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098270020D",
+    "description": "Goods and materials for Private housing Projects.",
+    "sourcePage": 45,
+    "sourceRow": 684,
+    "groupCode": "441",
+    "active": true
+  },
+  {
+    "code": "4098270020FS",
+    "description": "Goods and materials for Private housing Projects.",
+    "sourcePage": 45,
+    "sourceRow": 685,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098400000",
+    "description": "Goods and equipment for broadcasting, transmission and live streaming.",
+    "sourcePage": 45,
+    "sourceRow": 686,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098400000D",
+    "description": "Goods and equipment for broadcasting, transmission and live streaming.",
+    "sourcePage": 45,
+    "sourceRow": 687,
+    "groupCode": "441",
+    "active": true
+  },
+  {
+    "code": "4098400000FS",
+    "description": "Goods and equipment for broadcasting, transmission and live streaming.",
+    "sourcePage": 45,
+    "sourceRow": 688,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098460010",
+    "description": "Goods and equipment approved under this Act for Bahamian Citizen only",
+    "sourcePage": 45,
+    "sourceRow": 689,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098460010D",
+    "description": "Goods and equipment approved under this Act for Bahamian Citizen only",
+    "sourcePage": 45,
+    "sourceRow": 690,
+    "groupCode": "441",
+    "active": true
+  },
+  {
+    "code": "4098460010FS",
+    "description": "Goods and equipment approved under this Act for Bahamian Citizen only",
+    "sourcePage": 45,
+    "sourceRow": 691,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098460020",
+    "description": "Goods and equipment approved under this Act for non-citizens only",
+    "sourcePage": 45,
+    "sourceRow": 692,
+    "groupCode": "4098",
+    "active": false
+  },
+  {
+    "code": "4098460020D",
+    "description": "Goods and equipment approved under this Act for non-citizens only",
+    "sourcePage": 45,
+    "sourceRow": 693,
+    "groupCode": "441",
+    "active": true
+  },
+  {
+    "code": "4098460020FS",
+    "description": "Goods and equipment approved under this Act for non-citizens only",
+    "sourcePage": 45,
+    "sourceRow": 694,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098130016",
+    "description": "Articles imported by teachers for classroom use in any school in The Bahamas (and not for resale)",
+    "sourcePage": 45,
+    "sourceRow": 695,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098130016D",
+    "description": "Articles imported by teachers for classroom use in any school in The Bahamas (and not for resale)",
+    "sourcePage": 46,
+    "sourceRow": 696,
+    "groupCode": "441",
+    "active": true
+  },
+  {
+    "code": "4098130016FS",
+    "description": "Articles imported by teachers for classroom use in any school in The Bahamas (and not for resale)",
+    "sourcePage": 46,
+    "sourceRow": 697,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4098610000",
+    "description": "Concession for goods and equipment imported under any Heads of Ageement between the Government of the Bahamas and any entity.",
+    "sourcePage": 46,
+    "sourceRow": 698,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098400000",
+    "description": "Goods and equipment for broadcasting, transmission and live streaming.",
+    "sourcePage": 46,
+    "sourceRow": 699,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4098400000D",
+    "description": "Goods and equipment for broadcasting, transmission and live streaming.",
+    "sourcePage": 46,
+    "sourceRow": 700,
+    "groupCode": "441",
+    "active": true
+  },
+  {
+    "code": "4098400000FS",
+    "description": "Goods and equipment for broadcasting, transmission and live streaming.",
+    "sourcePage": 46,
+    "sourceRow": 701,
+    "groupCode": "H4098S",
+    "active": true
+  },
+  {
+    "code": "4298690000",
+    "description": "Goods and equipment for use in the Light Cottage and Handicraft industries that meet the conditions as specified in Note 11 to this Chapter",
+    "sourcePage": 46,
+    "sourceRow": 702,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298690000E",
+    "description": "Goods and equipment for use in the Light Cottage and Handicraft industries that meet the conditions as specified in Note 11 to this Chapter",
+    "sourcePage": 46,
+    "sourceRow": 703,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298690000F",
+    "description": "Goods and equipment for use in the Light Cottage and Handicraft industries that meet the conditions as specified in Note 11 to this Chapter",
+    "sourcePage": 46,
+    "sourceRow": 704,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298791000F",
+    "description": "Of returning residents who meet the conditions specified in Note 6 (1)",
+    "sourcePage": 46,
+    "sourceRow": 705,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298791000E",
+    "description": "Of returning residents who meet the conditions specified in Note 6 (1)",
+    "sourcePage": 46,
+    "sourceRow": 706,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298791000F",
+    "description": "Of returning residents who meet the conditions specified in Note 6 (1)",
+    "sourcePage": 46,
+    "sourceRow": 707,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298792000",
+    "description": "Of other passengers who meet the conditions specified in Note 6 (2)",
+    "sourcePage": 46,
+    "sourceRow": 708,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298792000E",
+    "description": "Of other passengers who meet the conditions specified in Note 6 (2)",
+    "sourcePage": 46,
+    "sourceRow": 709,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298792000F",
+    "description": "Of other passengers who meet the conditions specified in Note 6 (2)",
+    "sourcePage": 46,
+    "sourceRow": 710,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298920010",
+    "description": "Goods and equipment approved under this Act for Bahamian Citizens and Permanent Residents only",
+    "sourcePage": 46,
+    "sourceRow": 711,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298920010E",
+    "description": "Goods and equipment approved under this Act for Bahamian Citizens and Permanent Residents only",
+    "sourcePage": 46,
+    "sourceRow": 712,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298920010F",
+    "description": "Goods and equipment approved under this Act for Bahamian Citizens and Permanent Residents only",
+    "sourcePage": 46,
+    "sourceRow": 713,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "4298920020",
+    "description": "Goods and equipment approved under this Act for Non-Citizens and Non-Permanent Residents only",
+    "sourcePage": 46,
+    "sourceRow": 714,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298920020E",
+    "description": "Goods and equipment approved under this Act for Non-Citizens and Non-Permanent Residents only",
+    "sourcePage": 46,
+    "sourceRow": 715,
+    "groupCode": "443",
+    "active": true
+  },
+  {
+    "code": "4298920020F",
+    "description": "Goods and equipment approved under this Act for Non-Citizens and Non-Permanent Residents only",
+    "sourcePage": 47,
+    "sourceRow": 716,
+    "groupCode": "H4298S",
+    "active": true
+  },
+  {
+    "code": "341000",
+    "description": "Re-Export of Imported Goods Diplomatic",
+    "sourcePage": 47,
+    "sourceRow": 717,
+    "groupCode": "341",
+    "active": true
+  },
+  {
+    "code": "4098460020",
+    "description": "Goods and equipment approved under this Act for non-citizens only",
+    "sourcePage": 47,
+    "sourceRow": 718,
+    "groupCode": "4098",
+    "active": true
+  },
+  {
+    "code": "4298920020",
+    "description": "Goods and equipment approved under this Act for non-citizens only",
+    "sourcePage": 47,
+    "sourceRow": 719,
+    "groupCode": "4298",
+    "active": true
+  },
+  {
+    "code": "4298960020",
+    "description": "Spirit and Beer Manufacturing Act Businesses over 5 years",
+    "sourcePage": 47,
+    "sourceRow": 720,
+    "groupCode": "4298",
+    "active": true
+  }
+]

@@ -28,11 +28,11 @@ import type {
   BeaipParty,
 } from './types'
 import { d, moneyString, sum } from '@/lib/calculations/money'
-import { normalizeHsCode, STANDARD_IMPORT_CPC } from '@/lib/customs/normalization'
+import { isCpcGroup, isCpcInGroup, isCustomsPort, isCustomsUom } from '@/lib/customs/reference-data'
+import { normalizeHsCode } from '@/lib/customs/normalization'
 import {
   TFP_EACH_UNIT_CODE,
   TFP_QA_PARTY_ID,
-  TFP_STANDARD_IMPORT_WIRE_CPC,
 } from './constants'
 
 export const WCO_DECLARATION_NS = 'http://globaletrade.services/Declaration'
@@ -110,23 +110,13 @@ function chargeDeduction(code: string, amount: string, currency: string, exchang
     OtherChargeDeductionAmount: amount,
     CurrencyExchange: {
       CurrencyTypeCode: currency,
-      ...(exchangeRate && currency !== 'BSD' ? { RateNumeric: exchangeRate } : {}),
+      RateNumeric: currency === 'BSD' ? '1.0' : exchangeRate,
     },
   }
 }
 
 function isNonZero(money: string): boolean {
   return !d(money).isZero()
-}
-
-/** Click2Clear uses EA rather than the application's commercial PCS label. */
-function wireQuantityUnit(unit: string | null): string {
-  return unit === 'PCS' || !unit ? TFP_EACH_UNIT_CODE : unit
-}
-
-/** The application's standard CPC 400 is represented as 400000 on the wire. */
-function wireProcedureCode(cpcCode: string): string {
-  return cpcCode === STANDARD_IMPORT_CPC ? TFP_STANDARD_IMPORT_WIRE_CPC : cpcCode
 }
 
 /** Shipment-level CustomsValuation for one invoice (order-linked to Invoice). */
@@ -149,11 +139,6 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
   if (line.packageCount === null || line.packageCount <= 0) {
     throw new Error(`Line ${sequence} package count is required for Customs Packaging`)
   }
-  const tariffQuantity = line.dutyAssessmentQuantity
-    ? { value: line.dutyAssessmentQuantity, unit: line.dutyAssessmentUnit }
-    : line.exciseAssessmentQuantity
-      ? { value: line.exciseAssessmentQuantity, unit: line.exciseAssessmentUnit }
-      : { value: line.quantity, unit: line.unit }
   return {
     Commodity: {
       SequenceNumeric: sequence,
@@ -172,8 +157,8 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
           ? { NetNetWeightMeasure: { '#text': line.netWeightLb, '@_unitCode': 'LB' } }
           : {}),
         TariffQuantity: {
-          '#text': tariffQuantity.value,
-          '@_unitCode': wireQuantityUnit(tariffQuantity.unit ?? line.unit),
+          '#text': line.quantity,
+          '@_unitCode': line.unit,
         },
       },
       ...(containerNumber ? { TransportEquipment: { ID: containerNumber } } : {}),
@@ -184,13 +169,13 @@ function goodsItem(line: BeaipDeclarationLine, sequence: number, containerNumber
         ? { ChargeDeduction: chargeDeduction('104', line.otherApportioned, 'BSD') }
         : {}),
     },
-    GovernmentProcedure: { CurrentCode: wireProcedureCode(line.cpcCode) },
+    GovernmentProcedure: { CurrentCode: line.cpcCode },
     ...(line.countryOfOrigin ? { Origin: { CountryCode: line.countryOfOrigin } } : {}),
     Packaging: {
       SequenceNumeric: sequence,
       QuantityQuantity: {
         '#text': line.packageCount,
-        '@_unitCode': TFP_EACH_UNIT_CODE,
+        '@_unitCode': line.packageTypeCode === 'PC' ? 'PC' : TFP_EACH_UNIT_CODE,
       },
     },
   }
@@ -213,13 +198,16 @@ export function buildWcoDeclarationXml(
   options: WcoXmlOptions = {},
 ): string {
   const d = declaration
+  if (!isCpcGroup(d.declarationGroupCode) || d.lines.some((line) => !isCpcInGroup(line.cpcCode, d.declarationGroupCode))) throw new Error('Line CPC must belong to the shipment CPC group')
+  if (!isCustomsPort(d.customsOfficeCode)) throw new Error('Select a Customs port')
+  if (d.lines.some((line) => !isCustomsUom(line.unit))) throw new Error('Select a Customs UOM')
   const t = d.transport
   const acceptance = options.acceptanceDateTime ?? new Date()
   const totalInvoiceFreight = moneyString(
     sum(declaration.invoices.map((invoice) => invoice.freightApportioned)),
   )
 
-  const declarationProcedureCode = d.lines.length > 0 ? STANDARD_IMPORT_CPC : null
+  const declarationProcedureCode = d.declarationGroupCode
 
   const doc = {
     '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' },
@@ -296,9 +284,8 @@ export function buildWcoDeclarationXml(
         })),
         Supplier: d.invoices.map((inv) => party(inv.supplier)),
         TradeTerms: d.invoices
-          .filter((inv) => inv.incotermLocation)
-          .map((inv) => ({ LocationID: inv.incotermLocation! })),
-        UCR: { TraderAssignedReferenceID: d.brokerReference },
+          .filter((inv) => inv.incotermCode)
+          .map((inv) => ({ LocationID: inv.incotermCode! })),
       },
       ...(declarationProcedureCode
         ? { GovernmentProcedure: { CurrentCode: declarationProcedureCode } }

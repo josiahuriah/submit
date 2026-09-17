@@ -4,28 +4,28 @@
         <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-08-08 15:29:08</DateTimeString>
     </AcceptanceDateTime>
     <FunctionCode>9</FunctionCode>
-    <FunctionalReferenceID>2026DEC0000000001</FunctionalReferenceID>
+    <FunctionalReferenceID>SUBMITDEC000000001</FunctionalReferenceID>
     <TypeCode>4</TypeCode>
     <TotalGrossMassMeasure unitCode="LB">5401.325</TotalGrossMassMeasure>
     <TotalPackageQuantity unitCode="EA">6</TotalPackageQuantity>
     <Submitter>
-        <ID>20113855131249792</ID>
+        <ID>00000000000000000</ID>
     </Submitter>
     <DeclarationOffice>
         <ID>NASACP</ID>
     </DeclarationOffice>
     <Declarant>
-        <Name>Atlas Brokers</Name>
-        <ID>20113855131249792</ID>
+        <Name>Example Brokerage Ltd</Name>
+        <ID>00000000000000000</ID>
     </Declarant>
     <GoodsShipment>
         <Consignee>
-            <Name>Paradise Liquors Ltd</Name>
-            <ID>100-345-678</ID>
+            <Name>Example Importer Ltd</Name>
+            <ID>000-000-000</ID>
         </Consignee>
         <Consignment>
             <ArrivalTransportMeans>
-                <Name>Tropic Freedom</Name>
+                <Name>Example Vessel</Name>
                 <TypeCode>1</TypeCode>
                 <RegistrationNationalityCode>BS</RegistrationNationalityCode>
             </ArrivalTransportMeans>
@@ -38,7 +38,7 @@
                     <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-07-03 05:00:00</DateTimeString>
                 </ArrivalDateTime>
                 <Warehouse>
-                    <ID>WH-01</ID>
+                    <ID>SAMPLE-WH</ID>
                 </Warehouse>
             </UnloadingLocation>
         </Consignment>
@@ -78,8 +78,8 @@
             <ID>US</ID>
         </ExportCountry>
         <Exporter>
-            <Name>Caribbean Spirits Export</Name>
-            <ID>20113855131249792</ID>
+            <Name>Example Exporter Inc</Name>
+            <ID>00000000000000000</ID>
             <Address>
                 <CountryCode>US</CountryCode>
             </Address>
@@ -91,7 +91,7 @@
                 <ValueAmount currencyID="BSD">6900.00</ValueAmount>
                 <CommercialDescription>Rum</CommercialDescription>
                 <AdditionalDocument>
-                    <ID>INV-88231</ID>
+                    <ID>INV-SAMPLE-001</ID>
                     <TypeCode>380</TypeCode>
                 </AdditionalDocument>
                 <Classification>
@@ -104,7 +104,7 @@
                     <TariffQuantity unitCode="IMP_GAL">132</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
-                    <ID>TCLU7305421</ID>
+                    <ID>TEST0000001</ID>
                 </TransportEquipment>
             </Commodity>
             <CustomsValuation>
@@ -135,7 +135,7 @@
                 <ValueAmount currencyID="BSD">6225.00</ValueAmount>
                 <CommercialDescription>T-shirts</CommercialDescription>
                 <AdditionalDocument>
-                    <ID>INV-88231</ID>
+                    <ID>INV-SAMPLE-001</ID>
                     <TypeCode>380</TypeCode>
                 </AdditionalDocument>
                 <Classification>
@@ -148,7 +148,7 @@
                     <TariffQuantity unitCode="EA">1500</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
-                    <ID>TCLU7305421</ID>
+                    <ID>TEST0000001</ID>
                 </TransportEquipment>
             </Commodity>
             <CustomsValuation>
@@ -179,7 +179,7 @@
                 <ValueAmount currencyID="BSD">5840.00</ValueAmount>
                 <CommercialDescription>Refrigerator</CommercialDescription>
                 <AdditionalDocument>
-                    <ID>INV-88231</ID>
+                    <ID>INV-SAMPLE-001</ID>
                     <TypeCode>380</TypeCode>
                 </AdditionalDocument>
                 <Classification>
@@ -192,7 +192,7 @@
                     <TariffQuantity unitCode="EA">8</TariffQuantity>
                 </GoodsMeasure>
                 <TransportEquipment>
-                    <ID>TCLU7305421</ID>
+                    <ID>TEST0000001</ID>
                 </TransportEquipment>
             </Commodity>
             <CustomsValuation>
@@ -217,17 +217,17 @@
             </Packaging>
         </GovernmentAgencyGoodsItem>
         <Importer>
-            <Name>Paradise Liquors Ltd</Name>
-            <ID>100-345-678</ID>
+            <Name>Example Importer Ltd</Name>
+            <ID>000-000-000</ID>
         </Importer>
         <Invoice>
-            <ID>INV-88231</ID>
+            <ID>INV-SAMPLE-001</ID>
             <IssueDateTime>
                 <DateTimeString xmlns="" formatCode="yyyy-MM-dd HH:mm:ss ">2026-06-27 20:00:00</DateTimeString>
             </IssueDateTime>
         </Invoice>
         <Supplier>
-            <Name>Caribbean Spirits Export</Name>
+            <Name>Example Exporter Inc</Name>
             <Address>
                 <CountryCode>US</CountryCode>
             </Address>
@@ -235,9 +235,6 @@
         <TradeTerms>
             <LocationID>Port Everglades</LocationID>
         </TradeTerms>
-        <UCR>
-            <TraderAssignedReferenceID>202600OREF00000001</TraderAssignedReferenceID>
-        </UCR>
     </GoodsShipment>
     <GovernmentProcedure>
         <CurrentCode>400</CurrentCode>

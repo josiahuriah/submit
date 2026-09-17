@@ -14,6 +14,7 @@ export function DeclarationProfileCard({ initial }: { initial: DeclarationProfil
     ['Declaration date', initial.declarationDate || 'Set on first submission'],
     ['Function', `${initial.declarationFunctionCode} — Original`],
     ['Regime', initial.regimeCode],
+    ['CPC group', valueOrDash(initial.cpcGroupCode)],
     ['Transport mode', initial.transportMode.toLowerCase()],
     ['B/L or airway bill', valueOrDash(initial.blNumber)],
     ['Container', valueOrDash(initial.containerNumber)],
@@ -22,7 +23,7 @@ export function DeclarationProfileCard({ initial }: { initial: DeclarationProfil
     ['Packages', `${initial.packageCount} ${packageLabel(initial.packageType)}`],
     ['Gross weight', initial.grossWeightLb ? `${initial.grossWeightLb} lb` : '—'],
     ['Net weight', initial.netWeightLb ? `${initial.netWeightLb} lb` : '—'],
-    ['Goods location', valueOrDash(initial.goodsLocationCode)],
+    ['Customs port', valueOrDash(initial.goodsLocationCode)],
     ['Warehouse', valueOrDash(initial.warehouseCode)],
     ['Transport nationality', valueOrDash(initial.transportNationalityCode)],
   ]
@@ -40,7 +41,7 @@ export function DeclarationProfileCard({ initial }: { initial: DeclarationProfil
           </div>
         ))}
         <div className="sb-meta" style={{ gridColumn: '1 / -1' }}>
-          Edit these values on the shipment. Fixed filing identity and function values cannot be overridden on an entry.
+          Edit the Customs port on the linked manifest and other values on the shipment. Fixed filing identity and function values cannot be overridden on an entry.
         </div>
       </div>
     </details>

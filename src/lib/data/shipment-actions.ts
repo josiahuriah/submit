@@ -49,7 +49,7 @@ export interface OptionItem {
 export interface NewShipmentOptions {
   clients: OptionItem[]
   offices: OptionItem[]
-  manifests: OptionItem[]
+  manifests: (OptionItem & { customsPortCode: string | null })[]
 }
 
 export interface ShipmentEditDraft {
@@ -63,6 +63,7 @@ export interface ShipmentEditDraft {
   containerFullnessCode: string
   declarationDate: string
   declarationFunctionCode: string
+  cpcGroupCode: string
   regimeCode: string
   isSplitDeclaration: boolean
   goodsLocationCode: string
@@ -97,6 +98,7 @@ export async function listNewShipmentOptions(): Promise<NewShipmentOptions> {
     offices: offices.map((o) => ({ id: o.id, label: `${o.code} — ${o.name}` })),
     manifests: manifests.items.map((m) => ({
       id: m.id,
+      customsPortCode: m.customsPortCode,
       label: `${m.manifestNumber} · ${m.voyage.vessel.name} ${m.voyage.voyageNumber}`,
     })),
   }
@@ -126,8 +128,9 @@ export async function getShipmentEditData(shipmentId: string): Promise<{
       declarationDate: shipment.declarationDate.toISOString().slice(0, 10),
       declarationFunctionCode: shipment.declarationFunctionCode,
       regimeCode: shipment.regimeCode,
+      cpcGroupCode: shipment.cpcGroupCode ?? "",
       isSplitDeclaration: shipment.isSplitDeclaration,
-      goodsLocationCode: shipment.goodsLocationCode ?? '',
+      goodsLocationCode: (shipment.manifest ? shipment.manifest.customsPortCode : shipment.goodsLocationCode) ?? '',
       warehouseCode: shipment.warehouseCode ?? '',
       transportNationalityCode: shipment.transportNationalityCode ?? '',
       goodsType: shipment.goodsType,
@@ -143,6 +146,9 @@ export async function getShipmentEditData(shipmentId: string): Promise<{
     },
     options: {
       ...options,
+      manifests: shipment.manifest && !options.manifests.some((m) => m.id === shipment.manifest!.id)
+        ? [{ id: shipment.manifest.id, label: shipment.manifest.manifestNumber, customsPortCode: shipment.manifest.customsPortCode }, ...options.manifests]
+        : options.manifests,
       clients: options.clients.some((client) => client.id === shipment.client.id)
         ? options.clients
         : [{ id: shipment.client.id, label: shipment.client.name }, ...options.clients],
@@ -168,6 +174,7 @@ export async function updateShipment(
       containerFullnessCode: draft.containerFullnessCode.trim(),
       declarationDate: draft.declarationDate,
       declarationFunctionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
+      cpcGroupCode: draft.cpcGroupCode,
       regimeCode: draft.regimeCode.trim(),
       isSplitDeclaration: draft.isSplitDeclaration,
       goodsLocationCode: draft.goodsLocationCode.trim(),
@@ -222,12 +229,14 @@ export interface CreateShipmentResult {
 }
 
 export async function createShipment(draft: {
+  goodsLocationCode: string
   clientId: string
   declarationOfficeId: string
   manifestId: string
   blNumber: string
   containerNumber: string
   containerSealNumber: string
+  cpcGroupCode: string
   regimeCode: string
   isSplitDeclaration: boolean
   goodsType: string
@@ -252,9 +261,11 @@ export async function createShipment(draft: {
       clientId: draft.clientId,
       declarationOfficeId: draft.declarationOfficeId,
       manifestId: draft.manifestId || undefined,
+      goodsLocationCode: draft.goodsLocationCode,
       blNumber: draft.blNumber.trim() || undefined,
       containerNumber: draft.containerNumber.trim() || undefined,
       containerSealNumber: draft.containerSealNumber.trim() || undefined,
+      cpcGroupCode: draft.cpcGroupCode,
       regimeCode: draft.regimeCode.trim() || '4',
       isSplitDeclaration: draft.isSplitDeclaration,
       declarationFunctionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,

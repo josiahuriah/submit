@@ -15,6 +15,7 @@ import { LineEntry } from "./line-entry";
  */
 export function InvoiceLineWorkspace({
   shipmentId,
+  cpcGroupCode,
   status,
   suppliers,
   initialInvoices,
@@ -22,6 +23,7 @@ export function InvoiceLineWorkspace({
   initialTotals,
 }: {
   shipmentId: string;
+  cpcGroupCode: string;
   status: ShipmentStatus;
   suppliers: SupplierOption[];
   initialInvoices: InvoiceSummary[];
@@ -45,6 +47,8 @@ export function InvoiceLineWorkspace({
       <AddInvoiceCard shipmentId={shipmentId} suppliers={suppliers} onInvoiceCreated={invoiceCreated} />
       <LineEntry
         shipmentId={shipmentId}
+        cpcGroupCode={cpcGroupCode}
+        key={cpcGroupCode}
         status={status}
         invoices={invoices}
         selectedInvoiceId={effectiveInvoiceId}

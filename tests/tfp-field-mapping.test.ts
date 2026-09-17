@@ -6,6 +6,7 @@ import {
   buildTraderAssignedReferenceId,
 } from '@/lib/beaip/references'
 import { partitionBeaipDeclaration } from '@/server/services/declaration-mapper'
+import { TFP_DECLARANT_NAME, TFP_QA_PARTY_ID } from '@/lib/beaip/constants'
 
 function declaration(): BeaipDeclaration {
   return {
@@ -16,11 +17,11 @@ function declaration(): BeaipDeclaration {
     functionCode: '9',
     declarationDate: '2026-08-08T00:00:00.000Z',
     regimeCode: '4',
-    functionalReferenceId: '2026DEC0001234567',
+    functionalReferenceId: 'SUBMITDEC000000001',
     brokerReference: '201800OREF02331212',
     customsOfficeCode: 'NASACP',
     submitterId: 'CR-12345',
-    declarant: { name: 'Atlas Brokers', id: '20113855131249792', address: null },
+    declarant: { name: TFP_DECLARANT_NAME, id: TFP_QA_PARTY_ID, address: null },
     importer: { name: 'Importer Ltd', id: null, address: null },
     consignee: { name: 'Importer Ltd', id: null, address: null },
     blNumber: null,
@@ -52,9 +53,9 @@ function declaration(): BeaipDeclaration {
     totalCifValue: '100.00', totalDuty: '0.00', totalVat: '11.00', totalLevy: '0.00',
     totalExcise: '0.00', processingFee: '10.00', totalPayable: '21.00',
     lines: [{
-      lineNumber: 1, invoiceNumber: 'INV-1', hsCode: '61091000', cpcCode: '400',
+      lineNumber: 1, invoiceNumber: 'INV-1', hsCode: '61091000', cpcCode: '400000',
       description: 'Cotton t-shirts', commercialDescription: null, countryOfOrigin: 'US',
-      quantity: '1', unit: 'PCS', weightLb: '10', netWeightLb: '9', packageCount: 1,
+      quantity: '1', unit: 'EA', weightLb: '10', netWeightLb: '9', packageCount: 1,
       packageTypeCode: 'EA', totalValue: '100.00', currency: 'BSD',
       freightApportioned: '10.00', insuranceApportioned: '0.00', otherApportioned: '0.00',
       cifValue: '100.00', dutyAmount: '0.00', vatAmount: '11.00', levyAmount: '0.00',
@@ -67,12 +68,14 @@ function declaration(): BeaipDeclaration {
 describe('TFP field mapping preflight', () => {
   it('partitions a split shipment into independently referenced CPC declarations', () => {
     const input = declaration()
+    input.declarationGroupCode = '4098'
+    input.lines[0]!.cpcCode = '4098180010'
     input.isSplitDeclaration = true
     input.lines[0]!.freightApportioned = '7.50'
     input.lines.push({
       ...input.lines[0]!,
       lineNumber: 2,
-      cpcCode: '4098',
+      cpcCode: '4098180020',
       hsCode: '94035090',
       weightLb: '5',
       netWeightLb: '4',
@@ -82,9 +85,12 @@ describe('TFP field mapping preflight', () => {
     input.totalCifValue = '200.00'
     input.totalVat = '23.00'
     input.totalPayable = '33.00'
-    const result = partitionBeaipDeclaration(input, 'batch-1')
-    expect(result.map((item) => item.declarationGroupCode)).toEqual(['400', '4098'])
-    expect(result[0]!.functionalReferenceId).not.toBe(result[1]!.functionalReferenceId)
+    const result = partitionBeaipDeclaration(input, 'batch-1', 41)
+    expect(result.map((item) => item.declarationGroupCode)).toEqual(['4098', '4098'])
+    expect(result.map((item) => item.functionalReferenceId)).toEqual([
+      'SUBMITDEC000000041',
+      'SUBMITDEC000000042',
+    ])
     expect(result[0]!.lines).toHaveLength(1)
     expect(result[1]!.lines).toHaveLength(1)
     expect(result[0]!.grossWeightLb).toBe('10.000')
@@ -105,15 +111,17 @@ describe('TFP field mapping preflight', () => {
     expect(result!.totalPayable).toBe('21.00')
   })
 
-  it('refuses mixed CPCs unless the broker selected split declaration', () => {
+  it('refuses CPCs outside the selected shipment group', () => {
     const input = declaration()
-    input.lines.push({ ...input.lines[0]!, lineNumber: 2, cpcCode: '4098' })
-    expect(() => partitionBeaipDeclaration(input, 'batch-2')).toThrow(/split declaration option/)
+    input.lines.push({ ...input.lines[0]!, lineNumber: 2, cpcCode: '4098180020' })
+    expect(() => partitionBeaipDeclaration(input, 'batch-2')).toThrow(/shipment CPC group/)
   })
 
-  it('builds stable Click2Clear-shaped review references', () => {
-    expect(buildFunctionalReferenceId('2026-08-08T00:00:00.000Z', 'SHP-2026-1234567'))
-      .toBe('2026DEC0001234567')
+  it('builds sequential Submit declaration references', () => {
+    expect(buildFunctionalReferenceId(1)).toBe('SUBMITDEC000000001')
+    expect(buildFunctionalReferenceId(123456789)).toBe('SUBMITDEC123456789')
+    expect(() => buildFunctionalReferenceId(0)).toThrow(/between 1 and 999999999/)
+    expect(() => buildFunctionalReferenceId(1_000_000_000)).toThrow(/between 1 and 999999999/)
     expect(buildTraderAssignedReferenceId('2018-08-08T00:00:00.000Z', 'SHP-2331212'))
       .toBe('201800OREF02331212')
   })
@@ -144,8 +152,6 @@ describe('TFP field mapping preflight', () => {
       expect.objectContaining({ field: 'Declaration/Declarant/ID' }),
       expect.objectContaining({ field: 'Declaration/GoodsShipment/Consignment/TransportContractDocument' }),
       expect.objectContaining({ field: 'Declaration/GoodsShipment/Consignment/GoodsLocation/ID' }),
-      expect.objectContaining({ field: 'Declaration/GoodsShipment/Consignment/UnloadingLocation/ID' }),
-      expect.objectContaining({ field: 'Declaration/GoodsShipment/ExitOffice/ID' }),
       expect.objectContaining({ field: 'GoodsItem[1]/Packaging/QuantityQuantity' }),
     ]))
   })
@@ -161,17 +167,17 @@ describe('TFP field mapping preflight', () => {
     }))
   })
 
-  it('blocks references that do not follow the Click2Clear review conventions', () => {
+  it('blocks functional references that do not follow the Click2Clear review convention', () => {
     const input = declaration()
     input.functionalReferenceId = 'SHP-2026-00001'
     input.brokerReference = 'SHP-2026-00001'
     const result = preflightTfpDeclaration(input)
     expect(result.ready).toBe(false)
-    expect(result.issues).toEqual(expect.arrayContaining([
+    expect(result.issues).toContainEqual(
       expect.objectContaining({ field: 'Declaration/FunctionalReferenceID' }),
-      expect.objectContaining({
-        field: 'Declaration/GoodsShipment/UCR/TraderAssignedReferenceID',
-      }),
-    ]))
+    )
+    expect(result.issues).not.toContainEqual(
+      expect.objectContaining({ field: 'Declaration/GoodsShipment/UCR/TraderAssignedReferenceID' }),
+    )
   })
 })

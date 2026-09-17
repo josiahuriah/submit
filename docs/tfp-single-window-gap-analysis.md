@@ -15,7 +15,7 @@ before the WSDL.
 >
 > Updated 2026-08-17: stakeholder decisions now supersede several historical
 > rows below. Review XML uses Click2Clear-shaped declaration and trader
-> references, `NASACP`, `Atlas Brokers`, gross pounds (`LB`), undotted HS IDs,
+> references, `NASACP`, the configured declarant, gross pounds (`LB`), undotted HS IDs,
 > no optional `BorderTransportMeans`, and one invoice-level landed-cost freight
 > amount. See the formal matrix for the current rules.
 
@@ -125,7 +125,7 @@ existing data with only formatting.
 | `AcceptanceDateTime` | C | submission timestamp | OK (`yyyy-MM-dd HH:mm:ss`) |
 | `TotalGrossMassMeasure` | C | `Shipment.grossWeightKg`, unitCode `KGM` | OK |
 | `TotalPackageQuantity` | C | `Shipment.packageCount` | Customs-confirmed QA mapping uses `unitCode=EA` |
-| `Declarant` | C | Constant name + ID `20113855131249792` | Customs-confirmed QA identity |
+| `Declarant` | C | Configured declarant name + broker ID | Customs-confirmed QA identity |
 | `AdditionalDocument` (TIER/permits/uploads) | C | `ShipmentDocument` (has fileName/mime/size, bytes in S3) | GAP: response requires Invoice and Tax Compliance Certificate; no declaration attachment serialization yet |
 | `AdditionalInformation` (dynamic fields) | C | — | GAP: needs `TTFB_SYS_DEC_FIELD_MASTER` worksheet |
 | `PreviousDocument` | C | — | N/A (amendments only) |
@@ -137,7 +137,7 @@ existing data with only formatting.
 | Element | M/C | Our source | Gap |
 |---|---|---|---|
 | `Importer`, `Consignee` + `Address` | C | `Client.name`, TIN, address/city/country/postcode | MAPPED |
-| `Exporter`, `Consignor`, `Supplier` + `Address` | C | `Supplier` structured fields + exporter ID `20113855131249792` | Exporter/Supplier mapped for QA; Consignor remains conditional |
+| `Exporter`, `Consignor`, `Supplier` + `Address` | C | `Supplier` structured fields + configured exporter ID | Exporter/Supplier mapped for QA; Consignor remains conditional |
 | `BorderTransportMeans` Name/TypeCode/Nationality/ArrivalDateTime | C | `manifest.voyage.vessel.name`, `TransportMode` enum, `voyage.arrivalDate` | PARTIAL: mode enum → `TTFB_SYS_TRANSPORT_MODE` codes; vessel nationality not stored |
 | `BorderTransportMeans/TransportEquipment` (container, seal, fullness) | C | Shipment container/seal/fullness fields | MAPPED for one container; codes provisional |
 | `Consignment/ArrivalTransportMeans` | C | same vessel data | OK-ish |
@@ -151,7 +151,7 @@ existing data with only formatting.
 | `CustomsValuation` (one per invoice, **same order as `Invoice` elements** — that ordering is the invoice linkage) | C | Invoice subtotal/currency/exchange rate + line-level apportioned costs summed per invoice | MAPPED |
 | `Invoice` ID/date | C | `Invoice.invoiceNumber`, `invoiceDate` | OK; optional `Invoice/TypeCode` is omitted per Customs feedback |
 | `TradeTerms` (incoterm) | C | `Invoice.incotermCode` + `incotermLocation` | MAPPED following XSD sequence |
-| `UCR` | C | `shipmentNumber` if wanted | OK (optional) |
+| `UCR` | C | Not emitted | Optional and absent from the supplied successful submission |
 
 ### GovernmentAgencyGoodsItem (one per line item)
 
@@ -203,7 +203,7 @@ Until then, hardcode sample-consistent placeholders and label them.
    `docs/tfp/generated/declaration-SHP-2026-00001.xml`. Item CIF values sum
    exactly to the shipment total (apportionment intact). **Before sending to
    the integration team**: confirm the configured submitter ID; the current QA
-   declaration/declarant/exporter profile uses `20113855131249792` where noted.
+   declaration/declarant/exporter profile uses the configured QA party ID where noted.
 
 **Phase 2 — after the worksheets arrive:** remaining code-mapping tables
 (regime, office, non-`PCS` UOM, transport mode and concession CPC), real

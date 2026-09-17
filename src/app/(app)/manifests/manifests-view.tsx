@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { CUSTOMS_PORTS, customsPortLabel } from "@/lib/customs/reference-data";
 import { Chip } from "@/components/ui/primitives";
 import { Icons } from "@/components/ui/icons";
 import {
@@ -40,7 +41,7 @@ export function ManifestsView({
   const [open, setOpen] = useState(initialRows.length === 0);
   const [referenceForm, setReferenceForm] = useState<"voyage" | "agent" | "vessel" | "route" | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState({ manifestNumber: "", voyageId: voyages[0]?.id ?? "", shippingAgentId: "", registeredAt: "", status: "OPEN", notes: "" });
+  const [draft, setDraft] = useState({ customsPortCode: "", manifestNumber: "", voyageId: voyages[0]?.id ?? "", shippingAgentId: "", registeredAt: "", status: "OPEN", notes: "" });
   const [voyageDraft, setVoyageDraft] = useState({ vesselId: references.vessels[0]?.id ?? "", journeyId: references.journeys[0]?.id ?? "", voyageNumber: "", departureDate: "", arrivalDate: "" });
   const [agentDraft, setAgentDraft] = useState({ name: "", code: "", email: "", phone: "" });
   const initialMode: "SEA" | "AIR" = references.carriers.some((carrier) => carrier.mode === "SEA") ? "SEA" : "AIR";
@@ -146,7 +147,7 @@ export function ManifestsView({
   }
 
   function submit() {
-    if (pending || !draft.manifestNumber.trim() || !draft.voyageId) return;
+    if (pending || !draft.manifestNumber.trim() || !draft.voyageId || !draft.customsPortCode) return;
     setNotice(null);
     startTransition(async () => {
       const result = await createManifest(draft); // SERVER
@@ -168,6 +169,7 @@ export function ManifestsView({
     setNotice(null);
     setDraft({
       manifestNumber: manifest.manifestNumber,
+      customsPortCode: manifest.customsPortCode,
       voyageId: manifest.voyageId,
       shippingAgentId: manifest.shippingAgentId ?? "",
       registeredAt: manifest.registeredAt === "—" ? "" : manifest.registeredAt,
@@ -177,7 +179,7 @@ export function ManifestsView({
   }
 
   function saveEdit() {
-    if (!editingId || pending || !draft.manifestNumber.trim() || !draft.voyageId) return;
+    if (!editingId || pending || !draft.manifestNumber.trim() || !draft.voyageId || !draft.customsPortCode) return;
     setNotice(null);
     startTransition(async () => {
       const result = await updateManifest(editingId, draft); // SERVER
@@ -236,7 +238,7 @@ export function ManifestsView({
             </label>
             <label style={field}>
               <span className="sb-eyebrow">{vesselDraft.mode === "SEA" ? "Vessel name" : "Aircraft name"}</span>
-              <input className="sb-inp" value={vesselDraft.name} onChange={(e) => setVesselDraft((current) => ({ ...current, name: e.target.value }))} placeholder={vesselDraft.mode === "SEA" ? "Tropic Freedom" : "Cargo aircraft"} />
+              <input className="sb-inp" value={vesselDraft.name} onChange={(e) => setVesselDraft((current) => ({ ...current, name: e.target.value }))} placeholder={vesselDraft.mode === "SEA" ? "Example Vessel" : "Cargo aircraft"} />
             </label>
             {vesselDraft.mode === "SEA" && (
               <label style={field}>
@@ -323,6 +325,7 @@ export function ManifestsView({
                 placeholder="MAN-2026-0001"
               />
             </label>
+<label style={field}><span className="sb-eyebrow">Customs port</span><select className="sb-inp" value={draft.customsPortCode} onChange={(e) => setDraft((d) => ({ ...d, customsPortCode: e.target.value }))}><option value="">Select a Customs port</option>{CUSTOMS_PORTS.map((p) => <option key={p.code} value={p.code}>{p.code} — {p.description}</option>)}</select></label>
             <label style={field}>
               <span className="sb-eyebrow">Voyage</span>
               <select
@@ -360,7 +363,7 @@ export function ManifestsView({
                 placeholder="Optional"
               />
             </label>
-            <button className="sb-btn is-primary" onClick={submit} disabled={pending || !draft.manifestNumber.trim() || !draft.voyageId}>
+            <button className="sb-btn is-primary" onClick={submit} disabled={pending || !draft.manifestNumber.trim() || !draft.voyageId || !draft.customsPortCode}>
               {pending ? "Creating…" : "Create manifest"}
             </button>
           </div>
@@ -373,6 +376,7 @@ export function ManifestsView({
           {notice && <div style={{ padding: "8px 12px", marginBottom: 12, background: "var(--sb-gold-soft)", borderRadius: 6, fontSize: 12.5 }}>{notice}</div>}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
             <label style={field}><span className="sb-eyebrow">Manifest number</span><input className="sb-inp sb-mono" value={draft.manifestNumber} onChange={(e) => setDraft((d) => ({ ...d, manifestNumber: e.target.value }))} /></label>
+<label style={field}><span className="sb-eyebrow">Customs port</span><select className="sb-inp" value={draft.customsPortCode} onChange={(e) => setDraft((d) => ({ ...d, customsPortCode: e.target.value }))}><option value="">Select a Customs port</option>{CUSTOMS_PORTS.map((p) => <option key={p.code} value={p.code}>{p.code} — {p.description}</option>)}</select></label>
             <label style={field}><span className="sb-eyebrow">Voyage</span><select className="sb-inp" value={draft.voyageId} onChange={(e) => setDraft((d) => ({ ...d, voyageId: e.target.value }))}>{voyageOptions.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}</select></label>
             <label style={field}><span className="sb-eyebrow">Shipping agent</span><select className="sb-inp" value={draft.shippingAgentId} onChange={(e) => setDraft((d) => ({ ...d, shippingAgentId: e.target.value }))}><option value="">—</option>{agentOptions.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
             <label style={field}><span className="sb-eyebrow">Status</span><select className="sb-inp" value={draft.status} onChange={(e) => setDraft((d) => ({ ...d, status: e.target.value }))}><option value="OPEN">Open</option><option value="CLOSED">Closed</option></select></label>
@@ -388,6 +392,7 @@ export function ManifestsView({
           <thead>
             <tr>
               <th>Manifest #</th>
+              <th>Customs port</th>
               <th>Vessel</th>
               <th>Voyage</th>
               <th>Arrival</th>
@@ -400,7 +405,7 @@ export function ManifestsView({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={8} className="sb-meta" style={{ textAlign: "center", padding: 24 }}>
+                <td colSpan={9} className="sb-meta" style={{ textAlign: "center", padding: 24 }}>
                   No manifests yet — create one to attach shipments to a voyage.
                 </td>
               </tr>
@@ -408,6 +413,7 @@ export function ManifestsView({
               rows.map((m) => (
                 <tr key={m.id}>
                   <td className="sb-mono sb-strong">{m.manifestNumber}</td>
+                  <td>{customsPortLabel(m.customsPortCode)}</td>
                   <td>{m.vesselName}</td>
                   <td className="sb-mono">{m.voyageNumber}</td>
                   <td className="sb-mono">{m.arrival}</td>

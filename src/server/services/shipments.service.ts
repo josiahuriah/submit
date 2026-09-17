@@ -7,6 +7,8 @@
  *   - Submitted declarations
  *     are legal documents — you amend via customs, not by editing history).
  */
+import { resolveShipmentCustomsPort } from './customs-reference-validation'
+import { isCpcGroup } from '@/lib/customs/reference-data'
 import type { TenantClient } from '@/lib/db/tenant-client'
 import { shipmentsRepository, type ShipmentListFilters } from '@/server/repositories/shipments.repository'
 import { writeAudit, type AuditContext } from '@/lib/audit'
@@ -17,6 +19,11 @@ const EDITABLE_STATUSES: ShipmentStatus[] = ['DRAFT']
 
 const CALCULATION_INPUT_FIELDS = new Set([
   'clientId',
+  'cpcGroupCode',
+  'isSplitDeclaration',
+  'manifestId',
+  'goodsLocationCode',
+  'declarationOfficeId',
   'declarationDate',
   'grossWeightLb',
   'netWeightLb',
@@ -46,7 +53,9 @@ export const shipmentsService = {
     audit: AuditContext,
     input: Parameters<typeof shipmentsRepository.create>[1],
   ) {
-    const shipment = await shipmentsRepository.create(db, input)
+    if (!isCpcGroup(input.cpcGroupCode ?? '400')) throw new BusinessRuleError('Select a CPC group.')
+    const goodsLocationCode = await resolveShipmentCustomsPort(db, input.manifestId, input.goodsLocationCode)
+    const shipment = await shipmentsRepository.create(db, { ...input, goodsLocationCode })
     await writeAudit(db, audit, {
       action: 'CREATE',
       entityType: 'Shipment',
@@ -69,6 +78,11 @@ export const shipmentsService = {
         `Shipment ${existing.shipmentNumber} is ${existing.status} and can no longer be edited`,
       )
     }
+    const group = input.cpcGroupCode ?? existing.cpcGroupCode
+    if (typeof group !== 'string' || !isCpcGroup(group)) throw new BusinessRuleError('Select a CPC group.')
+    const manifestId = 'manifestId' in input ? input.manifestId as string | null : existing.manifest?.id
+    const port = await resolveShipmentCustomsPort(db, manifestId, (input.goodsLocationCode ?? existing.goodsLocationCode) as string | null)
+    input = { ...input, goodsLocationCode: port }
     const updateData = shipmentUpdateInvalidatesCalculation(input)
       ? { ...input, calculatedAt: null }
       : input
@@ -133,6 +147,8 @@ function diffable(s: Record<string, unknown>) {
     'declarationDate',
     'declarationFunctionCode',
     'regimeCode',
+    'cpcGroupCode',
+    'manifestId',
     'goodsLocationCode',
     'warehouseCode',
     'transportNationalityCode',

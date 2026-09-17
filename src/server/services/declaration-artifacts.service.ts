@@ -9,6 +9,7 @@ import { XMLValidator } from 'fast-xml-parser'
 import { createHash, randomUUID } from 'node:crypto'
 import type { TenantClient } from '@/lib/db/tenant-client'
 import { buildWcoDeclarationXml } from '@/lib/beaip/wco-xml'
+import { buildFunctionalReferenceId } from '@/lib/beaip/references'
 import { preflightTfpDeclaration } from '@/lib/beaip/tfp-field-mapping'
 import { writeAudit, type AuditContext } from '@/lib/audit'
 import { BusinessRuleError, NotFoundError } from '@/lib/errors'
@@ -40,6 +41,17 @@ function artifactFileName(shipmentNumber: string, declarationType: string, group
   return `${safeReference}-${declarationType}${groupCode ? `-${groupCode}` : ''}-review.xml`
 }
 
+function responseFileName(
+  shipmentNumber: string,
+  declarationType: string,
+  groupCode: string,
+  sequence: number,
+  attemptNumber: number,
+): string {
+  const safeReference = shipmentNumber.replace(/[^A-Za-z0-9._-]+/g, '-')
+  return `${safeReference}-${declarationType}-${groupCode}-${sequence}-attempt-${attemptNumber}-response.xml`
+}
+
 export const declarationArtifactsService = {
   async generate(
     db: TenantClient,
@@ -68,37 +80,51 @@ export const declarationArtifactsService = {
     } catch (error) {
       throw new BusinessRuleError(error instanceof Error ? error.message : 'Could not partition declaration')
     }
-    const prepared = declarations.map((declaration) => {
-      const preflight = preflightTfpDeclaration(declaration)
-      if (!preflight.ready) {
-        throw new BusinessRuleError('Declaration is not ready for Customs review', { issues: preflight.issues })
-      }
-      const xml = buildWcoDeclarationXml(declaration, {
-        functionCode: declaration.functionCode,
-        acceptanceDateTime: generatedAt,
+    const generated = await db.$tenantTransaction(async (tx) => {
+      // Allocate the entire batch in the same transaction as its artifacts.
+      // PostgreSQL serializes concurrent updates to this singleton row, so
+      // every declaration receives a unique, ordered reference.
+      const counter = await tx.customsDeclarationSequence.upsert({
+        where: { id: 1 },
+        create: { id: 1, nextValue: BigInt(declarations.length + 1) },
+        update: { nextValue: { increment: BigInt(declarations.length) } },
+        select: { nextValue: true },
       })
-      const wellFormedResult = XMLValidator.validate(xml)
-      if (wellFormedResult !== true) {
-        throw new BusinessRuleError('Generated declaration XML is not well formed', { xmlValidation: wellFormedResult })
-      }
-      const validationReport = {
-        ...preflight,
-        wellFormed: true,
-        xsdValidation: {
-          status: 'STRUCTURE_CONTRACT_TESTED',
-          commonTypes: 'PERMISSIVE_STUB',
-          note: 'Customs business validation remains authoritative.',
-        },
-      }
-      return {
-        declaration,
-        xml,
-        declarationHash: createHash('sha256').update(xml, 'utf8').digest('hex'),
-        validationReport,
-      }
-    })
+      const firstSequence = counter.nextValue - BigInt(declarations.length)
+      const prepared = declarations.map((sourceDeclaration, index) => {
+        const declaration = {
+          ...sourceDeclaration,
+          functionalReferenceId: buildFunctionalReferenceId(firstSequence + BigInt(index)),
+        }
+        const preflight = preflightTfpDeclaration(declaration)
+        if (!preflight.ready) {
+          throw new BusinessRuleError('Declaration is not ready for Customs review', { issues: preflight.issues })
+        }
+        const xml = buildWcoDeclarationXml(declaration, {
+          functionCode: declaration.functionCode,
+          acceptanceDateTime: generatedAt,
+        })
+        const wellFormedResult = XMLValidator.validate(xml)
+        if (wellFormedResult !== true) {
+          throw new BusinessRuleError('Generated declaration XML is not well formed', { xmlValidation: wellFormedResult })
+        }
+        const validationReport = {
+          ...preflight,
+          wellFormed: true,
+          xsdValidation: {
+            status: 'STRUCTURE_CONTRACT_TESTED',
+            commonTypes: 'PERMISSIVE_STUB',
+            note: 'Customs business validation remains authoritative.',
+          },
+        }
+        return {
+          declaration,
+          xml,
+          declarationHash: createHash('sha256').update(xml, 'utf8').digest('hex'),
+          validationReport,
+        }
+      })
 
-    const artifacts = await db.$tenantTransaction(async (tx) => {
       await tx.customsSubmissionBatch.create({
         data: {
           id: batchId,
@@ -136,17 +162,20 @@ export const declarationArtifactsService = {
           select: {
             id: true, status: true, declarationType: true, functionCode: true,
             regimeCode: true, schemaVersion: true, mappingVersion: true,
-            generatedAt: true, declarationGroupCode: true,
+            generatedAt: true, declarationGroupCode: true, declarationSequence: true,
           },
         })
         rows.push({
           artifact: entry,
-          fileName: artifactFileName(shipment.shipmentNumber, input.declarationType, declaration.declarationGroupCode),
+          fileName: artifactFileName(shipment.shipmentNumber, input.declarationType, `${declaration.declarationGroupCode}-${declaration.declarationSequence}`),
           downloadUrl: `/api/customs-entries/${entry.id}/xml`,
           validation: validationReport,
         })
       }
-      return rows
+      return {
+        artifacts: rows,
+        groups: prepared.map((item) => item.declaration.declarationGroupCode),
+      }
     })
 
     await writeAudit(db, audit, {
@@ -156,8 +185,8 @@ export const declarationArtifactsService = {
       changes: {
         after: {
           shipmentNumber: shipment.shipmentNumber,
-          declarationCount: artifacts.length,
-          groups: prepared.map((item) => item.declaration.declarationGroupCode),
+          declarationCount: generated.artifacts.length,
+          groups: generated.groups,
           functionCode: '9',
         },
       },
@@ -165,7 +194,7 @@ export const declarationArtifactsService = {
 
     return {
       batchId,
-      artifacts,
+      artifacts: generated.artifacts,
     }
   },
 
@@ -176,7 +205,7 @@ export const declarationArtifactsService = {
         id: true,
         shipment: { select: { shipmentNumber: true } },
         declarationType: true,
-        declarationGroupCode: true,
+        declarationGroupCode: true, declarationSequence: true,
         requestPayload: true,
       },
     })
@@ -185,7 +214,39 @@ export const declarationArtifactsService = {
     }
     return {
       xml: entry.requestPayload,
-      fileName: artifactFileName(entry.shipment.shipmentNumber, entry.declarationType, entry.declarationGroupCode),
+      fileName: artifactFileName(entry.shipment.shipmentNumber, entry.declarationType, `${entry.declarationGroupCode}-${entry.declarationSequence}`),
+    }
+  },
+
+  async getLatestResponse(db: TenantClient, artifactId: string) {
+    const entry = await db.customsEntry.findUnique({
+      where: { id: artifactId },
+      select: {
+        shipment: { select: { shipmentNumber: true } },
+        declarationType: true,
+        declarationGroupCode: true,
+        declarationSequence: true,
+        attempts: {
+          where: { responsePayload: { not: null } },
+          select: { attemptNumber: true, responsePayload: true },
+          orderBy: { attemptNumber: 'desc' },
+          take: 1,
+        },
+      },
+    })
+    const attempt = entry?.attempts[0]
+    if (!entry || !attempt?.responsePayload) {
+      throw new NotFoundError('Customs submission response')
+    }
+    return {
+      response: attempt.responsePayload,
+      fileName: responseFileName(
+        entry.shipment.shipmentNumber,
+        entry.declarationType,
+        entry.declarationGroupCode,
+        entry.declarationSequence,
+        attempt.attemptNumber,
+      ),
     }
   },
 }

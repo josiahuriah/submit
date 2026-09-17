@@ -30,6 +30,7 @@ export interface ShipmentListItem {
 
 /** Minimal shipment shape for the entry page header. */
 export interface ShipmentHeader {
+  cpcGroupCode: string;
   id: string;
   shipmentNumber: string;
   blNumber: string;
@@ -53,6 +54,7 @@ export interface CustomsArtifactSummary {
   fileName: string;
   attemptCount: number;
   latestOutcome: string | null;
+  responseDownloadUrl: string | null;
 }
 
 /** Header summary of a supplier's commercial invoice. */
@@ -147,6 +149,7 @@ export interface LineDraft {
 }
 
 export interface DeclarationProfile {
+  cpcGroupCode: string;
   submitterId: string;
   declarationDate: string;
   declarationFunctionCode: "9";

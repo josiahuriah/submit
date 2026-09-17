@@ -77,6 +77,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
 
       <InvoiceLineWorkspace
         shipmentId={id}
+        cpcGroupCode={shipment.cpcGroupCode}
         status={shipment.status}
         suppliers={suppliers}
         initialInvoices={shipment.invoices}

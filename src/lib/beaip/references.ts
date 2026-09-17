@@ -1,10 +1,6 @@
-/**
- * Temporary Click2Clear-shaped references for review XML.
- *
- * Click2Clear is expected to replace the declaration reference when live
- * submission is integrated. Until then, review files need stable references
- * that follow the examples supplied by Customs.
- */
+/** Reference builders for Click2Clear declaration XML. */
+
+const MAX_DECLARATION_SEQUENCE = 999_999_999n
 
 function referenceYear(declarationDate: string): string {
   const year = new Date(declarationDate).getUTCFullYear()
@@ -41,12 +37,13 @@ function hashedNumericReference(seed: string, width: number): string {
   return `${first}${second}`.slice(0, width).padEnd(width, '0')
 }
 
-/** Example shape: 2026DEC0001234567. */
-export function buildFunctionalReferenceId(
-  declarationDate: string,
-  sourceReference: string,
-): string {
-  return `${referenceYear(declarationDate)}DEC${fixedWidthNumericReference(sourceReference, 10)}`
+/** Globally allocated declaration reference. Example: SUBMITDEC000000001. */
+export function buildFunctionalReferenceId(sequence: number | bigint): string {
+  const value = typeof sequence === 'bigint' ? sequence : BigInt(sequence)
+  if (value < 1n || value > MAX_DECLARATION_SEQUENCE) {
+    throw new Error('Declaration reference sequence must be between 1 and 999999999')
+  }
+  return `SUBMITDEC${String(value).padStart(9, '0')}`
 }
 
 /** Example shape: 201800OREF02331212. */
@@ -57,10 +54,14 @@ export function buildTraderAssignedReferenceId(
   return `${referenceYear(declarationDate)}00OREF${fixedWidthNumericReference(sourceReference, 8)}`
 }
 
-/** Batch-seeded references keep split declarations distinct and auditable. */
-export function buildSubmissionReferences(declarationDate: string, seed: string) {
+/** Batch-seeded broker references keep split declarations distinct and auditable. */
+export function buildSubmissionReferences(
+  declarationDate: string,
+  seed: string,
+  functionalSequence: number | bigint,
+) {
   return {
-    functionalReferenceId: `${referenceYear(declarationDate)}DEC${hashedNumericReference(seed, 10)}`,
+    functionalReferenceId: buildFunctionalReferenceId(functionalSequence),
     brokerReference: `${referenceYear(declarationDate)}00OREF${hashedNumericReference(`${seed}:broker`, 8)}`,
   }
 }
