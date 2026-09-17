@@ -97,7 +97,6 @@ describe('buildWcoDeclarationXml', () => {
       'Supplier',
       'Supplier',
       'TradeTerms',
-      'UCR',
     ])
   })
 
@@ -117,9 +116,8 @@ describe('buildWcoDeclarationXml', () => {
     expect(xml).toContain('<TotalGrossMassMeasure unitCode="LB">512.500</TotalGrossMassMeasure>')
     expect(xml).toContain('<DeclarationOffice>\n        <ID>NASACP</ID>')
     expect(xml).toContain('<Declarant>\n        <Name>Atlas Brokers</Name>')
-    expect(xml).toContain(
-      '<TraderAssignedReferenceID>201800OREF02331212</TraderAssignedReferenceID>',
-    )
+    expect(xml).not.toContain('<UCR>')
+    expect(xml).not.toContain('<TraderAssignedReferenceID>')
   })
 
   it('omits optional BorderTransportMeans until its values are confirmed', () => {

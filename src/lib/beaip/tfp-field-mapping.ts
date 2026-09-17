@@ -15,7 +15,7 @@ import {
 } from './constants'
 
 export const TFP_SCHEMA_VERSION = 'TFB_WCO_DEC_v1.4.4'
-export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.3.0'
+export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.3.1'
 
 export type TfpRequirement = 'M' | 'C' | 'OUTBOUND_ONLY'
 export type TfpMappingStatus =
@@ -82,7 +82,7 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'Invoice', element: 'IssueDateTime', requirement: 'C', source: 'Invoice.invoiceDate', transform: 'TFP DateTimeType', status: 'MAPPED' },
   { section: 'Invoice', element: 'TypeCode', requirement: 'C', source: 'Invoice.incotermCode', transform: 'omit from invoice', status: 'OMIT_INCOMING' },
   { section: 'TradeTerms', element: 'LocationID', requirement: 'C', source: 'Invoice.incotermCode', transform: 'FOB etc., as in successful example', status: 'MAPPED' },
-  { section: 'UCR', element: 'TraderAssignedReferenceID', requirement: 'C', source: 'Shipment.shipmentNumber + declaration year', transform: 'YYYY00OREF + 8-digit stable sequence', status: 'DERIVED' },
+  { section: 'UCR', element: 'TraderAssignedReferenceID', requirement: 'C', source: 'not emitted', transform: 'omit optional UCR; absent from the supplied successful submission', status: 'OMIT_INCOMING' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/SequenceNumeric', requirement: 'C', source: 'generated item sequence', transform: '1-based across declaration', status: 'DERIVED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/Description', requirement: 'C', source: 'LineItem.description', transform: 'verbatim', status: 'MAPPED' },
   { section: 'GovernmentAgencyGoodsItem', element: 'Commodity/ValueAmount', requirement: 'C', source: 'LineItem.totalValue', transform: 'currencyID=BSD', status: 'MAPPED' },
@@ -163,12 +163,6 @@ export function preflightTfpDeclaration(declaration: BeaipDeclaration): TfpPrefl
     blocker(
       'Declaration/GoodsShipment/Consignment/GoodsLocation/ID',
       'Goods location must match DeclarationOffice/ID',
-    )
-  }
-  if (!/^\d{4}00OREF\d{8}$/.test(declaration.brokerReference)) {
-    blocker(
-      'Declaration/GoodsShipment/UCR/TraderAssignedReferenceID',
-      'Use the YYYY00OREF######## trader-reference convention',
     )
   }
   if (declaration.packageCount <= 0) {

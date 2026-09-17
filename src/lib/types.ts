@@ -54,6 +54,7 @@ export interface CustomsArtifactSummary {
   fileName: string;
   attemptCount: number;
   latestOutcome: string | null;
+  responseDownloadUrl: string | null;
 }
 
 /** Header summary of a supplier's commercial invoice. */

@@ -286,7 +286,6 @@ export function buildWcoDeclarationXml(
         TradeTerms: d.invoices
           .filter((inv) => inv.incotermCode)
           .map((inv) => ({ LocationID: inv.incotermCode! })),
-        UCR: { TraderAssignedReferenceID: d.brokerReference },
       },
       ...(declarationProcedureCode
         ? { GovernmentProcedure: { CurrentCode: declarationProcedureCode } }

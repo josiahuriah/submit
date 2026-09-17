@@ -161,17 +161,17 @@ describe('TFP field mapping preflight', () => {
     }))
   })
 
-  it('blocks references that do not follow the Click2Clear review conventions', () => {
+  it('blocks functional references that do not follow the Click2Clear review convention', () => {
     const input = declaration()
     input.functionalReferenceId = 'SHP-2026-00001'
     input.brokerReference = 'SHP-2026-00001'
     const result = preflightTfpDeclaration(input)
     expect(result.ready).toBe(false)
-    expect(result.issues).toEqual(expect.arrayContaining([
+    expect(result.issues).toContainEqual(
       expect.objectContaining({ field: 'Declaration/FunctionalReferenceID' }),
-      expect.objectContaining({
-        field: 'Declaration/GoodsShipment/UCR/TraderAssignedReferenceID',
-      }),
-    ]))
+    )
+    expect(result.issues).not.toContainEqual(
+      expect.objectContaining({ field: 'Declaration/GoodsShipment/UCR/TraderAssignedReferenceID' }),
+    )
   })
 })

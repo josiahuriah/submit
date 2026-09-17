@@ -151,7 +151,7 @@ existing data with only formatting.
 | `CustomsValuation` (one per invoice, **same order as `Invoice` elements** — that ordering is the invoice linkage) | C | Invoice subtotal/currency/exchange rate + line-level apportioned costs summed per invoice | MAPPED |
 | `Invoice` ID/date | C | `Invoice.invoiceNumber`, `invoiceDate` | OK; optional `Invoice/TypeCode` is omitted per Customs feedback |
 | `TradeTerms` (incoterm) | C | `Invoice.incotermCode` + `incotermLocation` | MAPPED following XSD sequence |
-| `UCR` | C | `shipmentNumber` if wanted | OK (optional) |
+| `UCR` | C | Not emitted | Optional and absent from the supplied successful submission |
 
 ### GovernmentAgencyGoodsItem (one per line item)
 

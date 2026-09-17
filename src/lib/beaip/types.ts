@@ -109,7 +109,7 @@ export interface BeaipDeclaration {
   declarationDate: string
   /** Click2Clear-shaped declaration reference, e.g. 2026DEC0001234567. */
   functionalReferenceId: string
-  /** Trader reference, e.g. 201800OREF02331212. */
+  /** Legacy internal artifact reference retained for database compatibility; not emitted as UCR. */
   brokerReference: string
   customsOfficeCode: string
   /** Submitter company registration number (mandatory on the wire). */

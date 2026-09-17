@@ -99,6 +99,7 @@ const DETAIL_SELECT = {
       declarationGroupCode: true,
       declarationSequence: true,
       generatedAt: true,
+      responsePayload: true,
       _count: { select: { attempts: true } },
       attempts: {
         select: { outcome: true, startedAt: true },

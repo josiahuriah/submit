@@ -86,7 +86,7 @@ Invoice linkage is positional in TFP v1.4.4: shipment `CustomsValuation` nodes a
 | `Invoice/IssueDateTime` | C | `Invoice.invoiceDate` | TFP `DateTimeString` | `MAPPED` |
 | `Invoice/TypeCode` | C | `Invoice.incotermCode` | Omit from `Invoice`; retain `TradeTerms/LocationID` when present | `OMIT_INCOMING` |
 | `TradeTerms/LocationID` | C | `Invoice.incotermLocation` | Verbatim | `MAPPED` |
-| `UCR/TraderAssignedReferenceID` | C | Declaration year + stable shipment sequence | `YYYY00OREF########` | `DERIVED` |
+| `UCR/TraderAssignedReferenceID` | C | Not emitted | Optional UCR is absent from the supplied successful submission | `OMIT_INCOMING` |
 
 ## Goods items
 

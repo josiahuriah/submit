@@ -125,6 +125,9 @@ function toShipmentHeader(row: DetailRow): ShipmentHeader {
       fileName: `${row.shipmentNumber}-${entry.declarationType}-${entry.declarationGroupCode}-${entry.declarationSequence}-review.xml`,
       attemptCount: entry._count.attempts,
       latestOutcome: entry.attempts[0]?.outcome ?? null,
+      responseDownloadUrl: entry.responsePayload
+        ? `/api/customs-entries/${entry.id}/response`
+        : null,
     })),
   }
 }
