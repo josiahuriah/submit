@@ -14,151 +14,10 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { XMLParser } from 'fast-xml-parser'
 import { buildWcoDeclarationXml, WCO_DECLARATION_NS } from '@/lib/beaip/wco-xml'
-import type { BeaipDeclaration } from '@/lib/beaip'
 
 const hasXmllint = !spawnSync('xmllint', ['--version'], { encoding: 'utf8' }).error
 
-function fixture(): BeaipDeclaration {
-  return {
-    isSplitDeclaration: false,
-    declarationGroupCode: '400',
-    declarationSequence: 1,
-    declarationType: 'C13',
-    functionCode: '9',
-    declarationDate: '2026-07-31T00:00:00.000Z',
-    regimeCode: '4',
-    functionalReferenceId: '2026DEC0001234567',
-    brokerReference: '201800OREF02331212',
-    customsOfficeCode: 'NASACP',
-    submitterId: 'CRN-12345',
-    declarant: { name: 'Atlas Brokers', id: '20113855131249792', address: null },
-    importer: {
-      name: 'Island Imports Ltd',
-      id: 'TIN-CLIENT-1',
-      address: { cityName: null, countryCode: null, line: '12 Bay St, Nassau', postcode: null },
-    },
-    consignee: { name: 'Island Imports Ltd', id: 'TIN-CLIENT-1', address: null },
-    blNumber: 'BL-778899',
-    packageCount: 40,
-    packageUom: 'CARTON',
-    grossWeightLb: '512.500',
-    transport: {
-      vesselName: 'Tropic Freedom',
-      transportMode: 'SEA',
-      arrivalDate: '2026-07-20T12:00:00.000Z',
-      containerNumber: 'TCLU7305421',
-      manifestNumber: 'MAN-2026-0142',
-      unloadingPortCode: 'USPBI',
-      entryPortCode: 'BSNAS',
-      exitPortCode: 'USPBI',
-      exportCountryCode: 'US',
-      containerSealNumber: 'SEAL-100',
-      containerFullnessCode: 'FULL',
-      transportNationalityCode: 'BS',
-      goodsLocationCode: 'NASACP',
-      warehouseCode: 'WH-01',
-    },
-    invoices: [
-      {
-        invoiceNumber: 'INV-1001',
-        invoiceDate: '2026-07-01T00:00:00.000Z',
-        currency: 'BSD',
-        exchangeRate: '1.00000000',
-        incotermCode: 'FOB',
-        incotermLocation: 'Miami',
-        subTotal: '1500.00',
-        supplier: {
-          name: 'Miami Wholesale Co',
-          id: null,
-          address: { cityName: null, countryCode: 'US', line: '400 NW 7th Ave', postcode: null },
-        },
-        freightApportioned: '250.00',
-        insuranceApportioned: '0.00',
-        otherApportioned: '0.00',
-      },
-      {
-        invoiceNumber: 'INV-1002',
-        invoiceDate: null,
-        currency: 'BSD',
-        exchangeRate: '1.00000000',
-        incotermCode: null,
-        incotermLocation: null,
-        subTotal: '800.00',
-        supplier: { name: 'Georgia Traders', id: null, address: null },
-        freightApportioned: '0.00',
-        insuranceApportioned: '0.00',
-        otherApportioned: '10.00',
-      },
-    ],
-    totalCifValue: '2560.00',
-    totalDuty: '640.00',
-    totalVat: '320.00',
-    totalLevy: '0.00',
-    totalExcise: '0.00',
-    processingFee: '25.60',
-    totalPayable: '988.16',
-    lines: [
-      {
-        lineNumber: 1,
-        invoiceNumber: 'INV-1001',
-        hsCode: '22083000',
-        cpcCode: '400',
-        description: 'Whisky 750ml',
-        commercialDescription: 'Spirits',
-        countryOfOrigin: 'GB',
-        quantity: '120',
-        unit: 'L',
-        weightLb: '150.000',
-        netWeightLb: '140.000',
-        packageCount: 10,
-        packageTypeCode: 'CT',
-        totalValue: '1500.00',
-        currency: 'BSD',
-        freightApportioned: '250.00',
-        insuranceApportioned: '0.00',
-        otherApportioned: '0.00',
-        cifValue: '1650.00',
-        dutyAmount: '600.00',
-        vatAmount: '225.00',
-        levyAmount: '0.00',
-        exciseAmount: '0.00',
-        dutyAssessmentQuantity: null,
-        dutyAssessmentUnit: null,
-        exciseAssessmentQuantity: '26.400000',
-        exciseAssessmentUnit: 'IMP_GAL',
-      },
-      {
-        lineNumber: 1,
-        invoiceNumber: 'INV-1002',
-        hsCode: '94035090',
-        cpcCode: '400',
-        description: 'Cotton t-shirts',
-        commercialDescription: null,
-        countryOfOrigin: null,
-        quantity: '500',
-        unit: 'PCS',
-        weightLb: null,
-        netWeightLb: null,
-        packageCount: 20,
-        packageTypeCode: null,
-        totalValue: '800.00',
-        currency: 'BSD',
-        freightApportioned: '0.00',
-        insuranceApportioned: '0.00',
-        otherApportioned: '10.00',
-        cifValue: '910.00',
-        dutyAmount: '40.00',
-        vatAmount: '95.00',
-        levyAmount: '0.00',
-        exciseAmount: '0.00',
-        dutyAssessmentQuantity: null,
-        dutyAssessmentUnit: null,
-        exciseAssessmentQuantity: null,
-        exciseAssessmentUnit: null,
-      },
-    ],
-  }
-}
+import { fixture } from './fixtures/declaration'
 
 const ACCEPTANCE = new Date('2026-07-31T14:00:00.000Z')
 
@@ -238,7 +97,6 @@ describe('buildWcoDeclarationXml', () => {
       'Supplier',
       'Supplier',
       'TradeTerms',
-      'UCR',
     ])
   })
 
@@ -258,9 +116,8 @@ describe('buildWcoDeclarationXml', () => {
     expect(xml).toContain('<TotalGrossMassMeasure unitCode="LB">512.500</TotalGrossMassMeasure>')
     expect(xml).toContain('<DeclarationOffice>\n        <ID>NASACP</ID>')
     expect(xml).toContain('<Declarant>\n        <Name>Atlas Brokers</Name>')
-    expect(xml).toContain(
-      '<TraderAssignedReferenceID>201800OREF02331212</TraderAssignedReferenceID>',
-    )
+    expect(xml).not.toContain('<UCR>')
+    expect(xml).not.toContain('<TraderAssignedReferenceID>')
   })
 
   it('omits optional BorderTransportMeans until its values are confirmed', () => {
@@ -313,7 +170,7 @@ describe('buildWcoDeclarationXml', () => {
     const xml = build()
     expect(xml).toContain('<TotalPackageQuantity unitCode="EA">40</TotalPackageQuantity>')
     expect(xml).toContain('<TariffQuantity unitCode="EA">500</TariffQuantity>')
-    expect(xml).toContain('<TariffQuantity unitCode="IMP_GAL">26.400000</TariffQuantity>')
+    expect(xml).toContain('<TariffQuantity unitCode="LTR">120</TariffQuantity>')
     expect(xml).toContain('<QuantityQuantity unitCode="EA">10</QuantityQuantity>')
     expect(xml).toContain('<QuantityQuantity unitCode="EA">20</QuantityQuantity>')
     expect(xml.match(/<Packaging>/g)).toHaveLength(2)

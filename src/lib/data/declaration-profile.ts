@@ -19,6 +19,8 @@ export async function getDeclarationProfile(shipmentId: string): Promise<Declara
     select: {
       submittedAt: true,
       regimeCode: true,
+      cpcGroupCode: true,
+      manifest: { select: { customsPortCode: true } },
       goodsLocationCode: true,
       warehouseCode: true,
       transportNationalityCode: true,
@@ -44,7 +46,8 @@ export async function getDeclarationProfile(shipmentId: string): Promise<Declara
     declarationDate: shipment.submittedAt?.toISOString().slice(0, 10) ?? '',
     declarationFunctionCode: '9',
     regimeCode: shipment.regimeCode,
-    goodsLocationCode: text(shipment.goodsLocationCode),
+    cpcGroupCode: shipment.cpcGroupCode ?? "",
+    goodsLocationCode: text(shipment.manifest ? shipment.manifest.customsPortCode : shipment.goodsLocationCode),
     warehouseCode: text(shipment.warehouseCode),
     transportNationalityCode: text(shipment.transportNationalityCode),
     transportMode: shipment.transportMode as 'SEA' | 'AIR',

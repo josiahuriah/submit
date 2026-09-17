@@ -11,6 +11,13 @@
 import { z } from 'zod'
 import { normalizeHsCode } from '@/lib/customs/normalization'
 
+import { isCpcCode, isCpcGroup, isCustomsPort, isCustomsUom } from '@/lib/customs/reference-data'
+
+const cpcCode = z.string().trim().toUpperCase().refine(isCpcCode, 'Select a CPC from the Customs list')
+const cpcGroup = z.string().trim().toUpperCase().refine(isCpcGroup, 'Select a CPC group')
+const customsPort = z.string().trim().toUpperCase().refine(isCustomsPort, 'Select a Customs port')
+const customsUom = z.string().trim().toUpperCase().refine(isCustomsUom, 'Select a UOM from the Customs list')
+
 // --- shared primitives -------------------------------------------------------
 
 const MONEY_REGEX = /^\d{1,13}(\.\d{1,2})?$/
@@ -99,6 +106,7 @@ export const supplierUpdateSchema = supplierCreateSchema.partial().extend({
 
 export const manifestCreateSchema = z.object({
   manifestNumber: z.string().min(1).max(60),
+  customsPortCode: customsPort,
   voyageId: id,
   shippingAgentId: id.optional(),
   registeredAt: z.coerce.date().optional(),
@@ -161,8 +169,9 @@ export const shipmentCreateSchema = z.object({
   declarationDate: z.coerce.date().optional(),
   declarationFunctionCode: z.literal('9').default('9'),
   regimeCode: z.string().min(1).max(17).default('4'),
+  cpcGroupCode: cpcGroup.default('400'),
   isSplitDeclaration: z.boolean().default(false),
-  goodsLocationCode: z.string().max(35).optional(),
+  goodsLocationCode: z.union([customsPort, z.literal('')]).optional(),
   warehouseCode: z.string().max(35).optional(),
   transportNationalityCode: z.string().length(2).toUpperCase().optional(),
   description: z.string().max(1000).optional(),
@@ -208,15 +217,12 @@ export const lineItemCreateSchema = z.object({
     (value) => typeof value === 'string' ? normalizeHsCode(value) : value,
     z.string().regex(/^\d{8}$/, 'Use the full 8-digit tariff code'),
   ),
-  // Customs Procedure Code, e.g. "400". Shape-checked only: no authoritative
-  // CPC list is encoded, so an unknown-but-well-formed code is accepted and
-  // surfaces during Customs review rather than being rejected at entry.
-  cpcCode: z.enum(['400', '4098']).default('400'),
+  cpcCode: cpcCode.default('400000'),
   description: z.string().min(1).max(500),
   commercialDescription: z.string().max(200).optional(),
   pageNumber: z.coerce.number().int().positive().optional(),
   quantity: quantity,
-  unit: z.string().max(20).default('PCS'),
+  unit: customsUom.default('EA'),
   unitPrice: z.string().regex(/^\d{1,13}(\.\d{1,4})?$/, 'Invalid unit price'),
   totalValue: money,
   weightLb: quantity.optional(),

@@ -1,5 +1,6 @@
 "use client";
 
+import { CPC_GROUPS, CUSTOMS_PORTS, customsPortLabel } from '@/lib/customs/reference-data'
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createShipment, type NewShipmentOptions } from "@/lib/data/shipment-actions";
@@ -28,6 +29,8 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
     containerNumber: "",
     containerSealNumber: "",
     regimeCode: "4",
+    cpcGroupCode: "400",
+    goodsLocationCode: "",
     isSplitDeclaration: false,
     goodsType: "GENERAL",
     packageType: "CARTON",
@@ -93,7 +96,7 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
 
       <div className="sb-card sb-pad" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
         {select("Client (consignee)", "clientId", options.clients)}
-        {select("Declaration office", "declarationOfficeId", options.offices)}
+        {select("Regional office", "declarationOfficeId", options.offices)}
         {select("Manifest", "manifestId", options.manifests, "— none yet —")}
 
         {text("BL / airway bill #", "blNumber", "TROP26070001", true)}
@@ -102,6 +105,8 @@ export function NewShipmentForm({ options }: { options: NewShipmentOptions }) {
 
         {enumSelect("Transport mode", "transportMode", TRANSPORT_MODES)}
         {text("Regime code", "regimeCode", "4", true)}
+          {select('CPC group', 'cpcGroupCode', CPC_GROUPS.map((g) => ({ id: g.code, label: `${g.code} — ${g.description}` })), 'Select a CPC group')}
+          {draft.manifestId ? <div><span className="sb-eyebrow">Customs port (from manifest)</span><p>{customsPortLabel(options.manifests.find((m) => m.id === draft.manifestId)?.customsPortCode)}</p></div> : select('Customs port', 'goodsLocationCode', CUSTOMS_PORTS.map((p) => ({ id: p.code, label: `${p.code} — ${p.description}` })), 'Select a Customs port')}
         <label style={field}>
           <span className="sb-eyebrow">Declaration grouping</span>
           <span><input type="checkbox" checked={draft.isSplitDeclaration} onChange={(event) => setDraft((current) => ({ ...current, isSplitDeclaration: event.target.checked }))} /> Split by item CPC</span>

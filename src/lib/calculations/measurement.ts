@@ -92,8 +92,10 @@ export function resolveSpecificQuantity(
   input: SpecificQuantityInput,
 ): Decimal {
   if (!rateUnit) return d(input.lineQuantity)
-  const target = rateUnit.trim().toUpperCase()
-  const lineUnit = input.lineUnit.trim().toUpperCase()
+  const aliases: Record<string, string> = { EA: 'PCS', PC: 'PCS', LTR: 'L', KGM: 'KG', LBR: 'LB', GLI: 'IMP_GAL', PGL: 'PROOF_GAL' }
+  const canonical = (unit: string) => aliases[unit.trim().toUpperCase()] ?? unit.trim().toUpperCase()
+  const target = canonical(rateUnit)
+  const lineUnit = canonical(input.lineUnit)
 
   if (target === lineUnit) return d(input.lineQuantity)
 

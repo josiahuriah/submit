@@ -40,6 +40,17 @@ function artifactFileName(shipmentNumber: string, declarationType: string, group
   return `${safeReference}-${declarationType}${groupCode ? `-${groupCode}` : ''}-review.xml`
 }
 
+function responseFileName(
+  shipmentNumber: string,
+  declarationType: string,
+  groupCode: string,
+  sequence: number,
+  attemptNumber: number,
+): string {
+  const safeReference = shipmentNumber.replace(/[^A-Za-z0-9._-]+/g, '-')
+  return `${safeReference}-${declarationType}-${groupCode}-${sequence}-attempt-${attemptNumber}-response.xml`
+}
+
 export const declarationArtifactsService = {
   async generate(
     db: TenantClient,
@@ -136,12 +147,12 @@ export const declarationArtifactsService = {
           select: {
             id: true, status: true, declarationType: true, functionCode: true,
             regimeCode: true, schemaVersion: true, mappingVersion: true,
-            generatedAt: true, declarationGroupCode: true,
+            generatedAt: true, declarationGroupCode: true, declarationSequence: true,
           },
         })
         rows.push({
           artifact: entry,
-          fileName: artifactFileName(shipment.shipmentNumber, input.declarationType, declaration.declarationGroupCode),
+          fileName: artifactFileName(shipment.shipmentNumber, input.declarationType, `${declaration.declarationGroupCode}-${declaration.declarationSequence}`),
           downloadUrl: `/api/customs-entries/${entry.id}/xml`,
           validation: validationReport,
         })
@@ -176,7 +187,7 @@ export const declarationArtifactsService = {
         id: true,
         shipment: { select: { shipmentNumber: true } },
         declarationType: true,
-        declarationGroupCode: true,
+        declarationGroupCode: true, declarationSequence: true,
         requestPayload: true,
       },
     })
@@ -185,7 +196,39 @@ export const declarationArtifactsService = {
     }
     return {
       xml: entry.requestPayload,
-      fileName: artifactFileName(entry.shipment.shipmentNumber, entry.declarationType, entry.declarationGroupCode),
+      fileName: artifactFileName(entry.shipment.shipmentNumber, entry.declarationType, `${entry.declarationGroupCode}-${entry.declarationSequence}`),
+    }
+  },
+
+  async getLatestResponse(db: TenantClient, artifactId: string) {
+    const entry = await db.customsEntry.findUnique({
+      where: { id: artifactId },
+      select: {
+        shipment: { select: { shipmentNumber: true } },
+        declarationType: true,
+        declarationGroupCode: true,
+        declarationSequence: true,
+        attempts: {
+          where: { responsePayload: { not: null } },
+          select: { attemptNumber: true, responsePayload: true },
+          orderBy: { attemptNumber: 'desc' },
+          take: 1,
+        },
+      },
+    })
+    const attempt = entry?.attempts[0]
+    if (!entry || !attempt?.responsePayload) {
+      throw new NotFoundError('Customs submission response')
+    }
+    return {
+      response: attempt.responsePayload,
+      fileName: responseFileName(
+        entry.shipment.shipmentNumber,
+        entry.declarationType,
+        entry.declarationGroupCode,
+        entry.declarationSequence,
+        attempt.attemptNumber,
+      ),
     }
   },
 }

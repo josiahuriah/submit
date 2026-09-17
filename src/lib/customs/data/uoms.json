@@ -1,0 +1,338 @@
+[
+  {
+    "code": "LBR",
+    "description": "POUND",
+    "sourcePage": 1,
+    "sourceRow": 1,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "TNE",
+    "description": "tonne (metric ton)",
+    "sourcePage": 1,
+    "sourceRow": 2,
+    "type": "weight",
+    "active": true
+  },
+  {
+    "code": "MTK",
+    "description": "square metre",
+    "sourcePage": 1,
+    "sourceRow": 3,
+    "type": "weight",
+    "active": true
+  },
+  {
+    "code": "MTQ",
+    "description": "cubic metre",
+    "sourcePage": 1,
+    "sourceRow": 4,
+    "type": "weight",
+    "active": true
+  },
+  {
+    "code": "MTR",
+    "description": "metre",
+    "sourcePage": 1,
+    "sourceRow": 5,
+    "type": "weight",
+    "active": true
+  },
+  {
+    "code": "GRM",
+    "description": "gram",
+    "sourcePage": 1,
+    "sourceRow": 6,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "KGM",
+    "description": "kilogram",
+    "sourcePage": 1,
+    "sourceRow": 7,
+    "type": "weight",
+    "active": true
+  },
+  {
+    "code": "LTR",
+    "description": "litre",
+    "sourcePage": 1,
+    "sourceRow": 8,
+    "type": "weight",
+    "active": true
+  },
+  {
+    "code": "MGM",
+    "description": "milligram",
+    "sourcePage": 1,
+    "sourceRow": 9,
+    "type": "weight",
+    "active": true
+  },
+  {
+    "code": "DRM",
+    "description": "drum",
+    "sourcePage": 1,
+    "sourceRow": 10,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "EA",
+    "description": "EACH",
+    "sourcePage": 1,
+    "sourceRow": 11,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "CEN",
+    "description": "HUNDRED",
+    "sourcePage": 1,
+    "sourceRow": 12,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "PR",
+    "description": "PAIR",
+    "sourcePage": 1,
+    "sourceRow": 13,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "DPR",
+    "description": "DOZEN PAIR",
+    "sourcePage": 1,
+    "sourceRow": 14,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "DZN",
+    "description": "DOZEN",
+    "sourcePage": 1,
+    "sourceRow": 15,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "FTQ",
+    "description": "CUBIC FOOT",
+    "sourcePage": 1,
+    "sourceRow": 16,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "YRD",
+    "description": "YARD",
+    "sourcePage": 1,
+    "sourceRow": 17,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "YDK",
+    "description": "SQUARE YARD",
+    "sourcePage": 1,
+    "sourceRow": 18,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "HF",
+    "description": "HUNDRED FOOT",
+    "sourcePage": 1,
+    "sourceRow": 19,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "LI",
+    "description": "LINEAR INCH",
+    "sourcePage": 1,
+    "sourceRow": 20,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "T8",
+    "description": "THOUSAND LINEAR INCH",
+    "sourcePage": 1,
+    "sourceRow": 21,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "FOT",
+    "description": "FOOT",
+    "sourcePage": 1,
+    "sourceRow": 22,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "LB",
+    "description": "POUND",
+    "sourcePage": 1,
+    "sourceRow": 23,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "CWA",
+    "description": "HUNDRED POUND (CWT)",
+    "sourcePage": 1,
+    "sourceRow": 24,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "L84",
+    "description": "TON (UK SHIPPING)",
+    "sourcePage": 1,
+    "sourceRow": 25,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "CTM",
+    "description": "METRIC CARAT",
+    "sourcePage": 1,
+    "sourceRow": 26,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "KWH",
+    "description": "KILOWATT HOUR",
+    "sourcePage": 1,
+    "sourceRow": 27,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "GLI",
+    "description": "GALLON (UK)",
+    "sourcePage": 1,
+    "sourceRow": 28,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "PGL",
+    "description": "PROOF GALLON",
+    "sourcePage": 1,
+    "sourceRow": 29,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "CS",
+    "description": "CASE",
+    "sourcePage": 1,
+    "sourceRow": 30,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "BLL",
+    "description": "BARREL (US)",
+    "sourcePage": 1,
+    "sourceRow": 31,
+    "type": "quantity",
+    "active": true
+  },
+  {
+    "code": "PLT",
+    "description": "Pallet",
+    "sourcePage": 1,
+    "sourceRow": 32,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "RL",
+    "description": "Roll",
+    "sourcePage": 1,
+    "sourceRow": 33,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "CTN",
+    "description": "Carton",
+    "sourcePage": 2,
+    "sourceRow": 34,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "GAL",
+    "description": "US GALLONS",
+    "sourcePage": 2,
+    "sourceRow": 35,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "PKG",
+    "description": "Package",
+    "sourcePage": 2,
+    "sourceRow": 36,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "PC",
+    "description": "Piece",
+    "sourcePage": 2,
+    "sourceRow": 37,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "BIN",
+    "description": "Bin",
+    "sourcePage": 2,
+    "sourceRow": 38,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "BG",
+    "description": "Bag",
+    "sourcePage": 2,
+    "sourceRow": 39,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "BX",
+    "description": "Box",
+    "sourcePage": 2,
+    "sourceRow": 40,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "BDL",
+    "description": "Bundle",
+    "sourcePage": 2,
+    "sourceRow": 41,
+    "type": null,
+    "active": true
+  },
+  {
+    "code": "PK",
+    "description": "Pack",
+    "sourcePage": 2,
+    "sourceRow": 42,
+    "type": null,
+    "active": true
+  }
+]

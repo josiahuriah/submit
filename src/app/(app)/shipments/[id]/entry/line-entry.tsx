@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { cpcsForGroup, CUSTOMS_UOMS } from "@/lib/customs/reference-data";
 import { Chip } from "@/components/ui/primitives";
 import { Icons } from "@/components/ui/icons";
 import { money } from "@/lib/format";
 import { previewLine } from "@/lib/calc";
-import { commitLineItem, deleteLineItem, findHsRate, searchHsCodes } from "@/lib/data/line-items";
+import { commitLineItem, updateLineCustomsReferences, deleteLineItem, findHsRate, searchHsCodes } from "@/lib/data/line-items";
 import { ReviewXmlButton } from "./review-xml-button";
 import type { HsRate, InvoiceSummary, LineCharges, LineDraft, LineItem, ShipmentStatus, ShipmentTotals } from "@/lib/types";
 
@@ -32,9 +33,9 @@ const EMPTY_DRAFT: LineDraft = {
   invoiceId: "",
   hsCode: "",
   quantity: "1",
-  unit: "PCS",
+  unit: "EA",
   description: "Other",
-  cpcCode: "400",
+  cpcCode: "",
   unitPrice: "",
   countryOfOrigin: "",
   weightLb: "",
@@ -50,6 +51,7 @@ const EMPTY_DRAFT: LineDraft = {
 
 export function LineEntry({
   shipmentId,
+  cpcGroupCode,
   status,
   invoices,
   selectedInvoiceId,
@@ -59,6 +61,7 @@ export function LineEntry({
   initialTotals,
 }: {
   shipmentId: string;
+  cpcGroupCode: string;
   status: ShipmentStatus;
   invoices: InvoiceSummary[];
   selectedInvoiceId: string;
@@ -69,10 +72,13 @@ export function LineEntry({
 }) {
   // Entry is only meaningful on a DRAFT shipment with a supplier invoice; the
   // server refuses both cases anyway, so this just keeps the UI honest.
-  const entryLocked = status !== "DRAFT" || invoices.length === 0;
+  const cpcOptions = cpcsForGroup(cpcGroupCode);
+  const defaultCpc = cpcGroupCode === "400" ? "400000" : cpcOptions.length === 1 ? cpcOptions[0]!.code : "";
+  const entryLocked = !cpcGroupCode || status !== "DRAFT" || invoices.length === 0;
+  const [referenceDrafts, setReferenceDrafts] = useState<Record<string, { cpcCode: string; unit: string }>>({});
   const [lines, setLines] = useState<LineItem[]>(initialLines);
   const [calculation, setCalculation] = useState({ version: invoiceVersion, totals: initialTotals });
-  const [draft, setDraft] = useState<LineDraft>({ ...EMPTY_DRAFT, invoiceId: selectedInvoiceId });
+  const [draft, setDraft] = useState<LineDraft>({ ...EMPTY_DRAFT, cpcCode: defaultCpc, invoiceId: selectedInvoiceId });
   const [hsQuery, setHsQuery] = useState("");
   const [hits, setHits] = useState<HsRate[]>([]);
   const [draftRate, setDraftRate] = useState<HsRate | null>(null);
@@ -123,7 +129,7 @@ export function LineEntry({
   const dc = previewLine(draft, draftRate);
 
   function commit() {
-    if (!selectedInvoiceId || !draft.hsCode || !draft.unitPrice || pending || entryLocked) return;
+    if (!selectedInvoiceId || !draft.hsCode || !draft.cpcCode || !draft.unitPrice || pending || entryLocked) return;
     const submitted = { ...draft, invoiceId: selectedInvoiceId };
     setNotice(null);
     startTransition(async () => {
@@ -136,13 +142,28 @@ export function LineEntry({
         setNotice(result.error ?? result.calculationError);
         // Keep the draft on refusal so the broker's typing isn't thrown away.
         if (!result.error) {
-          setDraft({ ...EMPTY_DRAFT, invoiceId: submitted.invoiceId });
+          setDraft({ ...EMPTY_DRAFT, cpcCode: defaultCpc, invoiceId: submitted.invoiceId });
           setHsQuery("");
           setHits([]);
           setDraftRate(null);
         }
       } catch (error) {
         setNotice(error instanceof Error ? error.message : "Could not save the line");
+      }
+    });
+  }
+
+  function changeReferences(line: LineItem, values: { cpcCode: string; unit: string }) {
+    if (pending || entryLocked) return;
+    startTransition(async () => {
+      try {
+        const result = await updateLineCustomsReferences(shipmentId, line.id, values);
+        setLines(result.lines);
+        setCalculation({ version: invoiceVersion, totals: result.totals });
+        setNotice(result.error ?? result.calculationError);
+        if (!result.error) setReferenceDrafts((current) => { const next = { ...current }; delete next[line.id]; return next; });
+      } catch (error) {
+        setNotice(error instanceof Error ? error.message : "Could not update the line");
       }
     });
   }
@@ -216,7 +237,7 @@ export function LineEntry({
         )}
         <div style={{ padding: "10px 12px", display: "grid", gridTemplateColumns: "1.4fr .7fr .7fr .7fr .7fr .7fr", gap: 8, borderBottom: "1px solid var(--sb-line)", background: "var(--sb-surface-2)" }}>
           <label><span className="sb-eyebrow">Commercial invoice</span><select className="sb-inp" value={selectedInvoiceId} onChange={(e) => onInvoiceIdChange(e.target.value)}>{invoices.length === 0 && <option value="">Add an invoice above</option>}{invoices.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.invoiceNumber} · {invoice.supplierName}</option>)}</select></label>
-          <label><span className="sb-eyebrow">Commercial unit</span><input className="sb-inp sb-mono" value={draft.unit} onChange={(e) => set("unit", e.target.value.toUpperCase())} /></label>
+          <label><span className="sb-eyebrow">Customs UOM</span><select className="sb-inp sb-mono" value={draft.unit} onChange={(e) => set("unit", e.target.value)}>{CUSTOMS_UOMS.map((u) => <option key={u.code} value={u.code}>{u.code} — {u.description}</option>)}</select></label>
           <label><span className="sb-eyebrow">Origin</span><input className="sb-inp sb-mono" maxLength={2} value={draft.countryOfOrigin} onChange={(e) => set("countryOfOrigin", e.target.value.toUpperCase())} placeholder="US" /></label>
           <label><span className="sb-eyebrow">Gross lb</span><input className="sb-inp sb-mono" value={draft.weightLb} onChange={(e) => set("weightLb", e.target.value)} /></label>
           <label><span className="sb-eyebrow">Net lb</span><input className="sb-inp sb-mono" value={draft.netWeightLb} onChange={(e) => set("netWeightLb", e.target.value)} /></label>
@@ -269,7 +290,7 @@ export function LineEntry({
                         <div
                           key={h.code}
                           onClick={() => {
-                            setDraft((current) => ({ ...current, hsCode: h.code, unit: h.unit ?? current.unit }));
+                            setDraft((current) => ({ ...current, hsCode: h.code }));
                             setHsQuery("");
                             setHits([]);
                             setDraftRate(h);
@@ -296,7 +317,7 @@ export function LineEntry({
                 )}
               </td>
               <td style={{ verticalAlign: "top" }}>
-                <input className="sb-inp sb-mono" style={{ padding: "5px 6px", width: 46 }} value={draft.cpcCode} onChange={(e) => set("cpcCode", e.target.value)} />
+                <select aria-label="Line CPC" className="sb-inp sb-mono" style={{ padding: "5px 6px", width: 180 }} value={draft.cpcCode} onChange={(e) => set("cpcCode", e.target.value)}><option value="">Select CPC</option>{cpcOptions.map((c) => <option key={c.code} value={c.code}>{c.code} — {c.description}</option>)}</select>
               </td>
               <td style={{ verticalAlign: "top" }}>
                 <input className="sb-inp sb-mono" style={{ padding: "5px 6px", width: 46, textAlign: "right" }} value={draft.quantity} onChange={(e) => set("quantity", e.target.value)} />
@@ -335,6 +356,7 @@ export function LineEntry({
           {/* committed lines — server numbers only */}
           <tbody>
             {lines.map((l) => {
+              const refs = referenceDrafts[l.id] ?? { cpcCode: l.cpcCode, unit: l.unit };
               const c = l.charges;
               const isExcise = c !== null && Number(c.excise) > 0;
               const dutyPct = l.rates ? Math.round(Number(l.rates.duty) * 100) : 0;
@@ -350,9 +372,9 @@ export function LineEntry({
                       {l.hsDescription ?? "—"}
                     </div>
                   </td>
-                  <td className="sb-mono" style={{ verticalAlign: "top" }}>{l.cpcCode}</td>
+                  <td className="sb-mono" style={{ verticalAlign: "top" }}>{entryLocked ? l.cpcCode : <select aria-label={`CPC for ${l.description}`} className="sb-inp" style={{ width: 180 }} disabled={pending} value={refs.cpcCode} onChange={(e) => setReferenceDrafts((current) => ({ ...current, [l.id]: { ...refs, cpcCode: e.target.value } }))}>{!cpcOptions.some((c) => c.code === l.cpcCode) && <option value={l.cpcCode}>{l.cpcCode} — select replacement</option>}{cpcOptions.map((c) => <option key={c.code} value={c.code}>{c.code} — {c.description}</option>)}</select>}{!entryLocked && referenceDrafts[l.id] && <button className="sb-btn is-sm" disabled={pending} onClick={() => changeReferences(l, refs)}>Save CPC / UOM</button>}</td>
                   <td className="sb-mono" style={{ verticalAlign: "top", textAlign: "right" }}>
-                    {l.quantity}<span className="sb-soft"> {l.unit}</span>
+                    {l.quantity}{entryLocked ? <span className="sb-soft"> {l.unit}</span> : <select aria-label={`UOM for ${l.description}`} className="sb-inp" disabled={pending} value={refs.unit} onChange={(e) => setReferenceDrafts((current) => ({ ...current, [l.id]: { ...refs, unit: e.target.value } }))}>{!CUSTOMS_UOMS.some((u) => u.code === l.unit) && <option value={l.unit}>{l.unit} — select replacement</option>}{CUSTOMS_UOMS.map((u) => <option key={u.code} value={u.code}>{u.code} — {u.description}</option>)}</select>}
                   </td>
                   <td style={{ verticalAlign: "top" }}>
                     <div>{l.description}</div>

@@ -6,7 +6,15 @@ import { generateReviewXml } from "@/lib/data/declaration-artifacts";
 import type { ShipmentStatus } from "@/lib/types";
 import { ApiClientError, apiRequest } from "@/lib/client-api";
 
-interface GeneratedArtifact { id: string; groupCode: string; downloadUrl: string; fileName: string; attemptCount?: number; latestOutcome?: string | null }
+interface GeneratedArtifact {
+  id: string;
+  groupCode: string;
+  downloadUrl: string;
+  fileName: string;
+  attemptCount?: number;
+  latestOutcome?: string | null;
+  responseDownloadUrl?: string | null;
+}
 interface SubmissionResult {
   outcome: string; attemptNumber: number; httpStatus: number | null;
   responsePayload: string | null; fault: { code: string | null; reason: string | null } | null;
@@ -66,6 +74,11 @@ export function ReviewXmlButton({
         body: JSON.stringify({ confirmResubmission, ...(confirmResubmission ? { resubmissionReason: "Broker explicitly confirmed repeat QA submission" } : {}) }),
       });
       setResponses((current) => ({ ...current, [artifact.id]: response }));
+      if (response.responsePayload) {
+        setArtifacts((current) => current.map((item) => item.id === artifact.id
+          ? { ...item, responseDownloadUrl: `/api/customs-entries/${artifact.id}/response` }
+          : item));
+      }
       setNotice(response.outcome === "PREVIEW"
         ? `CPC ${artifact.groupCode}: full SOAP XML ready. Nothing was sent to Customs.`
         : `CPC ${artifact.groupCode}: ${response.outcome}${response.httpStatus ? ` (HTTP ${response.httpStatus})` : ""}.`);
@@ -95,6 +108,9 @@ export function ReviewXmlButton({
         <div key={artifact.id} style={{ display: "grid", gap: 6 }}>
           <div style={{ display: "inline-flex", gap: 5, alignItems: "center", flexWrap: "wrap" }}>
             <a className="sb-btn is-sm" href={artifact.downloadUrl}>Review CPC {artifact.groupCode}</a>
+            {artifact.responseDownloadUrl && (
+              <a className="sb-btn is-sm" href={artifact.responseDownloadUrl}>Download latest response</a>
+            )}
             {(artifact.attemptCount ?? 0) > 0 && <span className="sb-meta">{artifact.attemptCount} attempt{artifact.attemptCount === 1 ? "" : "s"} · {artifact.latestOutcome}</span>}
             {canSubmit && <button className="sb-btn is-sm is-primary" type="button" disabled={submittingId !== null} onClick={() => void submitArtifact(artifact)}>
               {submittingId === artifact.id

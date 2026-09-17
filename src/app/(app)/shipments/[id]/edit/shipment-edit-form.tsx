@@ -1,5 +1,6 @@
 'use client'
 
+import { CPC_GROUPS, CUSTOMS_PORTS, customsPortLabel } from '@/lib/customs/reference-data'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateShipment, type NewShipmentOptions, type ShipmentEditDraft } from '@/lib/data/shipment-actions'
@@ -47,7 +48,7 @@ export function ShipmentEditForm({ shipmentId, initial, options }: { shipmentId:
           {text('Shipment number', 'shipmentNumber', true)}
           {select('Client / consignee', 'clientId', options.clients)}
           {select('Manifest', 'manifestId', options.manifests, '— no manifest —')}
-          {select('Declaration office', 'declarationOfficeId', options.offices)}
+          {select('Regional office', 'declarationOfficeId', options.offices)}
           {text('BL / airway bill', 'blNumber', true)}
           {enumSelect('Transport mode', 'transportMode', TRANSPORT_MODES)}
           {text('Container number', 'containerNumber', true)}
@@ -60,12 +61,14 @@ export function ShipmentEditForm({ shipmentId, initial, options }: { shipmentId:
         <div className="sb-h2" style={{ marginBottom: 12 }}>Shipment and declaration data</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 14 }}>
           {text('Regime code', 'regimeCode', true)}
+          {select('CPC group', 'cpcGroupCode', CPC_GROUPS.map((g) => ({ id: g.code, label: `${g.code} — ${g.description}` })), 'Select a CPC group')}
+          {draft.manifestId ? <div><span className="sb-eyebrow">Customs port (from manifest)</span><p>{customsPortLabel(options.manifests.find((m) => m.id === draft.manifestId)?.customsPortCode)}</p></div> : select('Customs port', 'goodsLocationCode', CUSTOMS_PORTS.map((p) => ({ id: p.code, label: `${p.code} — ${p.description}` })), 'Select a Customs port')}
           <label style={{ ...field, justifyContent: 'flex-end' }}>
             <span className="sb-eyebrow">Declaration grouping</span>
             <span><input type="checkbox" checked={draft.isSplitDeclaration} onChange={(event) => setDraft((current) => ({ ...current, isSplitDeclaration: event.target.checked }))} /> Split by item CPC</span>
           </label>
           {text('Transport nationality', 'transportNationalityCode', true)}
-          {text('Goods location', 'goodsLocationCode', true)}
+
           {text('Warehouse', 'warehouseCode', true)}
           {enumSelect('Goods type', 'goodsType', GOODS_TYPES)}
           {enumSelect('Package type', 'packageType', PACKAGE_TYPES)}
