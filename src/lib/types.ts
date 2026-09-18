@@ -111,6 +111,7 @@ export interface LineItem {
    * so a freshly committed line has no numbers yet. Never compute these on the
    * client for a committed line; lib/calc.ts is a pre-commit preview only.
    */
+  weightLb?: string | null;
   charges: ServerLineCharges | null;
   /** Rates as applied, frozen at calculation time. Fractions, e.g. "0.4500". */
   rates?: { duty: string; vat: string };

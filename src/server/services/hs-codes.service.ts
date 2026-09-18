@@ -1,3 +1,4 @@
+import { tariffUom } from '@/lib/customs/tariff-uoms'
 /**
  * HS code search — global reference data (NOT tenant-scoped).
  *
@@ -100,6 +101,7 @@ export const hsCodesService = {
     const results = await basePrisma.hSCode.findMany({
       where: {
         isActive: true,
+        NOT: { code: { startsWith: '98' } },
         ...(looksLikeCode
           ? { code: { startsWith: normalizedQuery } }
           : { description: { contains: normalizedQuery, mode: 'insensitive' } }),
@@ -115,7 +117,7 @@ export const hsCodesService = {
       description: r.description,
       chapter: r.chapter,
       heading: r.heading,
-      unit: r.unit,
+      unit: tariffUom(r.code),
       requiresPermit: r.requiresPermit,
       permitType: r.permitType,
       currentRate: r.rateHistory[0] ?? null,

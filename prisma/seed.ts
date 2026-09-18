@@ -1,3 +1,4 @@
+import { tariffUom } from '../src/lib/customs/tariff-uoms'
 /**
  * Reference-data seed (committed to version control).
  *
@@ -300,7 +301,8 @@ async function seedHsCode(entry: SeedHsCode) {
     where: { code },
     update: {
       description: entry.description,
-      unit: entry.unit,
+      unit: tariffUom(entry.code),
+      ...(chapter === '98' ? { isActive: false } : {}),
       chapterName: entry.chapterName,
       requiresPermit: entry.requiresPermit ?? false,
       permitType: entry.permitType,
@@ -310,7 +312,8 @@ async function seedHsCode(entry: SeedHsCode) {
       description: entry.description,
       chapter,
       heading,
-      unit: entry.unit,
+      unit: tariffUom(entry.code),
+      ...(chapter === '98' ? { isActive: false } : {}),
       chapterName: entry.chapterName,
       requiresPermit: entry.requiresPermit ?? false,
       permitType: entry.permitType,

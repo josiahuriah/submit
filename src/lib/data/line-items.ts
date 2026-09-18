@@ -24,6 +24,7 @@ import { AppError } from '@/lib/errors'
 import { toShipmentTotals } from '@/lib/data/shipments'
 import { d } from '@/lib/calculations/money'
 import type { HsRate, LineItem, ServerLineCharges, ShipmentTotals } from '@/lib/types'
+import { isTariffDisabled, tariffUom } from '@/lib/customs/tariff-uoms'
 import { normalizeHsCode } from '@/lib/customs/normalization'
 
 /** Every line on a shipment, priced by the server where a calculation exists. */
@@ -179,6 +180,10 @@ export async function commitLineItem(
   const hs = await hsCodesService.search(normalizedHsCode, 1)
   const matched = hs.find((h) => h.code === normalizedHsCode)
 
+  if (isTariffDisabled(normalizedHsCode)) return refused(db, shipmentId, 'Chapter 98 tariff codes are disabled.')
+  const unit = tariffUom(normalizedHsCode)
+  if (!unit) return refused(db, shipmentId, `Tariff ${normalizedHsCode} has no confirmed UOM in the supplied schedule.`)
+
   const quantity = d(draft.quantity || '1')
   const unitPrice = d(draft.unitPrice || '0')
 
@@ -189,12 +194,11 @@ export async function commitLineItem(
     cpcCode: draft.cpcCode.trim().toUpperCase(),
     description: draft.description.trim() || 'Other',
     quantity: quantity.toString(),
-    unit: draft.unit || 'EA',
+    unit,
     unitPrice: unitPrice.toFixed(4),
     totalValue: quantity.times(unitPrice).toDecimalPlaces(2).toFixed(2),
     countryOfOrigin: draft.countryOfOrigin.trim() || undefined,
-    weightLb: draft.weightLb || undefined,
-    netWeightLb: draft.netWeightLb || undefined,
+
     packageCount: draft.packageCount.trim() || undefined,
     packageTypeCode: draft.packageTypeCode.trim() || undefined,
     unitsPerPackage: draft.unitsPerPackage.trim() || undefined,
@@ -230,7 +234,7 @@ export async function updateLineCustomsReferences(shipmentId: string, lineItemId
   const { db, audit } = await writeContext('shipments:write')
   const line = await db.lineItem.findFirst({ where: { id: lineItemId, invoice: { shipmentId } }, select: { id: true } })
   if (!line) return refused(db, shipmentId, 'Line item not found on this shipment.')
-  const parsed = lineItemUpdateSchema.pick({ cpcCode: true, unit: true }).safeParse(values)
+  const parsed = lineItemUpdateSchema.pick({ cpcCode: true }).safeParse(values)
   if (!parsed.success) return refused(db, shipmentId, 'Select a valid full CPC and Customs UOM.')
   try {
     await invoicesService.updateLineItem(db, audit, lineItemId, parsed.data)
@@ -316,6 +320,7 @@ function toLineItem(row: LineRow): LineItem {
     hsCode: row.hsCode,
     quantity: num(row.quantity),
     unit: row.unit,
+    weightLb: row.weightLb === null ? null : String(row.weightLb),
     description: row.description,
     cpcCode: row.cpcCode,
     unitPrice: num(row.unitPrice),

@@ -84,7 +84,7 @@ describe('normalizeTariffEntry', () => {
     const entry = normalizeTariffEntry(raw({ dutyRate: '0.4500', generalRate: '45%' }))
     expect(entry.code).toBe('02011000')
     expect(entry.rate.dutyRate).toBe('0.4500')
-    expect(entry.unit).toBe('LB')
+    expect(entry.unit).toBe('LBR')
     expect(entry.sectionNumber).toBe('I')
   })
 })

@@ -99,6 +99,15 @@ export function resolveSpecificQuantity(
 
   if (target === lineUnit) return d(input.lineQuantity)
 
+  if (lineUnit === 'PROOF_GAL' && (target === 'IMP_GAL' || target === 'L')) {
+    if (!input.alcoholStrengthBasis || d(input.alcoholStrength).lessThanOrEqualTo(0)) {
+      throw new Error('Converting proof gallons requires a positive alcohol strength and strength basis')
+    }
+    const britishProof = d(input.alcoholStrength).times(input.alcoholStrengthBasis === 'US_PROOF' ? '0.875' : '1.75')
+    const imperialGallons = d(input.lineQuantity).div(britishProof.div(100))
+    return target === 'IMP_GAL' ? imperialGallons : imperialGallons.div('0.22')
+  }
+
   if (target === 'IMP_GAL' || target === 'PROOF_GAL' || target === 'L') {
     // A bulk line can state its commercial quantity directly in litres or
     // imperial gallons; no bottle/package metadata is needed in that case.

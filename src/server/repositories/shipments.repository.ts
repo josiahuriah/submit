@@ -199,6 +199,8 @@ export const shipmentsRepository = {
         declarationDate: true,
         isSplitDeclaration: true,
         cpcGroupCode: true,
+        grossWeightLb: true,
+        netWeightLb: true,
         freightCharge: true,
         insuranceCharge: true,
         otherCharges: true,

@@ -1,3 +1,4 @@
+import { tariffUom } from '../src/lib/customs/tariff-uoms'
 /**
  * TARIFF EXTRACTION IMPORTER
  * =============================================================================
@@ -96,18 +97,6 @@ export interface NormalizedHsCode {
   }
 }
 
-/**
- * The extraction's statistical units, mapped to the short codes used elsewhere
- * in this system. Cosmetic only — unit is display metadata; the field that
- * drives math is specificRateUnit, which this importer never sets.
- */
-const UNIT_MAP: Record<string, string> = {
-  number: 'PCS',
-  pound: 'LB',
-  gallon: 'GAL',
-  ton: 'TON',
-}
-
 /** `0201.1000` -> `02011000`. Throws on anything not xxxx.dddd. */
 export function normalizeCode(raw: string): string {
   const match = /^(\d{4})\.(\d{2})(\d{2})$/.exec(raw.trim())
@@ -160,7 +149,7 @@ export function normalizeTariffEntry(record: RawTariffRecord): NormalizedHsCode 
   return {
     code: normalizeCode(record.code),
     description: cleanDescription(record.description),
-    unit: UNIT_MAP[record.unit] ?? record.unit,
+    unit: tariffUom(normalizeCode(record.code)) ?? undefined,
     chapterName: record.chapterName,
     sectionNumber: record.sectionNumber,
     sectionName: record.sectionName,
