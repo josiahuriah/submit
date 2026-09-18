@@ -151,8 +151,9 @@ describe('buildWcoDeclarationXml', () => {
     expect(xml).not.toContain('<ID>9403.50.90</ID>')
   })
 
-  it('represents freight only as charge deduction 64', () => {
-    const shipmentSection = build().match(
+  it('represents freight as a BSD FreightChargeAmount in schema order', () => {
+    const xml = build()
+    const shipmentSection = xml.match(
       /<GoodsShipment>([\s\S]*?)<Destination>/,
     )?.[1]
     expect(shipmentSection).toBeDefined()
@@ -161,10 +162,15 @@ describe('buildWcoDeclarationXml', () => {
     )].map((match) => match[1]!)
 
     expect(valuations).toHaveLength(2)
-    expect(build()).not.toContain('<FreightChargeAmount')
-    expect(valuations[0]).toContain('<ChargesTypeCode>64</ChargesTypeCode>')
-    expect(valuations[0]).toContain('<OtherChargeDeductionAmount>10.00</OtherChargeDeductionAmount>')
-    expect(valuations[1]).not.toContain('<ChargesTypeCode>64</ChargesTypeCode>')
+    expect(valuations[0]).toContain('<FreightChargeAmount currencyID="BSD">10.00</FreightChargeAmount>')
+    expect(valuations[1]).not.toContain('<FreightChargeAmount')
+    expect(xml).not.toContain('<ChargesTypeCode>64</ChargesTypeCode>')
+
+    const valuationOrder = childOrder(xml, 'CustomsValuation')
+    expect(valuationOrder).toEqual([
+      'FreightChargeAmount',
+      'ChargeDeduction',
+    ])
   })
 
   it('uses the Customs-confirmed each UOM while preserving specific assessment units', () => {

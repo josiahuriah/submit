@@ -15,7 +15,7 @@ import {
 } from './constants'
 
 export const TFP_SCHEMA_VERSION = 'TFB_WCO_DEC_v1.4.4'
-export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.3.1'
+export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.3.2'
 
 export type TfpRequirement = 'M' | 'C' | 'OUTBOUND_ONLY'
 export type TfpMappingStatus =
@@ -75,8 +75,8 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'Consignment', element: 'UnloadingLocation/ID', requirement: 'C', source: 'Journey.destinationPort.unLocode', transform: 'remove BS prefix', status: 'CONFIRMED_BY_CUSTOMS' },
   { section: 'Consignment', element: 'UnloadingLocation/Warehouse/ID', requirement: 'C', source: 'Shipment.warehouseCode', transform: 'verbatim', status: 'WITHHELD_CODE_LIST' },
   { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[77]', requirement: 'C', source: 'Invoice.subTotal', transform: 'BSD; invoice order is linkage', status: 'MAPPED' },
-  { section: 'GoodsShipment.CustomsValuation', element: 'FreightChargeAmount', requirement: 'C', source: 'not emitted', transform: 'freight remains in ChargeDeduction[64]', status: 'OMIT_INCOMING' },
-  { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[64]', requirement: 'C', source: 'sum all LineItem.freightApportioned', transform: 'BSD; assign to first invoice valuation', status: 'DERIVED' },
+  { section: 'GoodsShipment.CustomsValuation', element: 'FreightChargeAmount', requirement: 'C', source: 'sum all LineItem.freightApportioned', transform: 'currencyID=BSD; assign to first invoice valuation', status: 'DERIVED' },
+  { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[64]', requirement: 'C', source: 'not emitted', transform: 'freight is represented by FreightChargeAmount', status: 'OMIT_INCOMING' },
   { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[104]', requirement: 'C', source: 'sum LineItem.otherCostApportioned by invoice', transform: 'BSD', status: 'DERIVED' },
   { section: 'Invoice', element: 'ID', requirement: 'C', source: 'Invoice.invoiceNumber', transform: 'verbatim', status: 'MAPPED' },
   { section: 'Invoice', element: 'IssueDateTime', requirement: 'C', source: 'Invoice.invoiceDate', transform: 'TFP DateTimeType', status: 'MAPPED' },

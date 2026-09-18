@@ -43,16 +43,10 @@
             </UnloadingLocation>
         </Consignment>
         <CustomsValuation>
+            <FreightChargeAmount currencyID="BSD">2170.00</FreightChargeAmount>
             <ChargeDeduction>
                 <ChargesTypeCode>77</ChargesTypeCode>
                 <OtherChargeDeductionAmount>18965.00</OtherChargeDeductionAmount>
-                <CurrencyExchange>
-                    <CurrencyTypeCode>BSD</CurrencyTypeCode>
-                </CurrencyExchange>
-            </ChargeDeduction>
-            <ChargeDeduction>
-                <ChargesTypeCode>64</ChargesTypeCode>
-                <OtherChargeDeductionAmount>2170.00</OtherChargeDeductionAmount>
                 <CurrencyExchange>
                     <CurrencyTypeCode>BSD</CurrencyTypeCode>
                 </CurrencyExchange>

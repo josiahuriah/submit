@@ -78,8 +78,8 @@ Invoice linkage is positional in TFP v1.4.4: shipment `CustomsValuation` nodes a
 | TFP element path | Req. | Submit source | Transform / rule | Status |
 |---|---:|---|---|---|
 | `CustomsValuation/ChargeDeduction[77]` | C | `Invoice.subTotal`, `currency`, `exchangeRate` | Invoice amount; non-BSD rate included | `MAPPED` |
-| `CustomsValuation/FreightChargeAmount` | C | Not emitted | Freight remains represented by `ChargeDeduction[64]` | `OMIT_INCOMING` |
-| `CustomsValuation/ChargeDeduction[64]` | C | Sum all lines' apportioned freight | BSD; assign to the same first invoice valuation | `DERIVED` |
+| `CustomsValuation/FreightChargeAmount` | C | Sum all lines' apportioned freight | `currencyID=BSD`; assign to the first invoice valuation | `DERIVED` |
+| `CustomsValuation/ChargeDeduction[64]` | C | Not emitted | Freight is represented by `FreightChargeAmount` | `OMIT_INCOMING` |
 | `CustomsValuation/ChargeDeduction[67]` | C | Sum invoice lines' apportioned insurance | BSD | `DERIVED` |
 | `CustomsValuation/ChargeDeduction[104]` | C | Sum invoice lines' apportioned other cost | BSD | `DERIVED` |
 | `Invoice/ID` | C | `Invoice.invoiceNumber` | Verbatim | `MAPPED` |

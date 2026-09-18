@@ -133,7 +133,8 @@ corrections:
 - standard item CPC `400` is serialized as `400000`; the final declaration-level procedure code is `400`;
 - commercial `PCS` and package quantities use `EA` on the wire;
 - every goods item includes `Packaging/QuantityQuantity`; missing line package counts block XML generation;
-- `FreightChargeAmount` and `Invoice/TypeCode` are omitted.
+- shipment freight is emitted as `CustomsValuation/FreightChargeAmount` in BSD;
+- freight `ChargeDeduction` code `64` and `Invoice/TypeCode` are omitted.
 
 The response still reported two required documents: Invoice and Tax Compliance
 Certificate. Submit does not yet serialize declaration-level attachments, so
