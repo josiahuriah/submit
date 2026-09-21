@@ -258,7 +258,9 @@ export function toBeaipDeclaration(
     regimeCode: shipment.regimeCode,
     functionCode: ORIGINAL_DECLARATION_FUNCTION_CODE,
     declarationDate,
-    functionalReferenceId: buildFunctionalReferenceId(declarationDate, shipment.shipmentNumber),
+    // Artifact generation replaces this placeholder with the next globally
+    // allocated reference before XML is built or persisted.
+    functionalReferenceId: buildFunctionalReferenceId(1),
     brokerReference: buildTraderAssignedReferenceId(declarationDate, shipment.shipmentNumber),
     customsOfficeCode: customsPort,
     submitterId: resolveBeaipBrokerCode(
@@ -305,6 +307,7 @@ export function toBeaipDeclaration(
 export function partitionBeaipDeclaration(
   declaration: BeaipDeclaration,
   referenceSeed: string,
+  startingFunctionalReferenceSequence: number | bigint = 1,
 ): BeaipDeclaration[] {
   const cpcs = [...new Set(declaration.lines.map((line) => line.cpcCode))].sort()
   if (!isCpcGroup(declaration.declarationGroupCode) || declaration.lines.some((line) => !isCpcInGroup(line.cpcCode, declaration.declarationGroupCode))) {
@@ -356,6 +359,7 @@ export function partitionBeaipDeclaration(
     const references = buildSubmissionReferences(
       declaration.declarationDate,
       `${referenceSeed}:${index + 1}:${cpc}`,
+      BigInt(startingFunctionalReferenceSequence) + BigInt(index),
     )
     const totalDuty = sum(sourceLines.map((line) => line.dutyAmount))
     const totalVat = sum(sourceLines.map((line) => line.vatAmount)).plus(feeVatShares.get(index) ?? d(0))

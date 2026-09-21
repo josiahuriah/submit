@@ -122,11 +122,12 @@ function isNonZero(money: string): boolean {
 /** Shipment-level CustomsValuation for one invoice (order-linked to Invoice). */
 function invoiceValuation(inv: BeaipInvoice, freightAmount: string) {
   return {
+    // XSD order: FreightChargeAmount precedes every ChargeDeduction.
+    ...(isNonZero(freightAmount)
+      ? { FreightChargeAmount: amt(freightAmount, 'BSD') }
+      : {}),
     ChargeDeduction: [
       chargeDeduction('77', inv.subTotal, 'BSD'),
-      ...(isNonZero(freightAmount)
-        ? [chargeDeduction('64', freightAmount, 'BSD')]
-        : []),
       ...(isNonZero(inv.otherApportioned)
         ? [chargeDeduction('104', inv.otherApportioned, 'BSD')]
         : []),

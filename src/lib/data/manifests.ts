@@ -47,7 +47,7 @@ export interface ManifestListItem {
 
 export interface VoyageOption {
   id: string
-  label: string // "Tropic Freedom · TF-2607 · USMIA → BSNAS · arr 2026-07-03"
+  label: string // "Example Vessel · EV-2607 · USMIA → BSNAS · arr 2026-07-03"
 }
 
 export interface AgentOption {

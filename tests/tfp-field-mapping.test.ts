@@ -6,6 +6,7 @@ import {
   buildTraderAssignedReferenceId,
 } from '@/lib/beaip/references'
 import { partitionBeaipDeclaration } from '@/server/services/declaration-mapper'
+import { TFP_DECLARANT_NAME, TFP_QA_PARTY_ID } from '@/lib/beaip/constants'
 
 function declaration(): BeaipDeclaration {
   return {
@@ -16,11 +17,11 @@ function declaration(): BeaipDeclaration {
     functionCode: '9',
     declarationDate: '2026-08-08T00:00:00.000Z',
     regimeCode: '4',
-    functionalReferenceId: '2026DEC0001234567',
+    functionalReferenceId: 'SUBMITDEC000000001',
     brokerReference: '201800OREF02331212',
     customsOfficeCode: 'NASACP',
     submitterId: 'CR-12345',
-    declarant: { name: 'Atlas Brokers', id: '20113855131249792', address: null },
+    declarant: { name: TFP_DECLARANT_NAME, id: TFP_QA_PARTY_ID, address: null },
     importer: { name: 'Importer Ltd', id: null, address: null },
     consignee: { name: 'Importer Ltd', id: null, address: null },
     blNumber: null,
@@ -84,9 +85,12 @@ describe('TFP field mapping preflight', () => {
     input.totalCifValue = '200.00'
     input.totalVat = '23.00'
     input.totalPayable = '33.00'
-    const result = partitionBeaipDeclaration(input, 'batch-1')
+    const result = partitionBeaipDeclaration(input, 'batch-1', 41)
     expect(result.map((item) => item.declarationGroupCode)).toEqual(['4098', '4098'])
-    expect(result[0]!.functionalReferenceId).not.toBe(result[1]!.functionalReferenceId)
+    expect(result.map((item) => item.functionalReferenceId)).toEqual([
+      'SUBMITDEC000000041',
+      'SUBMITDEC000000042',
+    ])
     expect(result[0]!.lines).toHaveLength(1)
     expect(result[1]!.lines).toHaveLength(1)
     expect(result[0]!.grossWeightLb).toBe('10.000')
@@ -113,9 +117,11 @@ describe('TFP field mapping preflight', () => {
     expect(() => partitionBeaipDeclaration(input, 'batch-2')).toThrow(/shipment CPC group/)
   })
 
-  it('builds stable Click2Clear-shaped review references', () => {
-    expect(buildFunctionalReferenceId('2026-08-08T00:00:00.000Z', 'SHP-2026-1234567'))
-      .toBe('2026DEC0001234567')
+  it('builds sequential Submit declaration references', () => {
+    expect(buildFunctionalReferenceId(1)).toBe('SUBMITDEC000000001')
+    expect(buildFunctionalReferenceId(123456789)).toBe('SUBMITDEC123456789')
+    expect(() => buildFunctionalReferenceId(0)).toThrow(/between 1 and 999999999/)
+    expect(() => buildFunctionalReferenceId(1_000_000_000)).toThrow(/between 1 and 999999999/)
     expect(buildTraderAssignedReferenceId('2018-08-08T00:00:00.000Z', 'SHP-2331212'))
       .toBe('201800OREF02331212')
   })

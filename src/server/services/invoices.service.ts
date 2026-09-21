@@ -1,3 +1,5 @@
+import { refreshLineWeights } from './line-measurements.service'
+import { requireTariffUom } from '@/lib/customs/tariff-uoms'
 /**
  * Invoices & line items service.
  *
@@ -52,6 +54,7 @@ async function assertShipmentEditable(db: TenantClient, shipmentId: string) {
 
 async function invalidateCalculation(db: TenantClient, shipmentId: string) {
   await db.shipment.update({ where: { id: shipmentId }, data: { calculatedAt: null } })
+  await refreshLineWeights(db, shipmentId)
 }
 
 export const invoicesService = {
@@ -130,12 +133,14 @@ export const invoicesService = {
     })
     if (!invoice) throw new NotFoundError('Invoice')
     const shipment = await assertShipmentEditable(db, invoice.shipmentId)
+    data = { ...data, unit: requireTariffUom(String(data.hsCode ?? "")), weightLb: null, netWeightLb: null }
     assertLineCustomsReferences(shipment.cpcGroupCode, String(data.cpcCode ?? "400000"), String(data.unit ?? "EA"))
 
     // hsCodeId is optional at entry time but must reference a real code.
     if (data.hsCodeId) {
-      const hs = await db.hSCode.findUnique({ where: { id: data.hsCodeId as string }, select: { id: true } })
+      const hs = await db.hSCode.findUnique({ where: { id: data.hsCodeId as string }, select: { id: true, code: true } })
       if (!hs) throw new NotFoundError('HS code')
+      if (hs.code.replace(/\D/g, '') !== String(data.hsCode).replace(/\D/g, '')) throw new BusinessRuleError('HS code and tariff reference do not match')
     }
 
     const last = await db.lineItem.findFirst({
@@ -155,10 +160,18 @@ export const invoicesService = {
   async updateLineItem(db: TenantClient, audit: AuditContext, lineItemId: string, data: Record<string, unknown>) {
     const existing = await db.lineItem.findUnique({
       where: { id: lineItemId },
-      select: { id: true, cpcCode: true, unit: true, invoice: { select: { shipmentId: true } } },
+      select: { id: true, hsCode: true, cpcCode: true, unit: true, invoice: { select: { shipmentId: true } } },
     })
     if (!existing) throw new NotFoundError('Line item')
     const shipment = await assertShipmentEditable(db, existing.invoice.shipmentId)
+    const assignedUnit = requireTariffUom(String(data.hsCode ?? existing.hsCode))
+    const aliases: Record<string, string> = { LB: 'LBR', PCS: 'EA', PC: 'EA', TON: 'L84' }
+    if ((aliases[existing.unit] ?? existing.unit) !== assignedUnit && data.quantity === undefined) {
+      throw new BusinessRuleError(`Re-enter this line's quantity and unit price in ${assignedUnit} before saving.`)
+    }
+    data = { ...data, unit: assignedUnit }
+    delete data.weightLb
+    delete data.netWeightLb
     assertLineCustomsReferences(shipment.cpcGroupCode, String(data.cpcCode ?? existing.cpcCode), String(data.unit ?? existing.unit))
     const line = await db.lineItem.update({ where: { id: lineItemId }, data: data as never, select: LINE_SELECT })
     await invalidateCalculation(db, existing.invoice.shipmentId)
@@ -169,7 +182,7 @@ export const invoicesService = {
   async deleteLineItem(db: TenantClient, audit: AuditContext, lineItemId: string) {
     const existing = await db.lineItem.findUnique({
       where: { id: lineItemId },
-      select: { id: true, cpcCode: true, unit: true, invoice: { select: { shipmentId: true } } },
+      select: { id: true, hsCode: true, cpcCode: true, unit: true, invoice: { select: { shipmentId: true } } },
     })
     if (!existing) throw new NotFoundError('Line item')
     await assertShipmentEditable(db, existing.invoice.shipmentId)

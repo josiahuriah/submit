@@ -107,7 +107,7 @@ export interface BeaipDeclaration {
   functionCode: '9' | '5' | '1'
   /** ISO date used for rate selection and artifact provenance. */
   declarationDate: string
-  /** Click2Clear-shaped declaration reference, e.g. 2026DEC0001234567. */
+  /** Sequential Submit declaration reference, e.g. SUBMITDEC000000001. */
   functionalReferenceId: string
   /** Legacy internal artifact reference retained for database compatibility; not emitted as UCR. */
   brokerReference: string

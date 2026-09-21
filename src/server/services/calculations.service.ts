@@ -1,3 +1,5 @@
+import { requireTariffUom } from '@/lib/customs/tariff-uoms'
+import { allocateLineWeights } from '@/lib/calculations/line-weights'
 /**
  * Calculations service — the bridge between the pure calculation engine and
  * the database.
@@ -71,13 +73,28 @@ export const calculationsService = {
     if (d(shipment.freightCharge).lessThanOrEqualTo(0)) {
       throw new BusinessRuleError('Every shipment must have a freight charge greater than zero')
     }
+    const weights = new Map(allocateLineWeights(String(shipment.grossWeightLb ?? 0), lineItems).map((row) => [row.id, row.weightLb]))
+    const netWeights = shipment.netWeightLb === null ? null : new Map(
+      allocateLineWeights(String(shipment.netWeightLb), lineItems, true).map((row) => [row.id, row.weightLb]),
+    )
+    if (d(shipment.netWeightLb).greaterThan(d(shipment.grossWeightLb))) {
+      throw new BusinessRuleError('Shipment net weight cannot exceed gross weight')
+    }
+    for (const line of lineItems) {
+      const assignedUnit = requireTariffUom(line.hsCode)
+      const aliases: Record<string, string> = { LB: 'LBR', PCS: 'EA', PC: 'EA', TON: 'L84' }
+      if ((aliases[line.unit] ?? line.unit) !== assignedUnit) {
+        throw new BusinessRuleError(`Line ${line.hsCode} was entered in ${line.unit}; re-enter its quantity and unit price in ${assignedUnit} before calculating.`)
+      }
+      line.unit = assignedUnit
+    }
     const cpcs = new Set(lineItems.map((line) => line.cpcCode))
     for (const line of lineItems) assertLineCustomsReferences(shipment.cpcGroupCode, line.cpcCode, line.unit)
     if (shipment.isSplitDeclaration) {
       if (cpcs.size < 2) {
         throw new BusinessRuleError('A split declaration requires at least two different item CPCs')
       }
-      const missingSplitWeight = lineItems.filter((line) => d(line.weightLb).lessThanOrEqualTo(0))
+      const missingSplitWeight = lineItems.filter((line) => d(weights.get(line.id)).lessThanOrEqualTo(0))
       if (missingSplitWeight.length > 0) {
         throw new BusinessRuleError('Every item in a split declaration requires a positive pound weight', {
           lineItemIds: missingSplitWeight.map((line) => line.id),
@@ -197,7 +214,7 @@ export const calculationsService = {
         quantity: String(l.quantity),
         dutyAssessmentQuantity: dutyAssessment,
         exciseAssessmentQuantity: exciseAssessment,
-        weightLb: l.weightLb === null ? null : String(l.weightLb),
+        weightLb: weights.get(l.id)!,
         exemptionType: l.exemptionType,
         rates: {
           dutyBasis: rate.dutyBasis,
@@ -238,6 +255,9 @@ export const calculationsService = {
         await tx.lineItem.update({
           where: { id: line.id },
           data: {
+            unit: source.unit,
+            weightLb: weights.get(line.id)!,
+            netWeightLb: netWeights?.get(line.id) ?? null,
             freightApportioned: moneyString(line.freightApportioned),
             insuranceApportioned: moneyString(line.insuranceApportioned),
             otherCostApportioned: moneyString(line.otherCostApportioned),

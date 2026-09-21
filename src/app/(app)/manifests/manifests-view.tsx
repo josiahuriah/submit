@@ -238,7 +238,7 @@ export function ManifestsView({
             </label>
             <label style={field}>
               <span className="sb-eyebrow">{vesselDraft.mode === "SEA" ? "Vessel name" : "Aircraft name"}</span>
-              <input className="sb-inp" value={vesselDraft.name} onChange={(e) => setVesselDraft((current) => ({ ...current, name: e.target.value }))} placeholder={vesselDraft.mode === "SEA" ? "Tropic Freedom" : "Cargo aircraft"} />
+              <input className="sb-inp" value={vesselDraft.name} onChange={(e) => setVesselDraft((current) => ({ ...current, name: e.target.value }))} placeholder={vesselDraft.mode === "SEA" ? "Example Vessel" : "Cargo aircraft"} />
             </label>
             {vesselDraft.mode === "SEA" && (
               <label style={field}>

@@ -1,3 +1,4 @@
+import { refreshLineWeights } from './line-measurements.service'
 /**
  * Shipments service — business rules live here, not in routes or the repo.
  *
@@ -87,6 +88,7 @@ export const shipmentsService = {
       ? { ...input, calculatedAt: null }
       : input
     const updated = await shipmentsRepository.update(db, shipmentId, updateData)
+    if (shipmentUpdateInvalidatesCalculation(input)) await refreshLineWeights(db, shipmentId)
     await writeAudit(db, audit, {
       action: 'UPDATE',
       entityType: 'Shipment',

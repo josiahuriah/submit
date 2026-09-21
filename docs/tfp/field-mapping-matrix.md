@@ -29,21 +29,21 @@ This matrix governs the stakeholder-created incoming declaration XML. It does no
 |---|---:|---|---|---|
 | `Declaration/AcceptanceDateTime` | C | Artifact generation timestamp | TFP `DateTimeString`, local time | `DERIVED` |
 | `Declaration/FunctionCode` | M | Constant `9` | Original declaration; cannot be overridden per entry | `DERIVED` |
-| `Declaration/FunctionalReferenceID` | M | Declaration year + stable shipment sequence | `YYYYDEC##########` for review files; Click2Clear is expected to supply the live declaration number | `DERIVED` |
+| `Declaration/FunctionalReferenceID` | M | Global declaration sequence | `SUBMITDEC#########`, allocated atomically when the immutable artifact is generated | `DERIVED` |
 | `Declaration/TypeCode` | M | `Shipment.regimeCode` | Code value; default `4` is provisional | `WITHHELD_CODE_LIST` |
 | `Declaration/TotalGrossMassMeasure` | C | `Shipment.grossWeightKg` | Convert kilograms to pounds; `unitCode=LB` | `DERIVED` |
 | `Declaration/TotalPackageQuantity` | C | `Shipment.packageCount` | `unitCode=EA` | `CONFIRMED_BY_CUSTOMS` |
 | `Declaration/Submitter/ID` | M | `BEAIP_BROKER_CODE` | Assigned BEAIP filing code; distinct from WS-Security username, Sender, TIN, and broker licence | `CONFIRMED_BY_BROKER` |
 | `Declaration/DeclarationOffice/ID` | M | Constant `NASACP` | Interim value for all entries until the office master sheet is available | `DERIVED` |
-| `Declaration/Declarant/Name` | C | Constant `Atlas Brokers` | Stakeholder-approved filing identity | `DERIVED` |
-| `Declaration/Declarant/ID` | C | Constant `20113855131249792` | Current Customs QA filing identity | `CONFIRMED_BY_CUSTOMS` |
+| `Declaration/Declarant/Name` | C | Configured declarant name | Stakeholder-approved filing identity | `DERIVED` |
+| `Declaration/Declarant/ID` | C | Configured BEAIP broker code | Current Customs QA filing identity | `CONFIRMED_BY_CUSTOMS` |
 | `Declaration/PreviousDocument/ID` | C | Not modeled | Required for applicable amendments | `NOT_MODELED` |
 | `Declaration/AdditionalDocument` | C | `ShipmentDocument` metadata exists | Bytes/code mapping still required | `NOT_MODELED` |
 | `Declaration/AdditionalInformation` | C | Dynamic declaration data | Worksheet-driven qualifiers | `WITHHELD_CODE_LIST` |
 | `Declaration/DutyTaxFee` | OUT | Click2Clear assessment | Never sent in incoming XML | `OMIT_INCOMING` |
 | `GoodsShipment/Consignee` | C | `Client` | Name, TIN and structured address | `MAPPED` |
 | `GoodsShipment/Importer` | C | `Client` | Name, TIN and structured address | `MAPPED` |
-| `GoodsShipment/Exporter` | C | First invoice `Supplier` + constant ID `20113855131249792` | Supplier name/address with current Customs QA exporter ID | `CONFIRMED_BY_CUSTOMS` |
+| `GoodsShipment/Exporter` | C | First invoice `Supplier` + configured QA party ID | Supplier name/address with current Customs QA exporter ID | `CONFIRMED_BY_CUSTOMS` |
 | `GoodsShipment/Supplier[]` | C | Each invoice `Supplier` | Same order as invoices | `MAPPED` |
 | `GoodsShipment/Consignor` | C | Supplier candidate | Not emitted separately | `CONDITIONAL` |
 | `GoodsShipment/Destination/CountryCode` | C | Bahamas destination | Constant `BS` | `DERIVED` |
@@ -78,8 +78,8 @@ Invoice linkage is positional in TFP v1.4.4: shipment `CustomsValuation` nodes a
 | TFP element path | Req. | Submit source | Transform / rule | Status |
 |---|---:|---|---|---|
 | `CustomsValuation/ChargeDeduction[77]` | C | `Invoice.subTotal`, `currency`, `exchangeRate` | Invoice amount; non-BSD rate included | `MAPPED` |
-| `CustomsValuation/FreightChargeAmount` | C | Not emitted | Freight remains represented by `ChargeDeduction[64]` | `OMIT_INCOMING` |
-| `CustomsValuation/ChargeDeduction[64]` | C | Sum all lines' apportioned freight | BSD; assign to the same first invoice valuation | `DERIVED` |
+| `CustomsValuation/FreightChargeAmount` | C | Sum all lines' apportioned freight | `currencyID=BSD`; assign to the first invoice valuation | `DERIVED` |
+| `CustomsValuation/ChargeDeduction[64]` | C | Not emitted | Freight is represented by `FreightChargeAmount` | `OMIT_INCOMING` |
 | `CustomsValuation/ChargeDeduction[67]` | C | Sum invoice lines' apportioned insurance | BSD | `DERIVED` |
 | `CustomsValuation/ChargeDeduction[104]` | C | Sum invoice lines' apportioned other cost | BSD | `DERIVED` |
 | `Invoice/ID` | C | `Invoice.invoiceNumber` | Verbatim | `MAPPED` |

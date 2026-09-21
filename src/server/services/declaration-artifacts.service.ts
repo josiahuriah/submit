@@ -9,6 +9,7 @@ import { XMLValidator } from 'fast-xml-parser'
 import { createHash, randomUUID } from 'node:crypto'
 import type { TenantClient } from '@/lib/db/tenant-client'
 import { buildWcoDeclarationXml } from '@/lib/beaip/wco-xml'
+import { buildFunctionalReferenceId } from '@/lib/beaip/references'
 import { preflightTfpDeclaration } from '@/lib/beaip/tfp-field-mapping'
 import { writeAudit, type AuditContext } from '@/lib/audit'
 import { BusinessRuleError, NotFoundError } from '@/lib/errors'
@@ -79,37 +80,51 @@ export const declarationArtifactsService = {
     } catch (error) {
       throw new BusinessRuleError(error instanceof Error ? error.message : 'Could not partition declaration')
     }
-    const prepared = declarations.map((declaration) => {
-      const preflight = preflightTfpDeclaration(declaration)
-      if (!preflight.ready) {
-        throw new BusinessRuleError('Declaration is not ready for Customs review', { issues: preflight.issues })
-      }
-      const xml = buildWcoDeclarationXml(declaration, {
-        functionCode: declaration.functionCode,
-        acceptanceDateTime: generatedAt,
+    const generated = await db.$tenantTransaction(async (tx) => {
+      // Allocate the entire batch in the same transaction as its artifacts.
+      // PostgreSQL serializes concurrent updates to this singleton row, so
+      // every declaration receives a unique, ordered reference.
+      const counter = await tx.customsDeclarationSequence.upsert({
+        where: { id: 1 },
+        create: { id: 1, nextValue: BigInt(declarations.length + 1) },
+        update: { nextValue: { increment: BigInt(declarations.length) } },
+        select: { nextValue: true },
       })
-      const wellFormedResult = XMLValidator.validate(xml)
-      if (wellFormedResult !== true) {
-        throw new BusinessRuleError('Generated declaration XML is not well formed', { xmlValidation: wellFormedResult })
-      }
-      const validationReport = {
-        ...preflight,
-        wellFormed: true,
-        xsdValidation: {
-          status: 'STRUCTURE_CONTRACT_TESTED',
-          commonTypes: 'PERMISSIVE_STUB',
-          note: 'Customs business validation remains authoritative.',
-        },
-      }
-      return {
-        declaration,
-        xml,
-        declarationHash: createHash('sha256').update(xml, 'utf8').digest('hex'),
-        validationReport,
-      }
-    })
+      const firstSequence = counter.nextValue - BigInt(declarations.length)
+      const prepared = declarations.map((sourceDeclaration, index) => {
+        const declaration = {
+          ...sourceDeclaration,
+          functionalReferenceId: buildFunctionalReferenceId(firstSequence + BigInt(index)),
+        }
+        const preflight = preflightTfpDeclaration(declaration)
+        if (!preflight.ready) {
+          throw new BusinessRuleError('Declaration is not ready for Customs review', { issues: preflight.issues })
+        }
+        const xml = buildWcoDeclarationXml(declaration, {
+          functionCode: declaration.functionCode,
+          acceptanceDateTime: generatedAt,
+        })
+        const wellFormedResult = XMLValidator.validate(xml)
+        if (wellFormedResult !== true) {
+          throw new BusinessRuleError('Generated declaration XML is not well formed', { xmlValidation: wellFormedResult })
+        }
+        const validationReport = {
+          ...preflight,
+          wellFormed: true,
+          xsdValidation: {
+            status: 'STRUCTURE_CONTRACT_TESTED',
+            commonTypes: 'PERMISSIVE_STUB',
+            note: 'Customs business validation remains authoritative.',
+          },
+        }
+        return {
+          declaration,
+          xml,
+          declarationHash: createHash('sha256').update(xml, 'utf8').digest('hex'),
+          validationReport,
+        }
+      })
 
-    const artifacts = await db.$tenantTransaction(async (tx) => {
       await tx.customsSubmissionBatch.create({
         data: {
           id: batchId,
@@ -157,7 +172,10 @@ export const declarationArtifactsService = {
           validation: validationReport,
         })
       }
-      return rows
+      return {
+        artifacts: rows,
+        groups: prepared.map((item) => item.declaration.declarationGroupCode),
+      }
     })
 
     await writeAudit(db, audit, {
@@ -167,8 +185,8 @@ export const declarationArtifactsService = {
       changes: {
         after: {
           shipmentNumber: shipment.shipmentNumber,
-          declarationCount: artifacts.length,
-          groups: prepared.map((item) => item.declaration.declarationGroupCode),
+          declarationCount: generated.artifacts.length,
+          groups: generated.groups,
           functionCode: '9',
         },
       },
@@ -176,7 +194,7 @@ export const declarationArtifactsService = {
 
     return {
       batchId,
-      artifacts,
+      artifacts: generated.artifacts,
     }
   },
 

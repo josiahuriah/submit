@@ -51,9 +51,9 @@ describe('supplied Customs reference lists', () => {
     const db = {
       invoice: { findUnique: vi.fn().mockResolvedValue({ id: 'i', shipmentId: 's' }) },
       shipment: { findUnique: vi.fn().mockResolvedValue({ id: 's', status: 'DRAFT', cpcGroupCode: '400' }) },
-      lineItem: { create, update, findUnique: vi.fn().mockResolvedValue({ id: 'l', cpcCode: '400000', unit: 'EA', invoice: { shipmentId: 's' } }) },
+      lineItem: { create, update, findUnique: vi.fn().mockResolvedValue({ id: 'l', hsCode: '94035090', cpcCode: '400000', unit: 'EA', invoice: { shipmentId: 's' } }) },
     } as unknown as TenantClient
-    await expect(invoicesService.createLineItem(db, { userId: "test" }, { invoiceId: 'i', cpcCode: '4098180020', unit: 'EA' })).rejects.toThrow(/not available/)
+    await expect(invoicesService.createLineItem(db, { userId: "test" }, { invoiceId: 'i', hsCode: '94035090', cpcCode: '4098180020', unit: 'EA' })).rejects.toThrow(/not available/)
     await expect(invoicesService.updateLineItem(db, { userId: "test" }, 'l', { cpcCode: '4098180020' })).rejects.toThrow(/not available/)
     expect(create).not.toHaveBeenCalled()
     expect(update).not.toHaveBeenCalled()

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { cpcsForGroup, CUSTOMS_UOMS } from "@/lib/customs/reference-data";
+import { cpcsForGroup } from "@/lib/customs/reference-data";
 import { Chip } from "@/components/ui/primitives";
 import { Icons } from "@/components/ui/icons";
 import { money } from "@/lib/format";
@@ -235,14 +235,13 @@ export function LineEntry({
             {notice}
           </div>
         )}
-        <div style={{ padding: "10px 12px", display: "grid", gridTemplateColumns: "1.4fr .7fr .7fr .7fr .7fr .7fr", gap: 8, borderBottom: "1px solid var(--sb-line)", background: "var(--sb-surface-2)" }}>
+        <div style={{ padding: "10px 12px", display: "grid", gridTemplateColumns: "1.4fr 1fr .7fr 1fr", gap: 8, borderBottom: "1px solid var(--sb-line)", background: "var(--sb-surface-2)" }}>
           <label><span className="sb-eyebrow">Commercial invoice</span><select className="sb-inp" value={selectedInvoiceId} onChange={(e) => onInvoiceIdChange(e.target.value)}>{invoices.length === 0 && <option value="">Add an invoice above</option>}{invoices.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.invoiceNumber} · {invoice.supplierName}</option>)}</select></label>
-          <label><span className="sb-eyebrow">Customs UOM</span><select className="sb-inp sb-mono" value={draft.unit} onChange={(e) => set("unit", e.target.value)}>{CUSTOMS_UOMS.map((u) => <option key={u.code} value={u.code}>{u.code} — {u.description}</option>)}</select></label>
+          <div><span className="sb-eyebrow">Customs UOM</span><div className="sb-mono">{draftRate?.unit ?? "Select a confirmed tariff"}</div></div>
           <label><span className="sb-eyebrow">Origin</span><input className="sb-inp sb-mono" maxLength={2} value={draft.countryOfOrigin} onChange={(e) => set("countryOfOrigin", e.target.value.toUpperCase())} placeholder="US" /></label>
-          <label><span className="sb-eyebrow">Gross lb</span><input className="sb-inp sb-mono" value={draft.weightLb} onChange={(e) => set("weightLb", e.target.value)} /></label>
-          <label><span className="sb-eyebrow">Net lb</span><input className="sb-inp sb-mono" value={draft.netWeightLb} onChange={(e) => set("netWeightLb", e.target.value)} /></label>
           <label><span className="sb-eyebrow">Packages / type</span><span style={{ display: "flex", gap: 4 }}><input className="sb-inp sb-mono" value={draft.packageCount} onChange={(e) => set("packageCount", e.target.value)} /><input className="sb-inp sb-mono" style={{ width: 48 }} value={draft.packageTypeCode} onChange={(e) => set("packageTypeCode", e.target.value.toUpperCase())} /></span></label>
         </div>
+        <p className="sb-meta" style={{ padding: "0 12px" }}>Enter quantity and unit price in the assigned tariff unit. Gross and net pounds are allocated by line value across all shipment invoices when calculated; rounding preserves the shipment totals.</p>
         {needsAlcoholMeasure && (
           <div style={{ padding: "10px 12px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, borderBottom: "1px solid var(--sb-line)", background: "var(--sb-gold-soft)" }}>
             <label><span className="sb-eyebrow">Units per package</span><input className="sb-inp sb-mono" value={draft.unitsPerPackage} onChange={(e) => set("unitsPerPackage", e.target.value)} placeholder="12" /></label>
@@ -372,9 +371,9 @@ export function LineEntry({
                       {l.hsDescription ?? "—"}
                     </div>
                   </td>
-                  <td className="sb-mono" style={{ verticalAlign: "top" }}>{entryLocked ? l.cpcCode : <select aria-label={`CPC for ${l.description}`} className="sb-inp" style={{ width: 180 }} disabled={pending} value={refs.cpcCode} onChange={(e) => setReferenceDrafts((current) => ({ ...current, [l.id]: { ...refs, cpcCode: e.target.value } }))}>{!cpcOptions.some((c) => c.code === l.cpcCode) && <option value={l.cpcCode}>{l.cpcCode} — select replacement</option>}{cpcOptions.map((c) => <option key={c.code} value={c.code}>{c.code} — {c.description}</option>)}</select>}{!entryLocked && referenceDrafts[l.id] && <button className="sb-btn is-sm" disabled={pending} onClick={() => changeReferences(l, refs)}>Save CPC / UOM</button>}</td>
+                  <td className="sb-mono" style={{ verticalAlign: "top" }}>{entryLocked ? l.cpcCode : <select aria-label={`CPC for ${l.description}`} className="sb-inp" style={{ width: 180 }} disabled={pending} value={refs.cpcCode} onChange={(e) => setReferenceDrafts((current) => ({ ...current, [l.id]: { ...refs, cpcCode: e.target.value } }))}>{!cpcOptions.some((c) => c.code === l.cpcCode) && <option value={l.cpcCode}>{l.cpcCode} — select replacement</option>}{cpcOptions.map((c) => <option key={c.code} value={c.code}>{c.code} — {c.description}</option>)}</select>}{!entryLocked && referenceDrafts[l.id] && <button className="sb-btn is-sm" disabled={pending} onClick={() => changeReferences(l, refs)}>Save CPC</button>}</td>
                   <td className="sb-mono" style={{ verticalAlign: "top", textAlign: "right" }}>
-                    {l.quantity}{entryLocked ? <span className="sb-soft"> {l.unit}</span> : <select aria-label={`UOM for ${l.description}`} className="sb-inp" disabled={pending} value={refs.unit} onChange={(e) => setReferenceDrafts((current) => ({ ...current, [l.id]: { ...refs, unit: e.target.value } }))}>{!CUSTOMS_UOMS.some((u) => u.code === l.unit) && <option value={l.unit}>{l.unit} — select replacement</option>}{CUSTOMS_UOMS.map((u) => <option key={u.code} value={u.code}>{u.code} — {u.description}</option>)}</select>}
+                    {l.quantity}<span className="sb-soft"> {l.unit}</span><div className="sb-meta">{l.weightLb ?? "—"} lb allocated</div>
                   </td>
                   <td style={{ verticalAlign: "top" }}>
                     <div>{l.description}</div>

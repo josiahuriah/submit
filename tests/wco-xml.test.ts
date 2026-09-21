@@ -14,6 +14,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { XMLParser } from 'fast-xml-parser'
 import { buildWcoDeclarationXml, WCO_DECLARATION_NS } from '@/lib/beaip/wco-xml'
+import { TFP_DECLARANT_NAME, TFP_QA_PARTY_ID } from '@/lib/beaip/constants'
 
 const hasXmllint = !spawnSync('xmllint', ['--version'], { encoding: 'utf8' }).error
 
@@ -53,7 +54,7 @@ function childOrder(xml: string, name: string): string[] {
 describe('buildWcoDeclarationXml', () => {
   it('emits the configured filing identity as Submitter/ID', () => {
     const xml = buildWcoDeclarationXml(fixture())
-    expect(xml).toMatch(/<Submitter>\s*<ID>CRN-12345<\/ID>\s*<\/Submitter>/)
+    expect(xml).toMatch(/<Submitter>\s*<ID>TEST-SUBMITTER<\/ID>\s*<\/Submitter>/)
   })
 
   it('declares the target namespace on the root (the sample-file trap)', () => {
@@ -112,10 +113,10 @@ describe('buildWcoDeclarationXml', () => {
 
   it('uses the approved declaration header values and reference conventions', () => {
     const xml = build()
-    expect(xml).toContain('<FunctionalReferenceID>2026DEC0001234567</FunctionalReferenceID>')
-    expect(xml).toContain('<TotalGrossMassMeasure unitCode="LB">512.500</TotalGrossMassMeasure>')
+    expect(xml).toContain('<FunctionalReferenceID>SUBMITDEC000000001</FunctionalReferenceID>')
+    expect(xml).toContain('<TotalGrossMassMeasure unitCode="LB">20.000</TotalGrossMassMeasure>')
     expect(xml).toContain('<DeclarationOffice>\n        <ID>NASACP</ID>')
-    expect(xml).toContain('<Declarant>\n        <Name>Atlas Brokers</Name>')
+    expect(xml).toContain(`<Declarant>\n        <Name>${TFP_DECLARANT_NAME}</Name>`)
     expect(xml).not.toContain('<UCR>')
     expect(xml).not.toContain('<TraderAssignedReferenceID>')
   })
@@ -129,10 +130,10 @@ describe('buildWcoDeclarationXml', () => {
 
   it('carries currencyID on amounts and links lines to invoices', () => {
     const xml = build()
-    expect(xml).toContain('<ValueAmount currencyID="BSD">1500.00</ValueAmount>')
-    expect(xml).toContain('<ExitToEntryChargeAmount currencyID="BSD">1650.00</ExitToEntryChargeAmount>')
+    expect(xml).toContain('<ValueAmount currencyID="BSD">100.00</ValueAmount>')
+    expect(xml).toContain('<ExitToEntryChargeAmount currencyID="BSD">110.00</ExitToEntryChargeAmount>')
     // Item → invoice link: AdditionalDocument type 380 with the invoice number.
-    expect(xml).toContain('<ID>INV-1002</ID>')
+    expect(xml).toContain('<ID>TEST-INVOICE-B</ID>')
     expect(xml).toContain('<TypeCode>380</TypeCode>')
   })
 
@@ -150,8 +151,9 @@ describe('buildWcoDeclarationXml', () => {
     expect(xml).not.toContain('<ID>9403.50.90</ID>')
   })
 
-  it('represents freight only as charge deduction 64', () => {
-    const shipmentSection = build().match(
+  it('represents freight as a BSD FreightChargeAmount in schema order', () => {
+    const xml = build()
+    const shipmentSection = xml.match(
       /<GoodsShipment>([\s\S]*?)<Destination>/,
     )?.[1]
     expect(shipmentSection).toBeDefined()
@@ -160,19 +162,23 @@ describe('buildWcoDeclarationXml', () => {
     )].map((match) => match[1]!)
 
     expect(valuations).toHaveLength(2)
-    expect(build()).not.toContain('<FreightChargeAmount')
-    expect(valuations[0]).toContain('<ChargesTypeCode>64</ChargesTypeCode>')
-    expect(valuations[0]).toContain('<OtherChargeDeductionAmount>250.00</OtherChargeDeductionAmount>')
-    expect(valuations[1]).not.toContain('<ChargesTypeCode>64</ChargesTypeCode>')
+    expect(valuations[0]).toContain('<FreightChargeAmount currencyID="BSD">10.00</FreightChargeAmount>')
+    expect(valuations[1]).not.toContain('<FreightChargeAmount')
+    expect(xml).not.toContain('<ChargesTypeCode>64</ChargesTypeCode>')
+
+    const valuationOrder = childOrder(xml, 'CustomsValuation')
+    expect(valuationOrder).toEqual([
+      'FreightChargeAmount',
+      'ChargeDeduction',
+    ])
   })
 
   it('uses the Customs-confirmed each UOM while preserving specific assessment units', () => {
     const xml = build()
-    expect(xml).toContain('<TotalPackageQuantity unitCode="EA">40</TotalPackageQuantity>')
-    expect(xml).toContain('<TariffQuantity unitCode="EA">500</TariffQuantity>')
-    expect(xml).toContain('<TariffQuantity unitCode="LTR">120</TariffQuantity>')
-    expect(xml).toContain('<QuantityQuantity unitCode="EA">10</QuantityQuantity>')
-    expect(xml).toContain('<QuantityQuantity unitCode="EA">20</QuantityQuantity>')
+    expect(xml).toContain('<TotalPackageQuantity unitCode="EA">2</TotalPackageQuantity>')
+    expect(xml).toContain('<TariffQuantity unitCode="EA">2</TariffQuantity>')
+    expect(xml).toContain('<TariffQuantity unitCode="LTR">1</TariffQuantity>')
+    expect(xml.match(/<QuantityQuantity unitCode="EA">1<\/QuantityQuantity>/g)).toHaveLength(2)
     expect(xml.match(/<Packaging>/g)).toHaveLength(2)
     const arrival = childOrder(xml, 'ArrivalTransportMeans')
     expect(arrival).toEqual(['Name', 'TypeCode', 'RegistrationNationalityCode'])
@@ -182,13 +188,13 @@ describe('buildWcoDeclarationXml', () => {
   it('applies the Customs-confirmed QA locations, identities, CPC and omissions', () => {
     const xml = build()
     expect(xml).toMatch(
-      /<Declarant>\s*<Name>Atlas Brokers<\/Name>\s*<ID>20113855131249792<\/ID>\s*<\/Declarant>/,
+      new RegExp(`<Declarant>\\s*<Name>${TFP_DECLARANT_NAME}</Name>\\s*<ID>${TFP_QA_PARTY_ID}</ID>\\s*</Declarant>`),
     )
     expect(xml).toMatch(/<GoodsLocation>\s*<ID>NASACP<\/ID>\s*<\/GoodsLocation>/)
     expect(xml).toMatch(/<UnloadingLocation>\s*<ID>USPBI<\/ID>/)
     expect(xml).toMatch(/<ExitOffice>\s*<ID>USPBI<\/ID>\s*<\/ExitOffice>/)
     expect(xml).toMatch(
-      /<Exporter>\s*<Name>Miami Wholesale Co<\/Name>\s*<ID>20113855131249792<\/ID>/,
+      new RegExp(`<Exporter>\\s*<Name>TEST_SUPPLIER_A</Name>\\s*<ID>${TFP_QA_PARTY_ID}</ID>`),
     )
     expect(xml).not.toContain('<TransportContractDocument>')
     expect(xml.match(/<CurrentCode>400000<\/CurrentCode>/g)).toHaveLength(2)

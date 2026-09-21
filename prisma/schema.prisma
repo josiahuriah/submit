@@ -701,6 +701,13 @@ model CustomsSubmissionBatch {
   @@index([organizationId, shipmentId, createdAt(sort: Desc)])
 }
 
+/// Global allocator for FunctionalReferenceID values sent to Click2Clear.
+/// The singleton row uses id=1; allocation and artifact creation share one transaction.
+model CustomsDeclarationSequence {
+  id        Int    @id
+  nextValue BigInt @default(1)
+}
+
 model CustomsEntry {
   id                String  @id @default(cuid())
   organizationId    String

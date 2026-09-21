@@ -15,7 +15,7 @@ import {
 } from './constants'
 
 export const TFP_SCHEMA_VERSION = 'TFB_WCO_DEC_v1.4.4'
-export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.3.1'
+export const TFP_MAPPING_VERSION = 'submit-tfp-map-1.3.2'
 
 export type TfpRequirement = 'M' | 'C' | 'OUTBOUND_ONLY'
 export type TfpMappingStatus =
@@ -40,14 +40,14 @@ export interface TfpFieldMapping {
 export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'Declaration', element: 'AcceptanceDateTime', requirement: 'C', source: 'artifact generation time', transform: 'yyyy-MM-dd HH:mm:ss', status: 'DERIVED' },
   { section: 'Declaration', element: 'FunctionCode', requirement: 'M', source: 'constant 9', transform: 'original declaration', status: 'DERIVED' },
-  { section: 'Declaration', element: 'FunctionalReferenceID', requirement: 'M', source: 'Shipment.shipmentNumber + declaration year', transform: 'YYYYDEC + 10-digit stable sequence', status: 'DERIVED', note: 'Temporary review-file value; live Click2Clear integration is expected to supply the declaration number' },
+  { section: 'Declaration', element: 'FunctionalReferenceID', requirement: 'M', source: 'Global declaration sequence', transform: 'SUBMITDEC + 9-digit sequence', status: 'DERIVED', note: 'Allocated atomically when the immutable declaration artifact is generated' },
   { section: 'Declaration', element: 'TypeCode', requirement: 'M', source: 'Shipment.regimeCode', transform: 'verbatim', status: 'WITHHELD_CODE_LIST', note: 'TTFB_SYS_REGIME not released; sample uses 4' },
   { section: 'Declaration', element: 'TotalGrossMassMeasure', requirement: 'C', source: 'Shipment.grossWeightLb', transform: 'unitCode=LB', status: 'MAPPED' },
   { section: 'Declaration', element: 'TotalPackageQuantity', requirement: 'C', source: 'Shipment.packageCount', transform: 'unitCode=EA', status: 'CONFIRMED_BY_CUSTOMS' },
   { section: 'Declaration', element: 'Submitter/ID', requirement: 'M', source: 'BEAIP_BROKER_CODE', transform: 'server-only filing configuration', status: 'MAPPED' },
   { section: 'Declaration', element: 'DeclarationOffice/ID', requirement: 'M', source: 'Manifest.customsPortCode or standalone shipment port', transform: 'validate Customs port list', status: 'MAPPED' },
-  { section: 'Declaration', element: 'Declarant/Name', requirement: 'C', source: 'constant Atlas Brokers', transform: 'stakeholder-approved filing identity', status: 'DERIVED' },
-  { section: 'Declaration', element: 'Declarant/ID', requirement: 'C', source: 'constant 20113855131249792', transform: 'Customs QA filing identity', status: 'CONFIRMED_BY_CUSTOMS' },
+  { section: 'Declaration', element: 'Declarant/Name', requirement: 'C', source: 'configured declarant name', transform: 'stakeholder-approved filing identity', status: 'DERIVED' },
+  { section: 'Declaration', element: 'Declarant/ID', requirement: 'C', source: 'configured BEAIP broker code', transform: 'Customs QA filing identity', status: 'CONFIRMED_BY_CUSTOMS' },
   { section: 'Declaration', element: 'PreviousDocument/ID', requirement: 'C', source: 'not modeled', transform: 'amendments only', status: 'NOT_MODELED' },
   { section: 'Declaration', element: 'AdditionalDocument', requirement: 'C', source: 'ShipmentDocument', transform: 'base64/hash metadata', status: 'NOT_MODELED', note: 'Object bytes and official document codes are not yet available' },
   { section: 'Declaration', element: 'AdditionalInformation', requirement: 'C', source: 'dynamic declaration fields', transform: 'worksheet driven', status: 'WITHHELD_CODE_LIST' },
@@ -61,7 +61,7 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'BorderTransportMeans.TransportEquipment', element: 'Seal/ID', requirement: 'C', source: 'withheld', transform: 'omit optional parent until confirmed', status: 'OMIT_INCOMING' },
   { section: 'GoodsShipment', element: 'Consignee', requirement: 'C', source: 'Client', transform: 'party/address mapping', status: 'MAPPED' },
   { section: 'GoodsShipment', element: 'Consignor', requirement: 'C', source: 'Supplier', transform: 'not emitted separately', status: 'CONDITIONAL' },
-  { section: 'GoodsShipment', element: 'Exporter/ID', requirement: 'C', source: 'constant 20113855131249792', transform: 'Customs QA exporter identity', status: 'CONFIRMED_BY_CUSTOMS' },
+  { section: 'GoodsShipment', element: 'Exporter/ID', requirement: 'C', source: 'configured QA party ID', transform: 'Customs QA exporter identity', status: 'CONFIRMED_BY_CUSTOMS' },
   { section: 'GoodsShipment', element: 'Destination/CountryCode', requirement: 'C', source: 'constant BS', transform: 'ISO alpha-2', status: 'DERIVED' },
   { section: 'GoodsShipment', element: 'EntryOffice/ID', requirement: 'C', source: 'Journey.destinationPort.unLocode', transform: 'verbatim', status: 'MAPPED' },
   { section: 'GoodsShipment', element: 'ExitOffice/ID', requirement: 'C', source: 'Journey.originPort.unLocode', transform: 'verbatim', status: 'CONFIRMED_BY_CUSTOMS' },
@@ -75,8 +75,8 @@ export const TFP_FIELD_MAPPINGS: readonly TfpFieldMapping[] = [
   { section: 'Consignment', element: 'UnloadingLocation/ID', requirement: 'C', source: 'Journey.destinationPort.unLocode', transform: 'remove BS prefix', status: 'CONFIRMED_BY_CUSTOMS' },
   { section: 'Consignment', element: 'UnloadingLocation/Warehouse/ID', requirement: 'C', source: 'Shipment.warehouseCode', transform: 'verbatim', status: 'WITHHELD_CODE_LIST' },
   { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[77]', requirement: 'C', source: 'Invoice.subTotal', transform: 'BSD; invoice order is linkage', status: 'MAPPED' },
-  { section: 'GoodsShipment.CustomsValuation', element: 'FreightChargeAmount', requirement: 'C', source: 'not emitted', transform: 'freight remains in ChargeDeduction[64]', status: 'OMIT_INCOMING' },
-  { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[64]', requirement: 'C', source: 'sum all LineItem.freightApportioned', transform: 'BSD; assign to first invoice valuation', status: 'DERIVED' },
+  { section: 'GoodsShipment.CustomsValuation', element: 'FreightChargeAmount', requirement: 'C', source: 'sum all LineItem.freightApportioned', transform: 'currencyID=BSD; assign to first invoice valuation', status: 'DERIVED' },
+  { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[64]', requirement: 'C', source: 'not emitted', transform: 'freight is represented by FreightChargeAmount', status: 'OMIT_INCOMING' },
   { section: 'GoodsShipment.CustomsValuation', element: 'ChargeDeduction[104]', requirement: 'C', source: 'sum LineItem.otherCostApportioned by invoice', transform: 'BSD', status: 'DERIVED' },
   { section: 'Invoice', element: 'ID', requirement: 'C', source: 'Invoice.invoiceNumber', transform: 'verbatim', status: 'MAPPED' },
   { section: 'Invoice', element: 'IssueDateTime', requirement: 'C', source: 'Invoice.invoiceDate', transform: 'TFP DateTimeType', status: 'MAPPED' },
@@ -125,10 +125,10 @@ export function preflightTfpDeclaration(declaration: BeaipDeclaration): TfpPrefl
   const warning = (field: string, message: string) =>
     issues.push({ severity: 'WARNING', field, message })
 
-  if (!/^\d{4}DEC\d{10}$/.test(declaration.functionalReferenceId)) {
+  if (!/^SUBMITDEC\d{9}$/.test(declaration.functionalReferenceId)) {
     blocker(
       'Declaration/FunctionalReferenceID',
-      'Use the YYYYDEC########## declaration-reference convention',
+      'Use the SUBMITDEC######### declaration-reference convention',
     )
   }
   if (declaration.functionCode !== '9') {
