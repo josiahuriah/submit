@@ -25,7 +25,8 @@ DECLARE
   tenant_tables TEXT[] := ARRAY[
     'User', 'Client', 'Supplier', 'Manifest', 'Shipment', 'ShipmentDocument',
     'Invoice', 'LineItem', 'CustomsEntry', 'CustomsSubmissionBatch',
-    'CustomsSubmissionAttempt', 'BrokerageInvoice', 'Payment', 'AuditLog'
+    'CustomsSubmissionAttempt', 'CustomsSubmissionStatusCheck',
+    'BrokerageInvoice', 'Payment', 'AuditLog'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP

@@ -1,4 +1,4 @@
-/** Wrap reviewed declaration XML and keep credentials out of the persisted envelope. */
+/** Build the two Customs SOAP requests while keeping credentials out of persisted envelopes. */
 import { randomBytes } from 'node:crypto'
 import { WCO_DECLARATION_NS } from '@/lib/beaip/wco-xml'
 
@@ -25,10 +25,10 @@ function declarationBody(xml: string): string {
   return body
 }
 
-export function buildDeclarationSoapEnvelope(input: {
+function buildSoapEnvelope(input: {
   username: string
   password: string
-  declarationXml: string
+  body: string
 }): { envelope: string; redactedEnvelope: string } {
   // Match the government-supplied QA header with a unique, XML-valid token ID.
   // Build it once so the persisted redacted envelope describes the exact request.
@@ -44,7 +44,7 @@ export function buildDeclarationSoapEnvelope(input: {
     </wsse:Security>
   </soapenv:Header>
   <soapenv:Body>
-${declarationBody(input.declarationXml)}
+${input.body}
   </soapenv:Body>
 </soapenv:Envelope>`
 
@@ -52,4 +52,57 @@ ${declarationBody(input.declarationXml)}
     envelope: build(input.password),
     redactedEnvelope: build('[REDACTED]'),
   }
+}
+
+function messageDate(value: Date, timeZone: string): string {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(value)
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value ?? ''
+  return `${part('day')}-${part('month')}-${part('year')} ${part('hour')}:${part('minute')}:${part('second')}`
+}
+
+export function buildDeclarationSoapEnvelope(input: {
+  username: string
+  password: string
+  declarationXml: string
+}): { envelope: string; redactedEnvelope: string } {
+  return buildSoapEnvelope({
+    username: input.username,
+    password: input.password,
+    body: declarationBody(input.declarationXml),
+  })
+}
+
+export function buildSubmissionStatusSoapEnvelope(input: {
+  username: string
+  password: string
+  requestMessageId: string
+  originalMessageId: string
+  sender: string
+  receiver: string
+  requestedAt: Date
+  timeZone: string
+}): { envelope: string; redactedEnvelope: string } {
+  const body = `    <SubmissionStatusRequest SchemaVersion="0.1" xmlns="http://beaip.crimsonlogic.com/SUB_ST_REQ">
+      <MessageHeader schemaVersion="0.1" xmlns="http://beaip.crimsonlogic.com/MessageHeader">
+        <MessageId>${escapeXml(input.requestMessageId)}</MessageId>
+        <MessageDate>${messageDate(input.requestedAt, input.timeZone)}</MessageDate>
+        <messageFunction>1</messageFunction>
+        <MessageType>SUB_STS_MSG</MessageType>
+        <Sender>${escapeXml(input.sender)}</Sender>
+        <Receiver>${escapeXml(input.receiver)}</Receiver>
+      </MessageHeader>
+      <DocumentDetails>
+        <OriginalMsgId>${escapeXml(input.originalMessageId)}</OriginalMsgId>
+      </DocumentDetails>
+    </SubmissionStatusRequest>`
+  return buildSoapEnvelope({ username: input.username, password: input.password, body })
 }

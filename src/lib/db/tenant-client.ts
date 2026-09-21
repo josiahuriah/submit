@@ -32,6 +32,7 @@ const TENANT_MODELS = new Set<string>([
   'CustomsEntry',
   'CustomsSubmissionBatch',
   'CustomsSubmissionAttempt',
+  'CustomsSubmissionStatusCheck',
   'BrokerageInvoice',
   'Payment',
   'AuditLog',

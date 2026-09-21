@@ -66,20 +66,21 @@ model Organization {
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
 
-  users             User[]
-  clients           Client[]
-  suppliers         Supplier[]
-  manifests         Manifest[]
-  shipments         Shipment[]
-  invoices          Invoice[]
-  lineItems         LineItem[]
-  customsEntries    CustomsEntry[]
-  submissionBatches CustomsSubmissionBatch[]
-  submissionAttempts CustomsSubmissionAttempt[]
-  shipmentDocuments ShipmentDocument[]
-  brokerageInvoices BrokerageInvoice[]
-  payments          Payment[]
-  auditLogs         AuditLog[]
+  users                  User[]
+  clients                Client[]
+  suppliers              Supplier[]
+  manifests              Manifest[]
+  shipments              Shipment[]
+  invoices               Invoice[]
+  lineItems              LineItem[]
+  customsEntries         CustomsEntry[]
+  submissionBatches      CustomsSubmissionBatch[]
+  submissionAttempts     CustomsSubmissionAttempt[]
+  submissionStatusChecks CustomsSubmissionStatusCheck[]
+  shipmentDocuments      ShipmentDocument[]
+  brokerageInvoices      BrokerageInvoice[]
+  payments               Payment[]
+  auditLogs              AuditLog[]
 }
 
 enum UserRole {
@@ -104,9 +105,9 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  organization      Organization       @relation(fields: [organizationId], references: [id])
+  organization      Organization             @relation(fields: [organizationId], references: [id])
   auditLogs         AuditLog[]
-  createdShipments  Shipment[]         @relation("ShipmentCreatedBy")
+  createdShipments  Shipment[]               @relation("ShipmentCreatedBy")
   submissionBatches CustomsSubmissionBatch[] @relation("SubmissionBatchCreatedBy")
   uploadedDocuments ShipmentDocument[]
 
@@ -473,11 +474,11 @@ model Shipment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization      Organization       @relation(fields: [organizationId], references: [id])
-  manifest          Manifest?          @relation(fields: [manifestId], references: [id])
-  client            Client             @relation(fields: [clientId], references: [id])
-  createdBy         User               @relation("ShipmentCreatedBy", fields: [createdById], references: [id])
-  declarationOffice CustomsOffice      @relation(fields: [declarationOfficeId], references: [id])
+  organization      Organization             @relation(fields: [organizationId], references: [id])
+  manifest          Manifest?                @relation(fields: [manifestId], references: [id])
+  client            Client                   @relation(fields: [clientId], references: [id])
+  createdBy         User                     @relation("ShipmentCreatedBy", fields: [createdById], references: [id])
+  declarationOffice CustomsOffice            @relation(fields: [declarationOfficeId], references: [id])
   invoices          Invoice[]
   documents         ShipmentDocument[]
   customsEntries    CustomsEntry[]
@@ -685,41 +686,41 @@ enum SubmissionAttemptOutcome {
 }
 
 model CustomsSubmissionBatch {
-  id             String   @id @default(cuid())
-  organizationId String
-  shipmentId     String
-  createdById    String
+  id               String   @id @default(cuid())
+  organizationId   String
+  shipmentId       String
+  createdById      String
   declarationCount Int
-  createdAt      DateTime @default(now())
+  createdAt        DateTime @default(now())
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  shipment     Shipment     @relation(fields: [shipmentId], references: [id])
-  createdBy    User         @relation("SubmissionBatchCreatedBy", fields: [createdById], references: [id])
+  organization Organization   @relation(fields: [organizationId], references: [id])
+  shipment     Shipment       @relation(fields: [shipmentId], references: [id])
+  createdBy    User           @relation("SubmissionBatchCreatedBy", fields: [createdById], references: [id])
   entries      CustomsEntry[]
 
   @@index([organizationId, shipmentId, createdAt(sort: Desc)])
 }
 
 model CustomsEntry {
-  id             String @id @default(cuid())
-  organizationId String
-  shipmentId     String
+  id                String  @id @default(cuid())
+  organizationId    String
+  shipmentId        String
   submissionBatchId String?
 
-  entryNumber      String?
-  declarationType  DeclarationType    @default(C13)
-  status           CustomsEntryStatus @default(DRAFT)
-  functionCode     String             @default("9")
-  regimeCode       String?
-  schemaVersion    String?
-  mappingVersion   String?
-  generatedAt      DateTime?
-  validationReport Json?
-  declarationGroupCode String
-  declarationSequence  Int
+  entryNumber           String?
+  declarationType       DeclarationType    @default(C13)
+  status                CustomsEntryStatus @default(DRAFT)
+  functionCode          String             @default("9")
+  regimeCode            String?
+  schemaVersion         String?
+  mappingVersion        String?
+  generatedAt           DateTime?
+  validationReport      Json?
+  declarationGroupCode  String
+  declarationSequence   Int
   functionalReferenceId String
-  brokerReference        String
-  declarationHash        String
+  brokerReference       String
+  declarationHash       String
 
   // Reserved for the future verified Single Window round trip.
   beaipReference  String? // reference number returned by BEAIP
@@ -727,51 +728,76 @@ model CustomsEntry {
   assessedAt      DateTime?
   releasedAt      DateTime?
   rejectionReason String?
-  requestPayload  String? @db.Text // exact declaration XML sent/exported
-  responsePayload String? @db.Text // latest normalized response for convenience
+  requestPayload  String?   @db.Text // exact declaration XML sent/exported
+  responsePayload String?   @db.Text // latest normalized response for convenience
 
   totalPayable Decimal @default(0) @db.Decimal(14, 2)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  shipment     Shipment     @relation(fields: [shipmentId], references: [id])
-  submissionBatch CustomsSubmissionBatch? @relation(fields: [submissionBatchId], references: [id])
-  attempts     CustomsSubmissionAttempt[]
+  organization    Organization               @relation(fields: [organizationId], references: [id])
+  shipment        Shipment                   @relation(fields: [shipmentId], references: [id])
+  submissionBatch CustomsSubmissionBatch?    @relation(fields: [submissionBatchId], references: [id])
+  attempts        CustomsSubmissionAttempt[]
 
-  @@index([organizationId, status, createdAt(sort: Desc)])
-  @@index([shipmentId])
   @@unique([organizationId, functionalReferenceId])
   @@unique([submissionBatchId, declarationSequence])
+  @@index([organizationId, status, createdAt(sort: Desc)])
+  @@index([shipmentId])
   @@index([beaipReference])
 }
 
 model CustomsSubmissionAttempt {
-  id             String   @id @default(cuid())
-  organizationId String
-  customsEntryId String
-  attemptNumber  Int
-  messageId      String
-  outcome        SubmissionAttemptOutcome @default(PENDING)
-  declarationHash String
-  redactedSoapEnvelope String? @db.Text
-  responsePayload String? @db.Text
-  httpStatus      Int?
-  soapFaultCode   String?
-  soapFaultReason String?
-  beaipReference  String?
-  businessErrors  Json?
-  resubmissionReason String?
-  startedAt       DateTime @default(now())
-  completedAt     DateTime?
+  id                   String                   @id @default(cuid())
+  organizationId       String
+  customsEntryId       String
+  attemptNumber        Int
+  messageId            String
+  outcome              SubmissionAttemptOutcome @default(PENDING)
+  declarationHash      String
+  redactedSoapEnvelope String?                  @db.Text
+  responsePayload      String?                  @db.Text
+  httpStatus           Int?
+  soapFaultCode        String?
+  soapFaultReason      String?
+  beaipReference       String?
+  businessErrors       Json?
+  resubmissionReason   String?
+  startedAt            DateTime                 @default(now())
+  completedAt          DateTime?
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  customsEntry CustomsEntry @relation(fields: [customsEntryId], references: [id])
+  organization Organization                   @relation(fields: [organizationId], references: [id])
+  customsEntry CustomsEntry                   @relation(fields: [customsEntryId], references: [id])
+  statusChecks CustomsSubmissionStatusCheck[]
 
   @@unique([organizationId, messageId])
   @@unique([customsEntryId, attemptNumber])
   @@index([organizationId, customsEntryId, startedAt(sort: Desc)])
+}
+
+model CustomsSubmissionStatusCheck {
+  id                   String                   @id @default(cuid())
+  organizationId       String
+  submissionAttemptId  String
+  checkNumber          Int
+  messageId            String
+  originalMessageId    String
+  outcome              SubmissionAttemptOutcome @default(PENDING)
+  redactedSoapEnvelope String                   @db.Text
+  responsePayload      String?                  @db.Text
+  httpStatus           Int?
+  soapFaultCode        String?
+  soapFaultReason      String?
+  startedAt            DateTime                 @default(now())
+  completedAt          DateTime?
+
+  organization      Organization             @relation(fields: [organizationId], references: [id])
+  submissionAttempt CustomsSubmissionAttempt @relation(fields: [submissionAttemptId], references: [id])
+
+  @@unique([organizationId, messageId])
+  @@unique([submissionAttemptId, checkNumber])
+  @@index([organizationId, submissionAttemptId, startedAt(sort: Desc)])
 }
 
 // =============================================================================

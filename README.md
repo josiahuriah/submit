@@ -176,7 +176,7 @@ generate review artifacts, but cannot send them to Customs.
 
 ---
 
-## API surface (30 routes)
+## API surface (33 routes)
 
 ```
 POST   /api/auth/register|login|logout        GET /api/auth/me
@@ -195,6 +195,8 @@ GET|POST /api/billing/invoices                GET /api/billing/invoices/:id
 POST   /api/billing/invoices/:id/send|payments
 GET    /api/customs-entries/:id/xml
 POST   /api/customs-entries/:id/submit        # Broker+; transport disabled by default
+POST   /api/customs-entries/:id/status-check  # Broker+; uses acknowledged MessageId
+GET    /api/customs-entries/:id/status-response
 ```
 
 Responses: `{ data, meta? }` on success, `{ error: { code, message, details? } }`
@@ -213,7 +215,7 @@ only; it is never treated as an authoritative excise source.
 
 ```
 prisma/           schema, migrations, sql/ (indexes + RLS), seed.ts, seed.dev.ts*
-src/app/api/      30 thin route handlers
+src/app/api/      33 thin route handlers
 src/app/          auth + operational home, directory, manifest, declaration, billing and accounting UI
 src/lib/          env, errors, api-response, auth/, db/, calculations/, beaip/, validation/
 src/server/       services/ (business rules) + repositories/

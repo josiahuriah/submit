@@ -1,7 +1,7 @@
 ---
 name: submit-api-conventions
 description: >
-  API route-handler contract for the Submit codebase (29 implemented routes under
+  API route-handler contract for the Submit codebase (33 implemented routes under
   src/app/api). Use when adding or modifying an endpoint, reviewing a route handler,
   answering questions about response shape ({data, meta?} / {error:{code,message,details?}}),
   cursor pagination, Zod request schemas, permission wiring (withAuth), or how
@@ -31,7 +31,7 @@ files and the four contract files they depend on:
   `submit-beaip-integration-campaign`. Tariff domain → `bahamas-customs-reference`.
   QA → `submit-validation-and-qa`. Process → `submit-change-control`.
 
-## Route inventory (29 route files, 38 exported handlers)
+## Route inventory (33 route files, 40 exported handlers)
 
 Permissions below were extracted from the actual `{ permission: '...' }` option in each file
 (command in Provenance). Roles: VIEWER(0) < CLERK(1) < BROKER(2) < ADMIN(3) < OWNER(4);
@@ -80,6 +80,10 @@ minimum role per permission is in `src/lib/auth/rbac.ts`.
 | POST | /api/billing/invoices/:id/send | billing:write | |
 | POST | /api/billing/invoices/:id/payments | billing:write | |
 | GET | /api/customs-entries/:id/xml | shipments:read | raw XML attachment, the intentional response-envelope exception |
+| GET | /api/customs-entries/:id/response | shipments:read | raw acknowledgement attachment |
+| POST | /api/customs-entries/:id/submit | shipments:submit | explicit broker-authorized QA submission |
+| POST | /api/customs-entries/:id/status-check | shipments:submit | explicit secondary status request using the acknowledged MessageId |
+| GET | /api/customs-entries/:id/status-response | shipments:read | raw secondary-response attachment |
 
 ## The canonical handler pattern (real code, not a template)
 
@@ -160,8 +164,9 @@ Variations seen in the codebase (all legitimate):
      internals never leak to the client.
 - Money is always a decimal **string** in JSON (`"13405.78"`), never a float.
 - Auth: httpOnly session cookie (browser) or `Authorization: Bearer <jwt>` (API clients).
-- `GET /api/customs-entries/:id/xml` is the only success-envelope exception: it returns
-  the exact stored XML bytes as a private attachment. Errors still use the standard JSON envelope.
+- The Customs XML, acknowledgement, and status-response GET routes are the
+  success-envelope exceptions: they return exact stored XML bytes as private
+  attachments. Errors still use the standard JSON envelope.
 
 ## Pagination contract (`src/lib/db/pagination.ts`)
 
@@ -255,11 +260,12 @@ Click2Clear wire value is dotted or undotted remains a government code-master de
    created, sent, and paid but not voided via API despite a `VOID` status in the list filter
    enum. Gap, not a bug.
 
-The XML download is the sole intentional non-JSON success response.
+The three Customs download routes are the intentional non-JSON success responses.
 
 ## Provenance and maintenance
 
-- Route count: `find src/app/api -name route.ts | wc -l` (expect 29).
+- Targeted re-verification 2026-09-21: `find src/app/api -name route.ts | wc -l`
+  returns 33 and the handler-export grep returns 40 after status checking was added.
 - Permission extraction: `grep -rn "permission:" src/app/api --include=route.ts` and
   `grep -rnE "export const (GET|POST|PATCH|PUT|DELETE)" src/app/api --include=route.ts`
   — re-run both and diff against the inventory table whenever routes change.

@@ -78,8 +78,17 @@ preview as a secret-bearing file and delete it when review is complete.
 5. Download and inspect each CPC artifact.
 6. Click **Submit CPC … to QA** once for each artifact.
 7. Record the displayed outcome, HTTP status, and raw response.
-8. Check Click2Clear UAT using the artifact's `FunctionalReferenceID`.
-9. Disable transport again while results are reviewed.
+8. After an acknowledgement containing a `MessageId`, click **Check submission status**.
+   Submit reads that exact acknowledged value into `OriginalMsgId`, persists the
+   status request before transmission, and displays and stores the raw secondary response.
+9. Check Click2Clear UAT using the artifact's `FunctionalReferenceID`.
+10. Disable transport again while results are reviewed.
+
+The supplied status-request XML documents the SOAP body but does not identify a
+separate URL or SOAP action. This owner-directed QA check therefore uses the
+configured declaration endpoint and action until Customs supplies different
+status-operation connection details. An operation/action fault is evidence to
+stop and request those details; it is not a reason to retry automatically.
 
 For a split shipment, CPC `400` and `4098` are separate declarations and
 separate POST requests. Do not resubmit an acknowledged group merely because a

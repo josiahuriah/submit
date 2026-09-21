@@ -69,7 +69,7 @@ correctly — it is the reference sequence.
 
 ---
 
-## Model map (23 models, schema declaration order preserved within groups)
+## Model map (26 models, schema declaration order preserved within groups)
 
 ### Tenancy & users
 | Model | Purpose | Key relations |
@@ -105,6 +105,9 @@ correctly — it is the reference sequence.
 | Invoice | Commercial invoice with currency, BSD exchange rate and incoterm fields. Cascade-deletes with Shipment. | Shipment, Supplier → LineItems |
 | LineItem | Duty unit with weights, packaging/alcohol measurements, frozen assessment quantities/rates and calculated amounts. | Invoice, HSCode? |
 | CustomsEntry | Versioned Customs review/submission artifact record; exact XML may be stored in `requestPayload` with schema/mapping/validation metadata. | Shipment |
+| CustomsSubmissionBatch | Groups one or more CPC-specific declaration artifacts created together. | Shipment, User, CustomsEntry |
+| CustomsSubmissionAttempt | Immutable outbound declaration attempt and acknowledgement history. | CustomsEntry → CustomsSubmissionStatusCheck |
+| CustomsSubmissionStatusCheck | Explicit secondary status request and raw response history. | CustomsSubmissionAttempt |
 | BrokerageInvoice | What the brokerage bills its client; `@@unique([organizationId, invoiceNumber])` | Client → Items, Payments |
 | BrokerageInvoiceItem | Billing line. **No organizationId** — child-scoped via parent. Cascade-deletes with BrokerageInvoice. | BrokerageInvoice, shipmentId? (loose link) |
 | Payment | Money received against a BrokerageInvoice | Organization, BrokerageInvoice |
@@ -112,11 +115,12 @@ correctly — it is the reference sequence.
 
 ## Tenant-scoping taxonomy (exact lists — verified 2026-07-08)
 
-**Tenant-scoped (the 12 in `TENANT_MODELS`, src/lib/db/tenant-client.ts):**
+**Tenant-scoped (the 15 in `TENANT_MODELS`, src/lib/db/tenant-client.ts):**
 `User, Client, Supplier, Manifest, Shipment, ShipmentDocument, Invoice,
-LineItem, CustomsEntry, BrokerageInvoice, Payment, AuditLog`
+LineItem, CustomsEntry, CustomsSubmissionBatch, CustomsSubmissionAttempt,
+CustomsSubmissionStatusCheck, BrokerageInvoice, Payment, AuditLog`
 
-Cross-checked against the schema: these are exactly the 12 models carrying an
+Cross-checked against the schema: these are exactly the 15 models carrying an
 `organizationId` column. No drift.
 
 **Global reference (never scoped, read via `basePrisma`):**
@@ -237,8 +241,7 @@ explicit owner sign-off via submit-change-control.
 
 ## Provenance and maintenance
 
-- Model/enum counts: `grep -cE '^model ' prisma/schema.prisma` → 23; `grep -cE '^enum ' prisma/schema.prisma` → 15 (recount after any schema change and fix this doc).
-- TENANT_MODELS extraction: `sed -n '/TENANT_MODELS = new Set/,/])/p' src/lib/db/tenant-client.ts` → must list exactly the schema's organizationId-bearing models (12 as of 2026-07-08).
-- RLS policy count: effective policies → 17 (14 tenant_isolation: 12 via the DO-loop over tenant_tables + BrokerageInvoiceItem + Organization; 3 system_bypass: User, Organization, AuditLog). Note `grep -c 'CREATE POLICY' prisma/sql/rls.sql` → 6, because the 12 looped policies are one EXECUTE format(...) inside the DO block; verify live with `SELECT count(*) FROM pg_policies WHERE policyname IN ('tenant_isolation','system_bypass')`.
+- Targeted re-verification 2026-09-21: 26 models, 19 enums, and 15 models in
+  both `TENANT_MODELS` and the RLS loop after submission-status history was added.
 - trgm index count: `grep -c 'gin_trgm_ops' prisma/schema.prisma` → 6.
 - Migration sync spot-check: `grep -c 'CREATE TABLE' prisma/migrations/20260707000000_init/migration.sql` → 23; `grep -c 'CREATE TYPE'` → 15.

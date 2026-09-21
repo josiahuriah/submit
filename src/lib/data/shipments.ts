@@ -18,6 +18,7 @@ import { requireSession } from '@/lib/auth/session'
 import { createTenantClient } from '@/lib/db/tenant-client'
 import { shipmentsService } from '@/server/services/shipments.service'
 import { NotFoundError } from '@/lib/errors'
+import { extractBeaipMessageId } from '@/lib/beaip/transport/response-parser'
 import type {
   Page,
   ShipmentListItem,
@@ -90,6 +91,15 @@ function isoDay(value: Date | null | undefined): string {
   return value ? value.toISOString().slice(0, 10) : '—'
 }
 
+function hasAcknowledgedMessageId(response: string | null | undefined): boolean {
+  if (!response) return false
+  try {
+    return Boolean(extractBeaipMessageId(response))
+  } catch {
+    return false
+  }
+}
+
 function toShipmentListItem(row: ListRow): ShipmentListItem {
   return {
     id: row.id,
@@ -125,8 +135,12 @@ function toShipmentHeader(row: DetailRow): ShipmentHeader {
       fileName: `${row.shipmentNumber}-${entry.declarationType}-${entry.declarationGroupCode}-${entry.declarationSequence}-review.xml`,
       attemptCount: entry._count.attempts,
       latestOutcome: entry.attempts[0]?.outcome ?? null,
+      canCheckStatus: hasAcknowledgedMessageId(entry.attempts[0]?.responsePayload),
       responseDownloadUrl: entry.responsePayload
         ? `/api/customs-entries/${entry.id}/response`
+        : null,
+      statusResponseDownloadUrl: entry.attempts[0]?.statusChecks[0]
+        ? `/api/customs-entries/${entry.id}/status-response`
         : null,
     })),
   }

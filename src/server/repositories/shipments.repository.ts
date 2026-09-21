@@ -102,7 +102,17 @@ const DETAIL_SELECT = {
       responsePayload: true,
       _count: { select: { attempts: true } },
       attempts: {
-        select: { outcome: true, startedAt: true },
+        select: {
+          outcome: true,
+          startedAt: true,
+          responsePayload: true,
+          statusChecks: {
+            where: { responsePayload: { not: null } },
+            select: { id: true },
+            orderBy: { startedAt: 'desc' as const },
+            take: 1,
+          },
+        },
         orderBy: { attemptNumber: 'desc' as const },
         take: 1,
       },

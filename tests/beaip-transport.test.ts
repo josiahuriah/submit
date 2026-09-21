@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { buildDeclarationSoapEnvelope } from '@/lib/beaip/transport/soap-envelope'
-import { parseBeaipResponse } from '@/lib/beaip/transport/response-parser'
+import {
+  buildDeclarationSoapEnvelope,
+  buildSubmissionStatusSoapEnvelope,
+} from '@/lib/beaip/transport/soap-envelope'
+import { extractBeaipMessageId, parseBeaipResponse } from '@/lib/beaip/transport/response-parser'
 import { normalizeHsCode } from '@/lib/customs/normalization'
 
 const declaration = `<?xml version="1.0" encoding="UTF-8"?>
@@ -46,6 +49,33 @@ describe('BEAIP SOAP transport contracts', () => {
   it('preserves leading zeroes in government reference numbers', () => {
     expect(parseBeaipResponse('<Envelope><Body><Status>SUCCESS</Status><ReferenceID>001234</ReferenceID></Body></Envelope>'))
       .toEqual({ kind: 'ACKNOWLEDGED', beaipReference: '001234' })
+  })
+
+  it('uses the acknowledged declaration MessageId as OriginalMsgId in the status request', () => {
+    const acknowledgement = `
+      <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+        <s:Body><Acknowledgement><MessageHeader><MessageId>SUBMITDEC000000001</MessageId></MessageHeader></Acknowledgement></s:Body>
+      </s:Envelope>`
+    const originalMessageId = extractBeaipMessageId(acknowledgement)
+    expect(originalMessageId).toBe('SUBMITDEC000000001')
+
+    const result = buildSubmissionStatusSoapEnvelope({
+      username: 'beaip',
+      password: 'test',
+      requestMessageId: 'status-request-1',
+      originalMessageId: originalMessageId!,
+      sender: 'SHIPAGENTS',
+      receiver: 'BESWS',
+      requestedAt: new Date('2019-10-17T15:02:59Z'),
+      timeZone: 'America/Nassau',
+    })
+
+    expect(result.envelope).toContain('<MessageId>status-request-1</MessageId>')
+    expect(result.envelope).toContain('<MessageDate>17-10-2019 11:02:59</MessageDate>')
+    expect(result.envelope).toContain('<OriginalMsgId>SUBMITDEC000000001</OriginalMsgId>')
+    expect(result.envelope).toContain('<MessageType>SUB_STS_MSG</MessageType>')
+    expect(result.redactedEnvelope).not.toContain('>test</wsse:Password>')
+    expect(result.redactedEnvelope).toContain('[REDACTED]')
   })
 })
 

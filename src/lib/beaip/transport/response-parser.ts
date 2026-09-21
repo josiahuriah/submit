@@ -19,10 +19,22 @@ function firstString(node: unknown, keys: string[]): string | null {
   return null
 }
 
-export function parseBeaipResponse(xml: string): ParsedBeaipResponse {
+function parseXml(xml: string): Record<string, unknown> {
   if (/<!DOCTYPE/i.test(xml)) throw new Error('DOCTYPE is not permitted in a BEAIP response')
   if (XMLValidator.validate(xml) !== true) throw new Error('BEAIP returned malformed XML')
-  const parsed = parser.parse(xml) as Record<string, unknown>
+  return parser.parse(xml) as Record<string, unknown>
+}
+
+/** The status operation must correlate with the MessageId Customs acknowledged. */
+export function extractBeaipMessageId(xml: string): string | null {
+  const parsed = parseXml(xml)
+  const envelope = (parsed.Envelope ?? parsed) as Record<string, unknown>
+  const body = (envelope.Body ?? envelope) as Record<string, unknown>
+  return firstString(body, ['MessageId', 'MessageID', 'MsgId', 'MsgID'])
+}
+
+export function parseBeaipResponse(xml: string): ParsedBeaipResponse {
+  const parsed = parseXml(xml)
   const envelope = (parsed.Envelope ?? parsed) as Record<string, unknown>
   const body = (envelope.Body ?? envelope) as Record<string, unknown>
   const fault = body.Fault as Record<string, unknown> | undefined

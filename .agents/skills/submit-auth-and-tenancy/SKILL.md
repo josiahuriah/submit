@@ -175,7 +175,7 @@ PERMISSION`.
                      ▼
  ┌─────────────────────────────────────────────┐
  │ Layer 1 — Prisma extension (PRIMARY,        │  injects organizationId
- │ tenant-client.ts)                           │  into every op on the 12
+ │ tenant-client.ts)                           │  into every op on the 15
  │ where-injection + create-stamping           │  TENANT_MODELS
  └───────────────────┬─────────────────────────┘
                      ▼
@@ -190,8 +190,9 @@ PERMISSION`.
 
 `createTenantClient(orgId)` extends `basePrisma` so that for every model in
 `TENANT_MODELS` — `User, Client, Supplier, Manifest, Shipment,
-ShipmentDocument, Invoice, LineItem, CustomsEntry, BrokerageInvoice, Payment,
-AuditLog` (12 models) —
+ShipmentDocument, Invoice, LineItem, CustomsEntry, CustomsSubmissionBatch,
+CustomsSubmissionAttempt, CustomsSubmissionStatusCheck, BrokerageInvoice,
+Payment, AuditLog` (15 models) —
 
 - **where-injection** on `findFirst(OrThrow)`, `findMany`,
   **`findUnique(OrThrow)`** (Prisma 5+ extendedWhereUnique makes this legal),
@@ -222,7 +223,7 @@ you can spoof.
 
 `prisma/sql/rls.sql` (applied via `npm run db:rls`): `tenant_isolation`
 policies (`USING` + `WITH CHECK` on `organizationId =
-current_setting('app.current_org_id', true)`) on all 12 tenant tables, with
+current_setting('app.current_org_id', true)`) on all 15 tenant tables, with
 `FORCE ROW LEVEL SECURITY` because Neon's `neondb_owner` owns the tables and
 owners otherwise bypass RLS. Special cases:
 
@@ -308,5 +309,7 @@ Neon, where `neondb_owner` is not a superuser.
   (Tenant isolation / RBAC sections). All read directly on 2026-07-08.
 - Re-verify after any change to: with-auth.ts (chokepoint), TENANT_MODELS,
   rls.sql, MINIMUM_ROLE, session/TTL handling, or the auth routes list.
+- Targeted re-verification 2026-09-21 confirmed 15 tenant models after adding
+  durable submission-status checks; both the Prisma extension and RLS list match.
 - If the 5 tests in `tests/tenant-isolation.test.ts` change, update the
   Layer 1 section — they are the executable spec this skill cites.
