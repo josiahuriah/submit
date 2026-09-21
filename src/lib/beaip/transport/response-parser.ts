@@ -9,6 +9,13 @@ export type ParsedBeaipResponse =
 
 const parser = new XMLParser({ ignoreAttributes: false, removeNSPrefix: true, parseTagValue: false })
 
+/**
+ * Positive Customs acknowledgement codes. `MSGRECV` is the "message received" reply Customs
+ * returns to a submitted declaration — the first half of the ack + status pair. Any other ack
+ * code is left as UNRECOGNIZED so an unknown business shape is preserved for contract review.
+ */
+const POSITIVE_ACK_CODES = ['MSGRECV']
+
 function firstString(node: unknown, keys: string[]): string | null {
   if (typeof node !== 'object' || node === null) return null
   for (const [key, value] of Object.entries(node)) {
@@ -30,6 +37,13 @@ export function extractBeaipMessageId(xml: string): string | null {
   const parsed = parseXml(xml)
   const envelope = (parsed.Envelope ?? parsed) as Record<string, unknown>
   const body = (envelope.Body ?? envelope) as Record<string, unknown>
+  // Customs carries the correlating id as <Acknowledgement><ID>. Read it from that node so the
+  // generic 'ID' name cannot accidentally match an unrelated element in some other response.
+  const acknowledgement = body.Acknowledgement as Record<string, unknown> | undefined
+  if (acknowledgement) {
+    const acknowledgedId = firstString(acknowledgement, ['MessageId', 'MessageID', 'MsgId', 'MsgID', 'ID'])
+    if (acknowledgedId) return acknowledgedId
+  }
   return firstString(body, ['MessageId', 'MessageID', 'MsgId', 'MsgID'])
 }
 
@@ -44,6 +58,19 @@ export function parseBeaipResponse(xml: string): ParsedBeaipResponse {
       faultCode: firstString(fault, ['faultcode', 'Code', 'Value']),
       faultReason: firstString(fault, ['faultstring', 'Reason', 'Text']),
       detail: fault.detail ?? fault.Detail ?? null,
+    }
+  }
+
+  // Customs replies to a received submission with <Acknowledgement><AckCode>MSGRECV</AckCode>.
+  // This is the "message received" acknowledgement that unlocks the secondary status check.
+  const acknowledgement = body.Acknowledgement as Record<string, unknown> | undefined
+  if (acknowledgement) {
+    const ackCode = firstString(acknowledgement, ['AckCode', 'Code'])?.toUpperCase()
+    if (ackCode && POSITIVE_ACK_CODES.includes(ackCode)) {
+      return {
+        kind: 'ACKNOWLEDGED',
+        beaipReference: firstString(acknowledgement, ['ID', 'ReferenceID', 'ReferenceNumber', 'EntryNumber', 'DeclarationNumber']),
+      }
     }
   }
 

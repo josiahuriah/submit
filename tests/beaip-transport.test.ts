@@ -4,6 +4,7 @@ import {
   buildSubmissionStatusSoapEnvelope,
 } from '@/lib/beaip/transport/soap-envelope'
 import { extractBeaipMessageId, parseBeaipResponse } from '@/lib/beaip/transport/response-parser'
+import { readFileSync } from 'node:fs'
 import { normalizeHsCode } from '@/lib/customs/normalization'
 
 const declaration = `<?xml version="1.0" encoding="UTF-8"?>
@@ -76,6 +77,19 @@ describe('BEAIP SOAP transport contracts', () => {
     expect(result.envelope).toContain('<MessageType>SUB_STS_MSG</MessageType>')
     expect(result.redactedEnvelope).not.toContain('>test</wsse:Password>')
     expect(result.redactedEnvelope).toContain('[REDACTED]')
+  })
+
+  it('recognizes the Customs MSGRECV acknowledgement as ACKNOWLEDGED', () => {
+    const acknowledgement = readFileSync(new URL('./fixtures/customs-acknowledgement.xml', import.meta.url), 'utf-8')
+    expect(parseBeaipResponse(acknowledgement)).toEqual({
+      kind: 'ACKNOWLEDGED',
+      beaipReference: 'SUBMITDEC000000004',
+    })
+  })
+
+  it('correlates the status request to the acknowledgement <ID>', () => {
+    const acknowledgement = readFileSync(new URL('./fixtures/customs-acknowledgement.xml', import.meta.url), 'utf-8')
+    expect(extractBeaipMessageId(acknowledgement)).toBe('SUBMITDEC000000004')
   })
 })
 
