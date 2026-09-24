@@ -8,7 +8,7 @@ import { writeAudit, type AuditContext } from '@/lib/audit'
 import { buildSubmissionStatusSoapEnvelope } from '@/lib/beaip/transport/soap-envelope'
 import {
   BeaipTransportError,
-  postDeclarationSoap,
+  postSubmissionStatusSoap,
 } from '@/lib/beaip/transport/http-gateway'
 import {
   extractBeaipMessageId,
@@ -107,7 +107,7 @@ export const customsStatusService = {
     })
 
     try {
-      const response = await postDeclarationSoap(soap.envelope, configuration)
+      const response = await postSubmissionStatusSoap(soap.envelope, configuration)
       let parsed
       try {
         parsed = parseBeaipResponse(response.body)

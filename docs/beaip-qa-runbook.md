@@ -37,6 +37,8 @@ BEAIP_TRANSPORT_MODE="disabled"
 BEAIP_ENVIRONMENT="qa"
 BEAIP_DECLARATION_SERVICE_URL=""
 BEAIP_DECLARATION_SOAP_ACTION=""
+BEAIP_SUBMISSION_STATUS_SERVICE_URL="https://io-qa.besw.gov.bs/cxf/BEAIP/Miscellaneous/WSDL/SubmissionStatus/?wsdl"
+BEAIP_SUBMISSION_STATUS_SOAP_ACTION=""
 BEAIP_USERNAME=""
 BEAIP_PASSWORD=""
 BEAIP_BROKER_CODE=""
@@ -84,11 +86,11 @@ preview as a secret-bearing file and delete it when review is complete.
 9. Check Click2Clear UAT using the artifact's `FunctionalReferenceID`.
 10. Disable transport again while results are reviewed.
 
-The supplied status-request XML documents the SOAP body but does not identify a
-separate URL or SOAP action. This owner-directed QA check therefore uses the
-configured declaration endpoint and action until Customs supplies different
-status-operation connection details. An operation/action fault is evidence to
-stop and request those details; it is not a reason to retry automatically.
+Status checks use the separately configured status service URL and SOAP action.
+The QA default is the exact `?wsdl` URL provided for status requests. Verify that
+this address accepts SOAP POSTs during a controlled QA check; the WSDL URL may
+serve service metadata instead of accepting SOAP requests. Set a production
+status URL explicitly before enabling production status checks.
 
 For a split shipment, CPC `400` and `4098` are separate declarations and
 separate POST requests. Do not resubmit an acknowledged group merely because a

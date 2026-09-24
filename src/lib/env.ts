@@ -5,6 +5,7 @@
 import { z } from 'zod'
 
 const booleanString = z.enum(['true', 'false']).transform((value) => value === 'true')
+const qaSubmissionStatusUrl = 'https://io-qa.besw.gov.bs/cxf/BEAIP/Miscellaneous/WSDL/SubmissionStatus/?wsdl'
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
@@ -18,6 +19,8 @@ const envSchema = z.object({
   BEAIP_ENVIRONMENT: z.enum(['qa', 'production']).default('qa'),
   BEAIP_DECLARATION_SERVICE_URL: z.string().optional().default(''),
   BEAIP_DECLARATION_SOAP_ACTION: z.string().optional().default(''),
+  BEAIP_SUBMISSION_STATUS_SERVICE_URL: z.string().optional().default(qaSubmissionStatusUrl),
+  BEAIP_SUBMISSION_STATUS_SOAP_ACTION: z.string().optional().default(''),
   BEAIP_USERNAME: z.string().optional().default(''),
   BEAIP_PASSWORD: z.string().optional().default(''),
   BEAIP_BROKER_CODE: z.string().trim().optional().default(''),
@@ -49,6 +52,17 @@ const envSchema = z.object({
     if (url.protocol !== 'https:' && !(url.protocol === 'http:' && value.BEAIP_ENVIRONMENT === 'qa' && value.BEAIP_ALLOW_INSECURE_QA_HTTP)) {
       context.addIssue({ code: 'custom', path: ['BEAIP_DECLARATION_SERVICE_URL'], message: 'Plain HTTP is permitted only for QA with BEAIP_ALLOW_INSECURE_QA_HTTP=true' })
     }
+  }
+  const statusUrl = value.BEAIP_SUBMISSION_STATUS_SERVICE_URL
+  let parsedStatusUrl: URL
+  try {
+    parsedStatusUrl = new URL(statusUrl)
+  } catch {
+    context.addIssue({ code: 'custom', path: ['BEAIP_SUBMISSION_STATUS_SERVICE_URL'], message: 'Invalid submission status service URL' })
+    return
+  }
+  if (parsedStatusUrl.protocol !== 'https:' && !(parsedStatusUrl.protocol === 'http:' && value.BEAIP_ENVIRONMENT === 'qa' && value.BEAIP_ALLOW_INSECURE_QA_HTTP)) {
+    context.addIssue({ code: 'custom', path: ['BEAIP_SUBMISSION_STATUS_SERVICE_URL'], message: 'Plain HTTP is permitted only for QA with BEAIP_ALLOW_INSECURE_QA_HTTP=true' })
   }
 })
 

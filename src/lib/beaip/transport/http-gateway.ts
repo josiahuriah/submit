@@ -33,11 +33,11 @@ async function readLimited(response: Response, maximum: number): Promise<string>
 
 export interface BeaipHttpResult { httpStatus: number; body: string }
 
-export async function postDeclarationSoap(envelope: string, configuration: Env = env()): Promise<BeaipHttpResult> {
+async function postSoap(envelope: string, configuration: Env, serviceUrl: string, soapAction: string): Promise<BeaipHttpResult> {
   if (configuration.BEAIP_TRANSPORT_MODE !== 'live') {
     throw new BeaipTransportError('BEAIP transport is disabled', 'NETWORK_ERROR')
   }
-  const target = new URL(configuration.BEAIP_DECLARATION_SERVICE_URL)
+  const target = new URL(serviceUrl)
   if (target.protocol === 'http:' && !(configuration.BEAIP_ENVIRONMENT === 'qa' && configuration.BEAIP_ALLOW_INSECURE_QA_HTTP)) {
     throw new BeaipTransportError('Plain HTTP is not allowed for this BEAIP environment', 'NETWORK_ERROR')
   }
@@ -48,7 +48,7 @@ export async function postDeclarationSoap(envelope: string, configuration: Env =
       method: 'POST',
       headers: {
         'Content-Type': 'text/xml; charset=utf-8',
-        SOAPAction: configuration.BEAIP_DECLARATION_SOAP_ACTION,
+        SOAPAction: soapAction,
       },
       body: envelope,
       redirect: 'error',
@@ -65,4 +65,15 @@ export async function postDeclarationSoap(envelope: string, configuration: Env =
   } finally {
     clearTimeout(timeout)
   }
+}
+
+export async function postDeclarationSoap(envelope: string, configuration: Env = env()): Promise<BeaipHttpResult> {
+  return postSoap(envelope, configuration, configuration.BEAIP_DECLARATION_SERVICE_URL, configuration.BEAIP_DECLARATION_SOAP_ACTION)
+}
+
+export async function postSubmissionStatusSoap(envelope: string, configuration: Env = env()): Promise<BeaipHttpResult> {
+  if (configuration.BEAIP_ENVIRONMENT === 'production' && new URL(configuration.BEAIP_SUBMISSION_STATUS_SERVICE_URL).hostname === 'io-qa.besw.gov.bs') {
+    throw new BeaipTransportError('Configure a production submission status URL before checking status', 'NETWORK_ERROR')
+  }
+  return postSoap(envelope, configuration, configuration.BEAIP_SUBMISSION_STATUS_SERVICE_URL, configuration.BEAIP_SUBMISSION_STATUS_SOAP_ACTION)
 }

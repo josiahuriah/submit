@@ -19,7 +19,7 @@ vi.mock('server-only', () => ({}))
 vi.mock('@/lib/env', () => ({ env: () => mocks.configuration }))
 vi.mock('@/lib/audit', () => ({ writeAudit: mocks.audit }))
 vi.mock('@/lib/beaip/transport/http-gateway', () => ({
-  postDeclarationSoap: mocks.post,
+  postSubmissionStatusSoap: mocks.post,
   BeaipTransportError: class extends Error {},
 }))
 import { customsStatusService } from '@/server/services/customs-status.service'
