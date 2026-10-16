@@ -232,8 +232,7 @@ describe('fresh account to Customs-review XML', () => {
       request('/api/billing/invoices', 'POST', {
         clientId: unrelatedClient.id,
         invoiceNumber: `BILL-WRONG-${marker}`,
-        vatRate: '0.10',
-        items: [{ description: 'Wrong client shipment', shipmentId: shipment.id, quantity: '1', unitPrice: '100.00' }],
+        items: [{ description: 'Wrong client shipment', shipmentId: shipment.id, quantity: '1', unitPrice: '100.00', vatAmount: '10.00' }],
       }),
       context(),
     )
@@ -244,13 +243,18 @@ describe('fresh account to Customs-review XML', () => {
       request('/api/billing/invoices', 'POST', {
         clientId: client.id,
         invoiceNumber: `BILL-${marker}`,
-        vatRate: '0.10',
-        items: [{ description: 'Declaration preparation', shipmentId: shipment.id, quantity: '1', unitPrice: '100.00' }],
+        items: [{
+          description: 'Declaration preparation',
+          quantity: '1',
+          unitPrice: '100.00',
+          vatAmount: '7.25',
+        }],
       }),
       context(),
     ), 201)
     expect(brokerageInvoice.status).toBe('DRAFT')
-    expect(d(brokerageInvoice.total).toFixed(2)).toBe('110.00')
+    // Manual billing VAT: $100.00 subtotal + $7.25 entered VAT = $107.25.
+    expect(d(brokerageInvoice.total).toFixed(2)).toBe('107.25')
 
     const sentInvoice = await data<{ status: string }>(await sendBrokerageInvoice(
       request(`/api/billing/invoices/${brokerageInvoice.id}/send`, 'POST'),
@@ -260,7 +264,7 @@ describe('fresh account to Customs-review XML', () => {
 
     const paidInvoice = await data<{ status: string; amountPaid: string }>(await recordBrokeragePayment(
       request(`/api/billing/invoices/${brokerageInvoice.id}/payments`, 'POST', {
-        amount: '110.00', method: 'BANK_TRANSFER', reference: `PAY-${marker}`,
+        amount: '107.25', method: 'BANK_TRANSFER', reference: `PAY-${marker}`,
       }),
       context(brokerageInvoice.id),
     ), 201)

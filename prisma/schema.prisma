@@ -853,6 +853,7 @@ model BrokerageInvoiceItem {
   quantity           Decimal @default(1) @db.Decimal(12, 3)
   unitPrice          Decimal @db.Decimal(12, 2)
   amount             Decimal @db.Decimal(12, 2)
+  vatAmount          Decimal @default(0) @db.Decimal(12, 2)
 
   brokerageInvoice BrokerageInvoice @relation(fields: [brokerageInvoiceId], references: [id], onDelete: Cascade)
 

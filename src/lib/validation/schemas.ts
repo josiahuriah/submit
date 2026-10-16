@@ -29,8 +29,6 @@ export const moneyOptional = money.optional().default('0')
 const QTY_REGEX = /^\d{1,13}(\.\d{1,4})?$/
 export const quantity = z.string().regex(QTY_REGEX, 'Must be a positive quantity')
 
-const RATE_REGEX = /^(0(\.\d{1,4})?|1(\.0{1,4})?)$/ // 0–1 as fraction
-
 export const id = z.string().min(1)
 
 export const paginationQuery = z.object({
@@ -264,7 +262,6 @@ export const brokerageInvoiceCreateSchema = z.object({
   clientId: id,
   invoiceNumber: z.string().min(1).max(60),
   dueDate: z.coerce.date().optional(),
-  vatRate: z.string().regex(RATE_REGEX).default('0.10'),
   notes: z.string().max(2000).optional(),
   items: z
     .array(
@@ -273,6 +270,7 @@ export const brokerageInvoiceCreateSchema = z.object({
         shipmentId: id.optional(),
         quantity: quantity.default('1'),
         unitPrice: money,
+        vatAmount: money,
       }),
     )
     .min(1),

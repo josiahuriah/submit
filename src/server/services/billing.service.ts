@@ -4,8 +4,8 @@
  * Money rules:
  *   - Item amount = quantity × unitPrice, computed server-side (never trust
  *     client-side arithmetic for money).
- *   - Invoice: subtotal = Σ item amounts; VAT applied at invoice level;
- *     total = subtotal + VAT.
+ *   - VAT is entered explicitly per item and retained for auditability.
+ *   - Invoice: subtotal = Σ item amounts; VAT = Σ item VAT; total = both.
  *   - Payments accumulate on amountPaid; status advances
  *     SENT → PARTIALLY_PAID → PAID automatically. Overpayment is rejected.
  */
@@ -20,7 +20,7 @@ const INVOICE_SELECT = {
   subtotal: true, vatAmount: true, total: true, amountPaid: true, notes: true,
   client: { select: { id: true, name: true } },
   items: {
-    select: { id: true, description: true, quantity: true, unitPrice: true, amount: true, shipmentId: true },
+    select: { id: true, description: true, quantity: true, unitPrice: true, amount: true, vatAmount: true, shipmentId: true },
   },
   payments: {
     select: { id: true, amount: true, method: true, reference: true, receivedAt: true },
@@ -32,9 +32,31 @@ export interface BrokerageInvoiceInput {
   clientId: string
   invoiceNumber: string
   dueDate?: Date
-  vatRate: string
   notes?: string
-  items: { description: string; shipmentId?: string; quantity: string; unitPrice: string }[]
+  items: BillingItemInput[]
+}
+
+interface BillingItemInput {
+  description: string
+  shipmentId?: string
+  quantity: string
+  unitPrice: string
+  vatAmount: string
+}
+
+/** Pure billing arithmetic kept separate from persistence for exact-value tests. */
+export function calculateBillingTotals(input: BillingItemInput[]) {
+  const items = input.map((item) => ({
+    description: item.description,
+    shipmentId: item.shipmentId,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    amount: moneyString(d(item.quantity).times(d(item.unitPrice))),
+    vatAmount: moneyString(item.vatAmount),
+  }))
+  const subtotal = moneyString(sum(items.map((item) => item.amount)))
+  const vatAmount = moneyString(sum(items.map((item) => item.vatAmount)))
+  return { items, subtotal, vatAmount, total: moneyString(d(subtotal).plus(vatAmount)) }
 }
 
 export const billingService = {
@@ -72,16 +94,7 @@ export const billingService = {
       }
     }
 
-    const items = input.items.map((item) => ({
-      description: item.description,
-      shipmentId: item.shipmentId,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      amount: moneyString(d(item.quantity).times(d(item.unitPrice))),
-    }))
-    const subtotal = toMoney(sum(items.map((i) => i.amount)))
-    const vatAmount = toMoney(subtotal.times(d(input.vatRate)))
-    const total = toMoney(subtotal.plus(vatAmount))
+    const { items, subtotal, vatAmount, total } = calculateBillingTotals(input.items)
 
     const invoice = await db.brokerageInvoice.create({
       data: {
@@ -89,9 +102,9 @@ export const billingService = {
         invoiceNumber: input.invoiceNumber,
         dueDate: input.dueDate,
         notes: input.notes,
-        subtotal: moneyString(subtotal),
-        vatAmount: moneyString(vatAmount),
-        total: moneyString(total),
+        subtotal,
+        vatAmount,
+        total,
         items: { create: items },
       } as never,
       select: INVOICE_SELECT,

@@ -51,8 +51,8 @@ Hard rules:
 
 | Command | What it proves | Expected outcome | Environment needs |
 |---|---|---|---|
-| `npm test` | Full pure + live-DB suite | 60 tests across 11 files pass | Tenant isolation and fresh-account workflow need a live seeded `DATABASE_URL`; pure tariff/calculation/TFP/XML tests do not. |
-| `npx vitest run tests/calculations.test.ts` | Calculation and alcohol measurement engine | 16 passed | **No DB needed.** Safe anywhere. |
+| `npm test` | Full pure + live-DB suite | 87 tests across 13 files pass | Tenant isolation and fresh-account workflow need a live seeded `DATABASE_URL`; pure tariff/calculation/TFP/XML tests do not. |
+| `npx vitest run tests/calculations.test.ts` | Calculation and alcohol measurement engine | 18 passed | **No DB needed.** Safe anywhere. |
 | `npx vitest run tests/tenant-isolation.test.ts` | Layer-1 tenant scoping (Prisma extension) against real Postgres | 5 passed | Live seeded DB. Creates then deletes a `ISOLATION-TEST-CLIENT` client row (cleanup in `afterAll`). |
 | `npx vitest run tests/fresh-account-workflow.test.ts` | Route-handler workflow: register → client → supplier → manifest → shipment → invoice → line → calculation → review XML, then billing send/payment | 1 passed | Live DB with global reference seed. Creates and deletes a uniquely named tenant. |
 | `npx tsx scripts/smoke.ts` | E2E: calculate → math checks → versioned review XML; shipment stays DRAFT | Exits 0, prints "Smoke passed" | Live seeded local DB. **MUTATES demo data** — see warning below. |
@@ -95,7 +95,7 @@ at production data; the delete in step 1 is unconditional.
 5. `npm run typecheck && npm run lint`.
 
 ### Touched tenancy/auth (`src/lib/db/tenant-client.ts`, `prisma/apply-rls.ts`, auth service)
-1. `npx vitest run tests/tenant-isolation.test.ts` against the seeded dev DB — all 5 must pass.
+1. `npx vitest run tests/tenant-isolation.test.ts` against the seeded dev DB — all 6 must pass.
 2. Manual cross-org probe (in addition, not instead):
    - Log in as a user of org A, note a shipment id belonging to org B
      (query via `basePrisma` or the other org's login).
@@ -170,7 +170,7 @@ fridge with levy):
 - Total CIF − total FOB: **2315.00** exactly (1850.00 freight + 320.00 insurance + 145.00 other)
 - Post-artifact status: `DRAFT`; no endpoint is called.
 
-**The 16 calc tests certify** (`tests/calculations.test.ts`), in addition to the original cases: additive duty, independent current/historical alcohol excise, exchange-rate conversion, package volume/proof-gallon conversion, and bulk-litre conversion.
+**The 18 calc tests certify** (`tests/calculations.test.ts`), in addition to the original cases: split-declaration freight placement, additive duty, independent current/historical alcohol excise, broker-entered BSD invoice values, package volume/proof-gallon conversion, and bulk-litre conversion.
 
 The original cases include:
 1. Apportionment splits proportionally by value.
@@ -185,16 +185,20 @@ The original cases include:
 10. Processing fee caps at $750.
 11. Line totals reconcile exactly with shipment totals, and CIF total = FOB + all charges to the penny.
 
-**The 5 isolation tests certify** (live DB, Layer 1): scoped findMany despite
+**The 6 isolation tests certify** (live DB, Layer 1): scoped findMany despite
 identical `shipmentNumber` in both orgs; cross-org `findUnique` → null;
 creates auto-stamped with tenant `organizationId`; cross-org `update` throws;
-scoped `count` < global count.
+scoped `count` < global count; submission batches and attempts remain isolated.
+
+**The billing calculation test certifies** that manually entered item VAT is
+summed exactly, without an implicit percentage, and reconciles to the invoice total.
 
 **Fixtures:** demo shipment `SHP-2026-00001` (both orgs, deliberately
 colliding numbers); bundled **1,544-code** tariff plus curated rate histories.
 
 ## Provenance and maintenance
 
+- Test inventory re-verified 2026-10-16 with `npx vitest list` (87 tests across 13 files).
 - Re-verified 2026-08-14 from calculation/tariff/TFP/XML/transport-reference/invoice-selection tests, smoke, package scripts, seeds, schema, and README.
 - If tests are added/removed, update the counts in §2 and the certified lists in §6; if CI or git appears, rewrite §5.
 - If `scripts/smoke.ts` changes what it mutates or asserts, update §2's warning block first — it is the safety-critical paragraph.

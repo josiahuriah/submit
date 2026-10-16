@@ -6,6 +6,7 @@ export interface BillingItemRow {
   quantity: string
   unitPrice: string
   amount: string
+  vatAmount: string
   shipmentId: string | null
 }
 

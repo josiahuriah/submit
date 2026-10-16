@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { apiListAll, apiRequest, ApiClientError } from '@/lib/client-api'
-import type { BillingInvoiceRow, ClientOptionRow, ShipmentOptionRow } from '@/lib/billing-types'
+import type { BillingInvoiceRow, ClientOptionRow } from '@/lib/billing-types'
 import { d, moneyString, sum } from '@/lib/calculations/money'
 import { money, isoDate } from '@/lib/format'
 import { Chip, KpiCard } from '@/components/ui/primitives'
@@ -11,8 +11,8 @@ import { Icons } from '@/components/ui/icons'
 const STATUS_KIND = { DRAFT: 'draft', SENT: 'acc', PARTIALLY_PAID: 'gold', PAID: 'pos', VOID: 'neg' } as const
 const PAYMENT_METHODS = ['BANK_TRANSFER', 'CASH', 'CHEQUE', 'CARD', 'OTHER'] as const
 
-interface DraftItem { description: string; shipmentId: string; quantity: string; unitPrice: string }
-const emptyItem = (): DraftItem => ({ description: 'Customs brokerage service', shipmentId: '', quantity: '1', unitPrice: '' })
+interface DraftItem { description: string; quantity: string; unitPrice: string; vatAmount: string }
+const emptyItem = (): DraftItem => ({ description: 'Customs brokerage service', quantity: '1', unitPrice: '', vatAmount: '' })
 
 function message(error: unknown) {
   if (error instanceof ApiClientError && error.details) return Object.values(error.details).flat()[0] ?? error.message
@@ -22,25 +22,22 @@ function message(error: unknown) {
 export function BillingView() {
   const [invoices, setInvoices] = useState<BillingInvoiceRow[]>([])
   const [clients, setClients] = useState<ClientOptionRow[]>([])
-  const [shipments, setShipments] = useState<ShipmentOptionRow[]>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [showCreate, setShowCreate] = useState(false)
   const [paymentInvoiceId, setPaymentInvoiceId] = useState<string | null>(null)
-  const [draft, setDraft] = useState({ clientId: '', invoiceNumber: '', dueDate: '', vatRate: '0.10', notes: '', items: [emptyItem()] })
+  const [draft, setDraft] = useState({ clientId: '', invoiceNumber: '', dueDate: '', notes: '', items: [emptyItem()] })
   const [payment, setPayment] = useState({ amount: '', method: 'BANK_TRANSFER', reference: '', receivedAt: new Date().toISOString().slice(0, 10) })
 
   const load = useCallback(async () => {
     try {
-      const [invoiceRows, clientRows, shipmentRows] = await Promise.all([
+      const [invoiceRows, clientRows] = await Promise.all([
         apiListAll<BillingInvoiceRow>('/api/billing/invoices'),
         apiListAll<ClientOptionRow>('/api/clients'),
-        apiListAll<ShipmentOptionRow>('/api/shipments'),
       ])
       setInvoices(invoiceRows)
       setClients(clientRows.filter((client) => client.isActive))
-      setShipments(shipmentRows)
       setDraft((current) => ({ ...current, clientId: current.clientId || clientRows.find((client) => client.isActive)?.id || '' }))
     } catch (error) {
       setNotice(message(error))
@@ -81,13 +78,12 @@ export function BillingView() {
           clientId: draft.clientId,
           invoiceNumber: draft.invoiceNumber.trim(),
           dueDate: draft.dueDate || undefined,
-          vatRate: draft.vatRate,
           notes: draft.notes.trim() || undefined,
           items: draft.items.map((item) => ({
             description: item.description.trim(),
-            shipmentId: item.shipmentId || undefined,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
+            vatAmount: item.vatAmount,
           })),
         }),
       })
@@ -141,18 +137,17 @@ export function BillingView() {
       {showCreate && <div className="sb-card sb-pad" style={{ marginBottom: 16, borderLeft: '3px solid var(--sb-accent)' }}>
         <div className="sb-h2" style={{ marginBottom: 12 }}>Create brokerage invoice</div>
         {clients.length === 0 ? <div className="sb-meta">Create an active client before raising an invoice.</div> : <>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12 }}>
             <label style={field}><span className="sb-eyebrow">Client</span><select className="sb-inp" value={draft.clientId} onChange={(e) => setDraft((current) => ({ ...current, clientId: e.target.value }))}>{clients.map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}</select></label>
             <label style={field}><span className="sb-eyebrow">Invoice number</span><input className="sb-inp sb-mono" value={draft.invoiceNumber} onChange={(e) => setDraft((current) => ({ ...current, invoiceNumber: e.target.value }))} placeholder="BILL-2026-0001" /></label>
             <label style={field}><span className="sb-eyebrow">Due date</span><input className="sb-inp sb-mono" type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} /></label>
-            <label style={field}><span className="sb-eyebrow">VAT rate</span><select className="sb-inp" value={draft.vatRate} onChange={(e) => setDraft((current) => ({ ...current, vatRate: e.target.value }))}><option value="0.10">10%</option><option value="0">0%</option></select></label>
           </div>
           <div className="sb-eyebrow" style={{ marginTop: 16, marginBottom: 7 }}>Invoice items</div>
-          {draft.items.map((item, index) => <div key={index} style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr .5fr .7fr auto', gap: 10, marginBottom: 8, alignItems: 'end' }}>
+          {draft.items.map((item, index) => <div key={index} style={{ display: 'grid', gridTemplateColumns: '2fr .5fr .7fr .7fr auto', gap: 10, marginBottom: 8, alignItems: 'end' }}>
             <label style={field}><span className="sb-meta">Description</span><input className="sb-inp" value={item.description} onChange={(e) => setItem(index, 'description', e.target.value)} /></label>
-            <label style={field}><span className="sb-meta">Shipment</span><select className="sb-inp" value={item.shipmentId} onChange={(e) => setItem(index, 'shipmentId', e.target.value)}><option value="">— general service —</option>{shipments.filter((shipment) => shipment.client.id === draft.clientId).map((shipment) => <option key={shipment.id} value={shipment.id}>{shipment.shipmentNumber}</option>)}</select></label>
-            <label style={field}><span className="sb-meta">Quantity</span><input className="sb-inp sb-mono" value={item.quantity} onChange={(e) => setItem(index, 'quantity', e.target.value)} /></label>
-            <label style={field}><span className="sb-meta">Unit price</span><input className="sb-inp sb-mono" value={item.unitPrice} onChange={(e) => setItem(index, 'unitPrice', e.target.value)} placeholder="0.00" /></label>
+            <label style={field}><span className="sb-meta">Quantity</span><input className="sb-inp sb-mono" inputMode="decimal" value={item.quantity} onChange={(e) => setItem(index, 'quantity', e.target.value)} /></label>
+            <label style={field}><span className="sb-meta">Unit price</span><input className="sb-inp sb-mono" inputMode="decimal" value={item.unitPrice} onChange={(e) => setItem(index, 'unitPrice', e.target.value)} placeholder="0.00" /></label>
+            <label style={field}><span className="sb-meta">VAT</span><input className="sb-inp sb-mono" inputMode="decimal" value={item.vatAmount} onChange={(e) => setItem(index, 'vatAmount', e.target.value)} placeholder="0.00" /></label>
             <button className="sb-btn is-sm" disabled={draft.items.length === 1} onClick={() => setDraft((current) => ({ ...current, items: current.items.filter((_, itemIndex) => itemIndex !== index) }))}>Remove</button>
           </div>)}
           <button className="sb-btn is-sm" onClick={() => setDraft((current) => ({ ...current, items: [...current.items, emptyItem()] }))}><Icons.plus /> Add item</button>
