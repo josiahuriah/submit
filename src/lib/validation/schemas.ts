@@ -276,6 +276,11 @@ export const brokerageInvoiceCreateSchema = z.object({
     .min(1),
 })
 
+// Edits replace the full editable invoice and allow clearing the due date.
+export const brokerageInvoiceUpdateSchema = brokerageInvoiceCreateSchema.extend({
+  dueDate: z.coerce.date().nullable().optional(),
+})
+
 export const paymentCreateSchema = z.object({
   brokerageInvoiceId: id,
   amount: money,

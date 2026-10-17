@@ -18,7 +18,8 @@ import { cursorArgs, toPage, type PaginationParams } from '@/lib/db/pagination'
 const INVOICE_SELECT = {
   id: true, invoiceNumber: true, status: true, issueDate: true, dueDate: true,
   subtotal: true, vatAmount: true, total: true, amountPaid: true, notes: true,
-  client: { select: { id: true, name: true } },
+  client: { select: { id: true, name: true, address: true, email: true, tinNumber: true } },
+  organization: { select: { name: true, address: true, email: true, phone: true, tinNumber: true } },
   items: {
     select: { id: true, description: true, quantity: true, unitPrice: true, amount: true, vatAmount: true, shipmentId: true },
   },
@@ -111,6 +112,48 @@ export const billingService = {
     })
     await writeAudit(db, audit, { action: 'CREATE', entityType: 'BrokerageInvoice', entityId: invoice.id })
     return invoice
+  },
+
+  async update(db: TenantClient, audit: AuditContext, invoiceId: string, input: Omit<BrokerageInvoiceInput, 'dueDate'> & { dueDate?: Date | null }) {
+    const result = await db.$tenantTransaction(async (tx) => {
+      // Share the payment lock so an edit cannot race a payment and change its balance.
+      const locked = await tx.$queryRaw<{ id: string }[]>`
+        SELECT "id" FROM "BrokerageInvoice"
+        WHERE "id" = ${invoiceId} AND "organizationId" = ${db.$organizationId}
+        FOR UPDATE
+      `
+      if (!locked.length) throw new NotFoundError('Brokerage invoice')
+      const before = await tx.brokerageInvoice.findFirst({
+        where: { id: invoiceId, organizationId: db.$organizationId }, select: INVOICE_SELECT,
+      })
+      if (!before) throw new NotFoundError('Brokerage invoice')
+      if (!['DRAFT', 'SENT'].includes(before.status) || d(String(before.amountPaid)).greaterThan(0) || before.payments.length) {
+        throw new BusinessRuleError('Only draft or sent invoices without payments can be edited')
+      }
+      const client = await tx.client.findFirst({ where: { id: input.clientId, organizationId: db.$organizationId } })
+      if (!client) throw new NotFoundError('Client')
+      if (!client.isActive && client.id !== before.client.id) throw new BusinessRuleError('Select an active client')
+      const shipmentIds = [...new Set(input.items.flatMap((item) => item.shipmentId ? [item.shipmentId] : []))]
+      if (shipmentIds.length && await tx.shipment.count({ where: {
+        id: { in: shipmentIds }, clientId: input.clientId, organizationId: db.$organizationId,
+      } }) !== shipmentIds.length) throw new BusinessRuleError('Every billed shipment must belong to the selected client')
+      const { items, ...totals } = calculateBillingTotals(input.items)
+      const invoice = await tx.brokerageInvoice.update({
+        where: { id: invoiceId, organizationId: db.$organizationId },
+        data: {
+          clientId: input.clientId, invoiceNumber: input.invoiceNumber,
+          dueDate: input.dueDate ?? null, notes: input.notes ?? null, ...totals,
+          items: { deleteMany: {}, create: items },
+        },
+        select: INVOICE_SELECT,
+      })
+      return { before, invoice }
+    })
+    await writeAudit(db, audit, {
+      action: 'UPDATE', entityType: 'BrokerageInvoice', entityId: invoiceId,
+      changes: { before: result.before, after: result.invoice },
+    })
+    return result.invoice
   },
 
   async send(db: TenantClient, audit: AuditContext, invoiceId: string) {

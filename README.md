@@ -176,6 +176,8 @@ generate review artifacts, but cannot send them to Customs.
 
 ---
 
+Billing invoice numbers open saved details and a Print / Save PDF view. Draft and sent invoices without payments can be edited; edits recalculate totals from item amounts and manually entered VAT. Paid, partially paid, and void invoices are read-only. Use the browser print dialog’s Save as PDF option for a PDF copy.
+
 ## API surface (33 routes)
 
 ```
@@ -191,7 +193,7 @@ GET|POST /api/manifests    GET|PATCH /api/manifests/:id
 POST   /api/invoices       PATCH|DELETE /api/invoices/:id
 GET|POST /api/invoices/:id/line-items         PATCH|DELETE /api/line-items/:id
 GET    /api/hs-codes/search?q=rum             GET /api/hs-codes/:code/rates
-GET|POST /api/billing/invoices                GET /api/billing/invoices/:id
+GET|POST /api/billing/invoices                GET|PATCH /api/billing/invoices/:id
 POST   /api/billing/invoices/:id/send|payments
 GET    /api/customs-entries/:id/xml
 POST   /api/customs-entries/:id/submit        # Broker+; transport disabled by default

@@ -29,7 +29,8 @@ export interface BillingInvoiceRow {
   total: string
   amountPaid: string
   notes: string | null
-  client: { id: string; name: string }
+  client: { id: string; name: string; address: string | null; email: string | null; tinNumber: string | null }
+  organization: { name: string; address: string | null; email: string | null; phone: string | null; tinNumber: string | null }
   items: BillingItemRow[]
   payments: PaymentRow[]
 }
