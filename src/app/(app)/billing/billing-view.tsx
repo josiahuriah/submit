@@ -12,8 +12,14 @@ import { Icons } from '@/components/ui/icons'
 const STATUS_KIND = { DRAFT: 'draft', SENT: 'acc', PARTIALLY_PAID: 'gold', PAID: 'pos', VOID: 'neg' } as const
 const PAYMENT_METHODS = ['BANK_TRANSFER', 'CASH', 'CHEQUE', 'CARD', 'OTHER'] as const
 
-interface DraftItem { description: string; quantity: string; unitPrice: string; vatAmount: string; shipmentId?: string }
-const emptyItem = (): DraftItem => ({ description: 'Customs brokerage service', quantity: '1', unitPrice: '', vatAmount: '0' })
+interface DraftItem {
+  description: string
+  amount: string
+  vatAmount: string
+  shipmentId?: string
+  original?: { amount: string; quantity: string; unitPrice: string }
+}
+const emptyItem = (): DraftItem => ({ description: 'Customs brokerage service', amount: '', vatAmount: '0' })
 
 function message(error: unknown) {
   if (error instanceof ApiClientError && error.details) return Object.values(error.details).flat()[0] ?? error.message
@@ -87,8 +93,9 @@ export function BillingView() {
     setDraft({
       clientId: invoice.client.id, invoiceNumber: invoice.invoiceNumber,
       dueDate: invoice.dueDate?.slice(0, 10) ?? '', notes: invoice.notes ?? '', paymentInstructions: invoice.paymentInstructions ?? '',
-      items: invoice.items.map((item) => ({ description: item.description, quantity: item.quantity,
-        unitPrice: item.unitPrice, vatAmount: item.vatAmount, shipmentId: item.shipmentId ?? undefined })),
+      items: invoice.items.map((item) => ({ description: item.description, amount: item.amount,
+        vatAmount: item.vatAmount, shipmentId: item.shipmentId ?? undefined,
+        original: { amount: item.amount, quantity: item.quantity, unitPrice: item.unitPrice } })),
     })
     setSelectedInvoice(null)
     setShowCreate(true)
@@ -109,8 +116,8 @@ export function BillingView() {
           paymentInstructions: draft.paymentInstructions.trim(),
           items: draft.items.map((item) => ({
             description: item.description.trim(),
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
+            quantity: item.original && item.amount === item.original.amount ? item.original.quantity : '1',
+            unitPrice: item.original && item.amount === item.original.amount ? item.original.unitPrice : item.amount,
             vatAmount: item.vatAmount,
             shipmentId: item.shipmentId,
           })),
@@ -178,10 +185,9 @@ export function BillingView() {
             <label style={field}><span className="sb-eyebrow">Due date</span><input className="sb-inp sb-mono" type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} /></label>
           </div>
           <div className="sb-eyebrow" style={{ marginTop: 16, marginBottom: 7 }}>Invoice items</div>
-          {draft.items.map((item, index) => <div key={index} style={{ display: 'grid', gridTemplateColumns: '2fr .5fr .7fr .7fr auto', gap: 10, marginBottom: 8, alignItems: 'end' }}>
+          {draft.items.map((item, index) => <div key={index} style={{ display: 'grid', gridTemplateColumns: '2fr .7fr .7fr auto', gap: 10, marginBottom: 8, alignItems: 'end' }}>
             <label style={field}><span className="sb-meta">Description</span><input className="sb-inp" value={item.description} onChange={(e) => setItem(index, 'description', e.target.value)} /></label>
-            <label style={field}><span className="sb-meta">Quantity</span><input className="sb-inp sb-mono" inputMode="decimal" value={item.quantity} onChange={(e) => setItem(index, 'quantity', e.target.value)} /></label>
-            <label style={field}><span className="sb-meta">Unit price</span><input className="sb-inp sb-mono" inputMode="decimal" value={item.unitPrice} onChange={(e) => setItem(index, 'unitPrice', e.target.value)} placeholder="0.00" /></label>
+            <label style={field}><span className="sb-meta">Amount</span><input className="sb-inp sb-mono" inputMode="decimal" value={item.amount} onChange={(e) => setItem(index, 'amount', e.target.value)} placeholder="0.00" /></label>
             <label style={field}><span className="sb-meta">VAT</span><input className="sb-inp sb-mono" inputMode="decimal" value={item.vatAmount} onChange={(e) => setItem(index, 'vatAmount', e.target.value)} placeholder="0.00" /></label>
             <button className="sb-btn is-sm" disabled={draft.items.length === 1} onClick={() => setDraft((current) => ({ ...current, items: current.items.filter((_, itemIndex) => itemIndex !== index) }))}>Remove</button>
           </div>)}

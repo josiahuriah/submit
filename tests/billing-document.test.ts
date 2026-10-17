@@ -15,6 +15,17 @@ const invoice: BillingInvoiceRow = {
 }
 
 describe('invoice document', () => {
+  it('shows the line amount without quantity or unit price in the invoice and print document', () => {
+    const withItem = { ...invoice, items: [{
+      id: 'item', description: 'Entry preparation', quantity: '2', unitPrice: '12.50',
+      amount: '25.00', vatAmount: '1.75', shipmentId: null,
+    }] }
+    const html = renderToStaticMarkup(createElement(InvoiceDocument, { invoice: withItem }))
+    expect(html).toContain('<th>Description</th><th>Amount</th><th>VAT</th>')
+    expect(html).toContain('<td>Entry preparation</td><td>$25.00</td>')
+    expect(html).not.toContain('<th>Qty</th>')
+    expect(html).not.toContain('<th>Unit price</th>')
+  })
   it('uses the issuing tenant name and renders escaped payment directions separately from notes', () => {
     const html = renderToStaticMarkup(createElement(InvoiceDocument, { invoice }))
     expect(html).toContain('<h2>Atlas Brokers</h2>')
