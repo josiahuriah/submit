@@ -17,7 +17,7 @@ import { cursorArgs, toPage, type PaginationParams } from '@/lib/db/pagination'
 
 const INVOICE_SELECT = {
   id: true, invoiceNumber: true, status: true, issueDate: true, dueDate: true,
-  subtotal: true, vatAmount: true, total: true, amountPaid: true, notes: true,
+  subtotal: true, vatAmount: true, total: true, amountPaid: true, notes: true, paymentInstructions: true,
   client: { select: { id: true, name: true, address: true, email: true, tinNumber: true } },
   organization: { select: { name: true, address: true, email: true, phone: true, tinNumber: true } },
   items: {
@@ -34,6 +34,7 @@ export interface BrokerageInvoiceInput {
   invoiceNumber: string
   dueDate?: Date
   notes?: string
+  paymentInstructions?: string
   items: BillingItemInput[]
 }
 
@@ -103,6 +104,7 @@ export const billingService = {
         invoiceNumber: input.invoiceNumber,
         dueDate: input.dueDate,
         notes: input.notes,
+        paymentInstructions: input.paymentInstructions,
         subtotal,
         vatAmount,
         total,
@@ -142,7 +144,7 @@ export const billingService = {
         where: { id: invoiceId, organizationId: db.$organizationId },
         data: {
           clientId: input.clientId, invoiceNumber: input.invoiceNumber,
-          dueDate: input.dueDate ?? null, notes: input.notes ?? null, ...totals,
+          dueDate: input.dueDate ?? null, notes: input.notes ?? null, paymentInstructions: input.paymentInstructions || null, ...totals,
           items: { deleteMany: {}, create: items },
         },
         select: INVOICE_SELECT,

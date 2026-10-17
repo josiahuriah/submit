@@ -35,7 +35,7 @@ describe('billing invoice edits', () => {
     const { db, tx, audit } = fixture(status)
     const result = await billingService.update(db, { userId: 'user' }, 'invoice', input)
     // (2 × 12.50) + 10 = 35; explicit VAT 1.75; total 36.75.
-    expect(result).toMatchObject({ subtotal: '35.00', vatAmount: '1.75', total: '36.75', dueDate: null, notes: null })
+    expect(result).toMatchObject({ subtotal: '35.00', vatAmount: '1.75', total: '36.75', dueDate: null, notes: null, paymentInstructions: null })
     expect(tx.brokerageInvoice.findFirst).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'invoice', organizationId: 'org' } }))
     expect(tx.brokerageInvoice.update).toHaveBeenCalledWith(expect.objectContaining({
       where: { id: 'invoice', organizationId: 'org' },
@@ -78,6 +78,17 @@ describe('billing invoice edits', () => {
     await expect(billingService.update(db, { userId: 'user' }, 'invoice', linkedInput)).rejects.toThrow('selected client')
     expect(tx.shipment.count).toHaveBeenCalledWith({ where: { id: { in: ['shipment'] }, clientId: 'client', organizationId: 'org' } })
     expect(tx.brokerageInvoice.update).not.toHaveBeenCalled()
+  })
+
+  it('saves payment instructions separately from notes and allows clearing them', async () => {
+    const { db } = fixture()
+    const result = await billingService.update(db, { userId: 'user' }, 'invoice', {
+      ...input, notes: 'Thank you', paymentInstructions: 'Bank: Example Bank\nAccount: Atlas Brokers',
+    })
+    expect(result).toMatchObject({ notes: 'Thank you', paymentInstructions: 'Bank: Example Bank\nAccount: Atlas Brokers' })
+    const cleared = await billingService.update(db, { userId: 'user' }, 'invoice', { ...input, paymentInstructions: '' })
+    expect(cleared.paymentInstructions).toBeNull()
+    expect(brokerageInvoiceUpdateSchema.safeParse({ ...input, paymentInstructions: 'x'.repeat(2001) }).success).toBe(false)
   })
 
   it('accepts clearing the due date and rejects invalid or empty item data', () => {

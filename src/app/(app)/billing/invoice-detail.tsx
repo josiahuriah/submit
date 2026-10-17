@@ -13,6 +13,7 @@ export function InvoiceDocument({ invoice }: { invoice: BillingInvoiceRow }) {
     <p className="currency">All amounts in BSD</p>
     <table><thead><tr><th>Description</th><th>Qty</th><th>Unit price</th><th>Amount</th><th>VAT</th></tr></thead><tbody>{invoice.items.map((item) => <tr key={item.id}><td>{item.description}</td><td>{item.quantity}</td><td>{money(item.unitPrice)}</td><td>{money(item.amount)}</td><td>{money(item.vatAmount)}</td></tr>)}</tbody></table>
     <dl>{[['Subtotal', invoice.subtotal], ['VAT', invoice.vatAmount], ['Total', invoice.total], ['Paid', invoice.amountPaid], ['Balance due', moneyString(d(invoice.total).minus(invoice.amountPaid))]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{money(value)}</dd></div>)}</dl>
+    {invoice.paymentInstructions && <section><h3>Payment instructions</h3><p>{invoice.paymentInstructions}</p></section>}
     {invoice.notes && <section><h3>Notes</h3><p>{invoice.notes}</p></section>}
     {invoice.payments.length > 0 && <section><h3>Payments</h3><table><thead><tr><th>Date</th><th>Method / reference</th><th>Amount</th></tr></thead><tbody>{invoice.payments.map((payment) => <tr key={payment.id}><td>{isoDate(payment.receivedAt)}</td><td>{payment.method.replaceAll('_', ' ')} {payment.reference}</td><td>{money(payment.amount)}</td></tr>)}</tbody></table></section>}
   </article>

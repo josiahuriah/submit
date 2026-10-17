@@ -263,6 +263,7 @@ export const brokerageInvoiceCreateSchema = z.object({
   invoiceNumber: z.string().min(1).max(60),
   dueDate: z.coerce.date().optional(),
   notes: z.string().max(2000).optional(),
+  paymentInstructions: z.string().trim().max(2000).optional(),
   items: z
     .array(
       z.object({

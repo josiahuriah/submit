@@ -176,7 +176,7 @@ generate review artifacts, but cannot send them to Customs.
 
 ---
 
-Billing invoice numbers open saved details and a Print / Save PDF view. Draft and sent invoices without payments can be edited; edits recalculate totals from item amounts and manually entered VAT. Paid, partially paid, and void invoices are read-only. Use the browser print dialog’s Save as PDF option for a PDF copy.
+Billing invoice numbers open saved details and a Print / Save PDF view. Draft and sent invoices without payments can be edited; edits recalculate totals from item amounts and manually entered VAT. Paid, partially paid, and void invoices are read-only. The invoice header uses the tenant organization’s saved name. Optional payment instructions can be entered when creating or editing an invoice and appear on the printed copy. Use the browser print dialog’s Save as PDF option for a PDF copy.
 
 ## API surface (33 routes)
 

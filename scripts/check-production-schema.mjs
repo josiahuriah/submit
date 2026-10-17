@@ -1,4 +1,4 @@
-/** Keep Vercel's current deployment serving until the required status-check schema is ready. */
+/** Keep Vercel's current deployment serving until the required application schema is ready. */
 import pg from 'pg'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
@@ -6,6 +6,8 @@ import { readFileSync } from 'node:fs'
 const migrations = [
   '20260917130000_sequential_declaration_reference',
   '20260921100000_submission_status_checks',
+  '20261016090000_add_billing_item_vat',
+  '20261017100000_add_invoice_payment_instructions',
 ]
 
 if (process.env.VERCEL_ENV === 'production') {
@@ -26,7 +28,7 @@ if (process.env.VERCEL_ENV === 'production') {
     const { rows } = await client.query(`
       SELECT
         NOT EXISTS (
-          SELECT 1 FROM (VALUES ($1, $2), ($3, $4)) AS required(migration_name, checksum)
+          SELECT 1 FROM unnest($1::text[], $2::text[]) AS required(migration_name, checksum)
           WHERE NOT EXISTS (
             SELECT 1 FROM "_prisma_migrations" applied
             WHERE applied.migration_name = required.migration_name
@@ -45,7 +47,7 @@ if (process.env.VERCEL_ENV === 'production') {
               SELECT 1 FROM pg_policy p WHERE p.polrelid = c.oid AND p.polname = 'tenant_isolation'
             )
         ) AS policies_ready
-    `, requiredMigrations.flatMap(({ migration, checksum }) => [migration, checksum]))
+    `, [requiredMigrations.map(({ migration }) => migration), requiredMigrations.map(({ checksum }) => checksum)])
     if (!rows[0]?.migrated || !rows[0]?.policies_ready) throw new Error('Schema is not ready')
     console.log('Production migration and tenant policies verified.')
   } catch {

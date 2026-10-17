@@ -30,7 +30,7 @@ export function BillingView() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showCreate, setShowCreate] = useState(false)
   const [paymentInvoiceId, setPaymentInvoiceId] = useState<string | null>(null)
-  const [draft, setDraft] = useState({ clientId: '', invoiceNumber: '', dueDate: '', notes: '', items: [emptyItem()] })
+  const [draft, setDraft] = useState({ clientId: '', invoiceNumber: '', dueDate: '', notes: '', paymentInstructions: '', items: [emptyItem()] })
   const [payment, setPayment] = useState({ amount: '', method: 'BANK_TRANSFER', reference: '', receivedAt: new Date().toISOString().slice(0, 10) })
 
   const load = useCallback(async () => {
@@ -86,7 +86,7 @@ export function BillingView() {
     setEditingId(invoice.id)
     setDraft({
       clientId: invoice.client.id, invoiceNumber: invoice.invoiceNumber,
-      dueDate: invoice.dueDate?.slice(0, 10) ?? '', notes: invoice.notes ?? '',
+      dueDate: invoice.dueDate?.slice(0, 10) ?? '', notes: invoice.notes ?? '', paymentInstructions: invoice.paymentInstructions ?? '',
       items: invoice.items.map((item) => ({ description: item.description, quantity: item.quantity,
         unitPrice: item.unitPrice, vatAmount: item.vatAmount, shipmentId: item.shipmentId ?? undefined })),
     })
@@ -106,6 +106,7 @@ export function BillingView() {
           invoiceNumber: draft.invoiceNumber.trim(),
           dueDate: draft.dueDate || (editingId ? null : undefined),
           notes: draft.notes.trim() || undefined,
+          paymentInstructions: draft.paymentInstructions.trim(),
           items: draft.items.map((item) => ({
             description: item.description.trim(),
             quantity: item.quantity,
@@ -118,7 +119,7 @@ export function BillingView() {
       setShowCreate(false)
       setEditingId(null)
       setSelectedInvoice(saved)
-      setDraft((current) => ({ ...current, invoiceNumber: '', dueDate: '', notes: '', items: [emptyItem()] }))
+      setDraft((current) => ({ ...current, invoiceNumber: '', dueDate: '', notes: '', paymentInstructions: '', items: [emptyItem()] }))
       await load()
     } catch (error) {
       setNotice(message(error))
@@ -162,7 +163,7 @@ export function BillingView() {
 
   return (
     <div className="sb-page">
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, marginBottom: 16 }}><div><h1 className="sb-h1">Billing</h1><p className="sb-meta" style={{ marginTop: 4 }}>Brokerage charges, invoice delivery, and client payments.</p></div><div style={{ flex: 1 }} /><button className="sb-btn is-primary" disabled={!!busy} onClick={() => { setEditingId(null); setSelectedInvoice(null); setDraft({ clientId: clients[0]?.id ?? '', invoiceNumber: '', dueDate: '', notes: '', items: [emptyItem()] }); setShowCreate(true) }}><Icons.plus /> New invoice</button></div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, marginBottom: 16 }}><div><h1 className="sb-h1">Billing</h1><p className="sb-meta" style={{ marginTop: 4 }}>Brokerage charges, invoice delivery, and client payments.</p></div><div style={{ flex: 1 }} /><button className="sb-btn is-primary" disabled={!!busy} onClick={() => { setEditingId(null); setSelectedInvoice(null); setDraft({ clientId: clients[0]?.id ?? '', invoiceNumber: '', dueDate: '', notes: '', paymentInstructions: '', items: [emptyItem()] }); setShowCreate(true) }}><Icons.plus /> New invoice</button></div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 12, marginBottom: 16 }}><KpiCard label="Total billed" value={money(metrics.billed)} tone="acc" /><KpiCard label="Payments received" value={money(metrics.paid)} tone="pos" /><KpiCard label="Outstanding" value={money(metrics.outstanding)} tone={d(metrics.outstanding).greaterThan(0) ? 'gold' : 'pos'} /><KpiCard label="Draft invoices" value={metrics.drafts} sub="Not yet sent" /></div>
       {notice && <div className="sb-card sb-pad" role="status" style={{ marginBottom: 12, borderLeft: '3px solid var(--sb-neg)' }}>{notice}</div>}
 
@@ -186,6 +187,7 @@ export function BillingView() {
           </div>)}
           <button className="sb-btn is-sm" onClick={() => setDraft((current) => ({ ...current, items: [...current.items, emptyItem()] }))}><Icons.plus /> Add item</button>
           <label style={{ ...field, marginTop: 12 }}><span className="sb-eyebrow">Notes</span><textarea className="sb-inp" rows={2} value={draft.notes} onChange={(e) => setDraft((current) => ({ ...current, notes: e.target.value }))} /></label>
+          <label style={{ ...field, marginTop: 12 }}><span className="sb-eyebrow">Payment instructions</span><textarea className="sb-inp" rows={4} maxLength={2000} value={draft.paymentInstructions} onChange={(e) => setDraft((current) => ({ ...current, paymentInstructions: e.target.value }))} placeholder="Bank name, account name and number, payment link, or payment location" /><span className="sb-meta">Shown on the invoice and printed PDF. Leave blank to omit this section.</span></label>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}><button className="sb-btn" onClick={() => { setShowCreate(false); if (editingId) void openInvoice(editingId) }} disabled={busy === 'create'}>Cancel</button><button className="sb-btn is-primary" onClick={() => void createInvoice()} disabled={busy === 'create'}>{busy === 'create' ? 'Saving…' : editingId ? 'Save invoice' : 'Create draft invoice'}</button></div>
         </>}
       </div>}
